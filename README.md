@@ -49,7 +49,9 @@ En la página puedes:
 
 ## Ejemplo
 
-[`examples/MuntanyesDelCanigo_neo.html`](examples/MuntanyesDelCanigo_neo.html): *Muntanyes del Canigó* (tradicional catalana, harmonización de Nadal Puig), con las cuatro voces.
+**[Ver la neo-partitura en el navegador](https://dinamicatech.github.io/NeoScore/examples/MuntanyesDelCanigo_neo.html)** · código en [`examples/MuntanyesDelCanigo_neo.html`](examples/MuntanyesDelCanigo_neo.html)
+
+*Muntanyes del Canigó* (tradicional catalana, harmonización de Nadal Puig), con las cuatro voces.
 
 ## Limitaciones conocidas
 
