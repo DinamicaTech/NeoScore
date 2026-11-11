@@ -1,11 +1,10 @@
 ---
 title: Arquitectura
 depends_on: []
-status: draft
 ---
 ## Summary
 Cómo está construido NeoScore: una aplicación web estática que funciona entera en el navegador y se publica en GitHub Pages, sin servidor ni cuentas.
-La página lee el MusicXML directamente (en JavaScript), lo dibuja como neo-partitura, hace sonar las notas con Tone.js y escucha el micrófono para comparar lo cantado con la nota que toca.
+La página lee el MusicXML directamente (en JavaScript), lo dibuja como neo-partitura, hace sonar las notas con Tone.js y escucha con pitchy el micrófono para comparar lo cantado con la nota que toca.
 
 ## Decisions
 - 2026-11-11 14:14 · Tipo de aplicación: web estática en el navegador, publicada en GitHub Pages (https://dinamicatech.github.io/NeoScore). Motivo: el navegador ya trae Web Audio para sonido y micrófono, funciona en móvil y PC, y no hay servidor que mantener. GitHub Pages sirve por HTTPS, que el navegador exige para usar el micrófono.
@@ -16,6 +15,8 @@ La página lee el MusicXML directamente (en JavaScript), lo dibuja como neo-part
 - 2026-11-11 14:14 · Reproducción de notas: Tone.js, con sonidos grabados (samples) elegibles en la página: piano y voz al principio, ampliable a más (Voz1, Voz2, Flauta…). Las librerías y los samples se copian dentro del repositorio, no se cargan de un CDN, para que la web no dependa de terceros.
 - 2026-11-11 14:14 · Datos del usuario (resultados, preferencias y, en el futuro, puntos): solo en el navegador de cada cantante (localStorage o IndexedDB), sin cuentas ni datos personales en ningún servidor.
 - 2026-11-11 14:14 · Pruebas automáticas con las herramientas que traen Node (node:test) y Python (unittest), sin instalar nada, en una acción de GitHub en cada pull request y de forma periódica.
+- 2026-11-11 14:18 · Detección de la nota cantada con pitchy (librería pequeña, método McLeod, precisa con la voz), copiada dentro del repositorio. Tone.js queda solo para reproducir sonido, porque no detecta notas.
+- 2026-11-11 14:18 · neopartitura.py se retira cuando la lectura en JavaScript dé el mismo resultado con los ejemplos, comprobado con pruebas automáticas. Hasta entonces sigue siendo la referencia.
 
 ## Requirements
 - 2026-11-11 14:14 · Creo que haría falta un formato intermedio para no tener la partitura 'harcoded' en al HTML.
@@ -24,5 +25,7 @@ La página lee el MusicXML directamente (en JavaScript), lo dibuja como neo-part
 - 2026-11-11 14:14 · Para la entonación, tone.js si es la más precisa (descartando CREPE).
 - 2026-11-11 14:14 · Para la reproducción la que haya que ofrezca una buena calidad de reproducción (ya sea piano o voz).
 - 2026-11-11 14:14 · La idea es poder escoger piano/voz (ampliable en un futuro a más 'samples', como Voz1, Voz2, Flauta...) en la web así el usuario escoge la que mejor le ayuda a afinar.
-- 2026-11-11 14:14 · question: Detección de la nota cantada. Tone.js sirve para reproducir sonido pero no detecta qué nota se canta. Opciones: A) pitchy, librería pequeña (unos 10 KB, método McLeod) y precisa con la voz; B) un algoritmo YIN propio dentro de la página, sin librería; C) Tone.js con su analizador de frecuencias (FFT), poco preciso para la voz. Recomendación: A.
-- 2026-11-11 14:14 · question: Qué hacer con neopartitura.py cuando la página lea el MusicXML. Opciones: A) retirarlo cuando la versión JavaScript dé el mismo resultado con los ejemplos (lo comprueban las pruebas); B) mantener los dos y que hagan lo mismo; C) dejar Python solo como herramienta para revisar MusicXML problemáticos. Recomendación: A.
+- 2026-11-11 14:14 · [answered 2026-11-11 14:18] question: Detección de la nota cantada. Tone.js sirve para reproducir sonido pero no detecta qué nota se canta. Opciones: A) pitchy, librería pequeña (unos 10 KB, método McLeod) y precisa con la voz; B) un algoritmo YIN propio dentro de la página, sin librería; C) Tone.js con su analizador de frecuencias (FFT), poco preciso para la voz. Recomendación: A.
+- 2026-11-11 14:14 · [answered 2026-11-11 14:18] question: Qué hacer con neopartitura.py cuando la página lea el MusicXML. Opciones: A) retirarlo cuando la versión JavaScript dé el mismo resultado con los ejemplos (lo comprueban las pruebas); B) mantener los dos y que hagan lo mismo; C) dejar Python solo como herramienta para revisar MusicXML problemáticos. Recomendación: A.
+- 2026-11-11 14:18 · answer: detección de la nota cantada → A, pitchy.
+- 2026-11-11 14:18 · answer: qué hacer con neopartitura.py → A, retirarlo cuando la versión JavaScript dé el mismo resultado con los ejemplos.
