@@ -1,0 +1,27 @@
+name: Pruebas
+# Ejecuta las pruebas automáticas de tests/ en cada pull request, en cada cambio en main,
+# cada lunes y a mano. Sin instalar nada: Python (unittest) y Node (node:test) ya vienen en el runner.
+#   Python: ficheros tests/test_*.py
+#   JavaScript: ficheros tests/*.test.mjs
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pruebas de Python (unittest)
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Pruebas de JavaScript (node:test)
+        run: |
+          shopt -s nullglob
+          files=(tests/*.test.mjs)
+          if [ ${#files[@]} -eq 0 ]; then echo "Todavía no hay pruebas de JavaScript."; exit 0; fi
+          node --test "${files[@]}"

@@ -53,11 +53,23 @@ En la página puedes:
 | `neopartitura.py` | Lee el MusicXML (notas, duraciones, silencios, ligaduras y letra) y genera el HTML. |
 | `neopartitura_template.html` | Plantilla de la página: dibuja la cuadrícula, los colores y la leyenda. |
 | `examples/` | Neo-partituras de ejemplo. |
+| `sources/` | MusicXML de los ejemplos y documentos de requisitos. |
+| `tests/` | Pruebas automáticas. |
 
 ## Ejemplos
 
 - **[Muntanyes del Canigó](https://dinamicatech.github.io/NeoScore/examples/MuntanyesDelCanigo_neo.html)** · [código](examples/MuntanyesDelCanigo_neo.html): tradicional catalana, harmonización de Nadal Puig. Cuatro voces.
 - **[El Noi de la Mare](https://dinamicatech.github.io/NeoScore/examples/ElNoiDeLaMare_neo.html)** · [código](examples/ElNoiDeLaMare_neo.html): villancico popular catalán, versión coral de Abel Di Marco, Pbro. Cuatro voces y cinco estrofas; se abre con las estrofas 1, 2 y 5. © A. Di Marco: uso y duplicación permitidos solo con fines pastorales, prohibido su uso con fines económicos.
+
+## Pruebas
+
+Cada cambio propuesto en GitHub pasa por unas pruebas automáticas (acción **Pruebas**), que también se ejecutan cada lunes. La primera comprueba que los ejemplos siguen saliendo exactamente igual. Para ejecutarlas en tu equipo:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Más detalles en [tests/README.md](tests/README.md).
 
 ## Limitaciones conocidas
 
