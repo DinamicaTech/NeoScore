@@ -1,7 +1,6 @@
 ---
 title: Nota de referencia
 depends_on: [architecture, neo-partitura/controles, musicxml]
-status: draft
 threads:
   - 2026-11-11 18:20 · Nota de referencia | https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv?thread=cmsg_01KVLuMPf5x5gSm2uLfB6SDvTPcUTg41TPZRYhy5A9zUJK
 ---
@@ -19,6 +18,7 @@ Lo hace js/sonido.js con Tone.js: suena mientras se mantiene pulsada (como míni
 - 2026-11-11 18:20 · Suena la altura real: la de la nota escrita más la octava de la voz (campo oct del lector), para que el tenor suene una octava más grave de como se escribe.
 - 2026-11-11 18:20 · Pruebas: tests/sonido.test.mjs comprueba los nombres de las notas, la lista de sonidos, que cada sonido grabado tiene sus ficheros y su licencia, y que las grabaciones cubren todas las notas de las partituras de ejemplo.
 - 2026-11-11 18:20 · Hecho cuando: cada sílaba suena a su altura correcta con los dos sonidos, en móvil y en PC, y sigue sonando mientras se mantiene pulsada; lo valida el propietario en la página de prueba.
+- 2026-11-11 18:10 · Validado por el propietario: el nodo deja de ser borrador.
 
 ## Requirements
 - 2026-11-11 13:55 · Poder seleccionar una nota/sílaba y que se emita el sonido de esa nota como referencia auditiva. Este sonido puede ser emulando un piano o una persona cantando esa nota (falta ver con qué tipo de sonido es más fácil detectar la resonancia para saber si se está afinando)
