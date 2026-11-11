@@ -24,6 +24,5 @@ La página lee el MusicXML directamente (en JavaScript), lo dibuja como neo-part
 - 2026-11-11 14:14 · Para la entonación, tone.js si es la más precisa (descartando CREPE).
 - 2026-11-11 14:14 · Para la reproducción la que haya que ofrezca una buena calidad de reproducción (ya sea piano o voz).
 - 2026-11-11 14:14 · La idea es poder escoger piano/voz (ampliable en un futuro a más 'samples', como Voz1, Voz2, Flauta...) en la web así el usuario escoge la que mejor le ayuda a afinar.
-- 2026-11-11 14:14 · También hay que ver si la visualización es suficientemente operativa en vertical en un móvil
 - 2026-11-11 14:14 · question: Detección de la nota cantada. Tone.js sirve para reproducir sonido pero no detecta qué nota se canta. Opciones: A) pitchy, librería pequeña (unos 10 KB, método McLeod) y precisa con la voz; B) un algoritmo YIN propio dentro de la página, sin librería; C) Tone.js con su analizador de frecuencias (FFT), poco preciso para la voz. Recomendación: A.
 - 2026-11-11 14:14 · question: Qué hacer con neopartitura.py cuando la página lea el MusicXML. Opciones: A) retirarlo cuando la versión JavaScript dé el mismo resultado con los ejemplos (lo comprueban las pruebas); B) mantener los dos y que hagan lo mismo; C) dejar Python solo como herramienta para revisar MusicXML problemáticos. Recomendación: A.
