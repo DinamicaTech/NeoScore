@@ -44,7 +44,7 @@ En la página puedes:
 - Elegir la **voz** (Soprano, Alto, Tenor, Baix…) si la partitura tiene varias.
 - Elegir qué **estrofas** ver en el desplegable. Cada estrofa termina donde la partitura tiene una doble barra y toma su nombre de la indicación de texto del primer compás ("Estrofa 2"…). El navegador recuerda la última selección.
 - Ajustar el **tamaño** con el control deslizante.
-- **Oír una nota**: al tocar una sílaba (o su bloque de color) suena su nota, como referencia para afinar. En **Sonido** se elige con qué se oye: **Voz** (una voz sintética que canta "a") o **Piano** (un piano de cola grabado). El navegador recuerda la elección. En iPhone, si no se oye nada, quita el interruptor de silencio.
+- **Oír una nota**: al tocar una sílaba (o su bloque de color) suena su nota, como referencia para afinar; si se mantiene pulsada, sigue sonando hasta soltarla. En **Sonido** se elige con qué se oye: **Voz** (una voz sintética que canta "a") o **Piano** (un piano de cola grabado). El navegador recuerda la elección. En iPhone, si no se oye nada, quita el interruptor de silencio.
 - **Imprimir**: los controles se ocultan y cada línea se mantiene entera en la página.
 
 ## Archivos

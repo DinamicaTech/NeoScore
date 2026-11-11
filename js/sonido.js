@@ -1,4 +1,5 @@
-// Nota de referencia: al tocar una sílaba (o su bloque de color) suena su nota con el sonido elegido en la cabecera.
+// Nota de referencia: al tocar una sílaba (o su bloque de color) suena su nota con el sonido elegido en la cabecera;
+// si se mantiene pulsada, sigue sonando hasta soltarla.
 // Reproduce con Tone.js (js/vendor/Tone.js, copiado en el repositorio), que se carga al abrir la página.
 // Se activa solo: busca en la página el recuadro #sonido (los botones) y la partitura #score, cuyas notas
 // tocables dibuja dibujo.js como <rect class="toque" data-p="altura MIDI que suena">.
@@ -15,7 +16,9 @@ export const SONIDOS = [
     titulo: 'Oír cada nota con un piano de cola grabado: un sonido limpio y conocido' },
 ];
 export const POR_DEFECTO = 'voz';
-export const DURACION = 1.2;   // segundos que suena cada nota
+export const DURACION = 1.2;     // segundos que suena, como mínimo, cada nota (un toque corto)
+export const MAXIMO = 30;        // segundos como mucho, aunque siga pulsada
+const ESPERA_TACTIL = 120;       // ms de espera en pantallas táctiles antes de sonar
 const GUARDADO = 'neo-sonido';  // sonido elegido, guardado en este navegador
 
 const NOMBRES = ['C', 'Cs', 'D', 'Ds', 'E', 'F', 'Fs', 'G', 'Gs', 'A', 'As', 'B'];
@@ -47,13 +50,14 @@ function instrumento(id) {
   return instrumentos[id];
 }
 
+// Cada instrumento: { empezar(midi), soltar(midi) }. La nota suena desde empezar hasta soltar.
 async function crear(s) {
   const T = await cargarTone();
   if (s.tipo === 'grabado') {
     return new Promise((ok, mal) => {
       const sampler = new T.Sampler({
         urls: grabaciones(s), baseUrl: new URL('../' + s.carpeta, import.meta.url).href, release: 0.8,
-        onload: () => ok((midi, dur) => sampler.triggerAttackRelease(nombreTone(midi), dur)),
+        onload: () => ok({ empezar: m => sampler.triggerAttack(nombreTone(m)), soltar: m => sampler.triggerRelease(nombreTone(m)) }),
         onerror: () => mal(new Error(`no se han podido descargar las grabaciones de "${s.nombre}" (${s.carpeta})`)),
       }).toDestination();
     });
@@ -70,7 +74,8 @@ async function crear(s) {
     envelope: { attack: 0.12, decay: 0.2, sustain: 0.85, release: 0.35 },
   }).connect(vibrato);
   voz.volume.value = -6;
-  return (midi, dur) => voz.triggerAttackRelease(T.Frequency(midi, 'midi').toFrequency(), dur);
+  const hz = m => T.Frequency(m, 'midi').toFrequency();
+  return { empezar: m => voz.triggerAttack(hz(m)), soltar: m => voz.triggerRelease(hz(m)) };
 }
 
 function iniciar() {
@@ -99,18 +104,42 @@ function iniciar() {
   new MutationObserver(ver).observe(score, { childList: true });
   ver();
 
-  score.addEventListener('click', async e => {
+  // Pulsar una sílaba la hace sonar; mientras se mantiene pulsada, sigue sonando (como mínimo DURACION).
+  // En pantallas táctiles se espera un instante antes de sonar: si el dedo se mueve, es que se desplaza la página.
+  const activas = new Map();   // pulsación (pointerId) → nota que suena
+  const despertar = () => { if (globalThis.Tone) globalThis.Tone.start().catch(() => {}); };   // el navegador solo deja sonar tras un toque
+  score.addEventListener('pointerdown', e => {
     const t = e.target.closest && e.target.closest('.toque');
-    if (!t) return;
+    if (!t || e.button > 0) return;
+    despertar();
+    const nota = { t, midi: +t.dataset.p, inicio: 0, cancelada: false, sonando: null };
+    activas.set(e.pointerId, nota);
     t.classList.add('sonando');
-    setTimeout(() => t.classList.remove('sonando'), DURACION * 1000);
-    try {
-      const T = await cargarTone();
-      await T.start();   // el navegador solo deja sonar después de un toque del usuario
-      (await instrumento(elegido))(+t.dataset.p, DURACION);
-      if (aviso.className === 'error' && aviso.textContent.startsWith('No suena')) { aviso.className = ''; aviso.textContent = ''; }
-    } catch (err) { fallo(err); }
+    setTimeout(async () => {
+      if (nota.cancelada) return;
+      try {
+        const T = await cargarTone();
+        await T.start();
+        const ins = await instrumento(elegido);
+        if (nota.cancelada) return;
+        ins.empezar(nota.midi); nota.sonando = ins; nota.inicio = performance.now();
+        nota.tope = setTimeout(() => terminar(e.pointerId, nota), MAXIMO * 1000);   // por si el navegador no avisa al soltar
+        if (aviso.className === 'error' && aviso.textContent.startsWith('No suena')) { aviso.className = ''; aviso.textContent = ''; }
+      } catch (err) { t.classList.remove('sonando'); fallo(err); }
+    }, e.pointerType === 'touch' ? ESPERA_TACTIL : 0);
   });
+  function terminar(id, nota) {
+    if (activas.get(id) === nota) activas.delete(id);
+    clearTimeout(nota.tope);
+    const resto = nota.sonando ? Math.max(0, DURACION * 1000 - (performance.now() - nota.inicio)) : 0;
+    setTimeout(() => { if (nota.sonando) nota.sonando.soltar(nota.midi); nota.t.classList.remove('sonando'); }, resto);
+  }
+  const soltar = e => { const n = activas.get(e.pointerId); if (n) terminar(e.pointerId, n); };
+  // desplazar la página con el dedo: no era una pulsación, se calla enseguida
+  const cancelar = e => { const n = activas.get(e.pointerId); if (!n) return; n.cancelada = true; if (n.sonando) n.inicio = -1e9; terminar(e.pointerId, n); };
+  addEventListener('pointerup', e => { despertar(); soltar(e); });
+  addEventListener('pointercancel', cancelar);
+  score.addEventListener('contextmenu', e => { if (e.target.closest && e.target.closest('.toque')) e.preventDefault(); });   // pulsación larga sin menú
 
   // se prepara en cuanto se abre la página: así la primera nota suena al momento
   instrumento(elegido).catch(() => {});   // si falla, el aviso sale al tocar una sílaba
