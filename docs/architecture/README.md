@@ -16,6 +16,7 @@ La página lee el MusicXML directamente (en JavaScript), lo dibuja como neo-part
 - 2026-11-11 14:14 · Datos del usuario (resultados, preferencias y, en el futuro, puntos): solo en el navegador de cada cantante (localStorage o IndexedDB), sin cuentas ni datos personales en ningún servidor.
 - 2026-11-11 14:14 · Pruebas automáticas con las herramientas que traen Node (node:test) y Python (unittest), sin instalar nada, en una acción de GitHub en cada pull request y de forma periódica.
 - 2026-11-11 14:18 · Detección de la nota cantada con pitchy (librería pequeña, método McLeod, precisa con la voz), copiada dentro del repositorio. Tone.js queda solo para reproducir sonido, porque no detecta notas.
+- 2026-11-11 18:45 · pitchy 4.1.0 copiado en js/vendor/pitchy.js con la pieza que usa para sus cálculos, fft.js 4.0.4 (js/vendor/fft.js, pasada a módulo); los dos con licencia MIT (js/vendor/pitchy-LICENSE.md). Se cargan solo al pulsar Cantar.
 - 2026-11-11 14:18 · neopartitura.py se retira cuando la lectura en JavaScript dé el mismo resultado con los ejemplos, comprobado con pruebas automáticas. Hasta entonces sigue siendo la referencia.
 
 ## Requirements

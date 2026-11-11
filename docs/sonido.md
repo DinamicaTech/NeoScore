@@ -19,6 +19,7 @@ Lo hace js/sonido.js con Tone.js: suena mientras se mantiene pulsada (como míni
 - 2026-11-11 18:20 · Pruebas: tests/sonido.test.mjs comprueba los nombres de las notas, la lista de sonidos, que cada sonido grabado tiene sus ficheros y su licencia, y que las grabaciones cubren todas las notas de las partituras de ejemplo.
 - 2026-11-11 18:20 · Hecho cuando: cada sílaba suena a su altura correcta con los dos sonidos, en móvil y en PC, y sigue sonando mientras se mantiene pulsada; lo valida el propietario en la página de prueba.
 - 2026-11-11 18:10 · Validado por el propietario: el nodo deja de ser borrador.
+- 2026-11-11 18:45 · js/sonido.js exporta instrumento(id, bajar) (el mismo sonido, bajar decibelios más suave), sonidoElegido() y cargarTone() para la nota guía del modo de canto (entonacion/cantar-con-tempo).
 
 ## Requirements
 - 2026-11-11 13:55 · Poder seleccionar una nota/sílaba y que se emita el sonido de esa nota como referencia auditiva. Este sonido puede ser emulando un piano o una persona cantando esa nota (falta ver con qué tipo de sonido es más fácil detectar la resonancia para saber si se está afinando)
@@ -30,3 +31,4 @@ Lo hace js/sonido.js con Tone.js: suena mientras se mantiene pulsada (como míni
 - 2026-11-11 18:06 · Si se mantiene pulsado, que siga sonando la referencia.
 - 2026-11-11 18:06 · answer: de dónde salen los sonidos → Ok a los samples: piano grabado Salamander (CC BY 3.0) y, de momento, una voz sintética; una voz grabada por el coro se añadirá más adelante.
 - 2026-11-11 18:06 · answer: qué sonido se ofrece por defecto → Ok a voz.
+- 2026-11-11 18:45 · Derived from entonacion/cantar-con-tempo: dejar usar sus sonidos, más suaves, como nota guía mientras se canta.

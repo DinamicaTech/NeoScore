@@ -26,8 +26,8 @@ export const hzAMidi = hz => 69 + 12 * Math.log2(hz / 440);
  */
 export function comparar(esperada, cantada, margen, octavas = true) {
   let dif = cantada - esperada, octava = 0;
-  if (octavas) { octava = Math.round(dif / 12); dif -= 12 * octava; }
-  const cents = Math.round(dif * 100);
+  if (octavas) { octava = Math.round(dif / 12) || 0; dif -= 12 * octava; }   // || 0: sin "-0"
+  const cents = Math.round(dif * 100) || 0;
   const estado = Math.abs(cents) <= margen ? 'afinada' : cents > 0 ? 'alta' : 'baja';
   return { cents, octava, estado };
 }

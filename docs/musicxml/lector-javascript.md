@@ -16,9 +16,10 @@ La web es index.html?partitura=<ruta>&estrofas=1,2,5, repartida en piezas para q
 - 2026-11-11 17:41 · Dibuja exactamente igual que la plantilla antigua (comprobado comparando la partitura y la leyenda dibujadas de los dos ejemplos). Cambios menores: los textos de la partitura se escapan antes de dibujarlos y un control con hidden queda oculto de verdad.
 - 2026-11-11 17:41 · Retirados neopartitura.py, neopartitura_template.html y tests/test_ejemplos.py. Los datos que daba neopartitura.py con los dos ejemplos se guardan en tests/referencia/ y tests/lector.test.mjs comprueba que el lector da exactamente los mismos.
 - 2026-11-11 17:41 · Las direcciones antiguas examples/*_neo.html pasan a ser páginas que llevan a index.html con su partitura y sus estrofas (El Noi de la Mare con la 1, la 2 y la 5); tests/ejemplos.test.mjs comprueba que esa partitura existe.
-
 - 2026-11-11 17:49 · Validado por el propietario: el nodo deja de ser borrador.
+- 2026-11-11 18:45 · El lector da también el tempo de la partitura (campo tempo, en negras por minuto, solo si lo trae): el primer <sound tempo>, si no la primera indicación de metrónomo, pasada a negras (♩, 𝅗𝅥, ♪, con puntillo). Lo usa entonacion/cantar-con-tempo. tests/lector.test.mjs lo prueba aparte y no lo compara con los datos de neopartitura.py.
 ## Requirements
+- 2026-11-11 18:45 · Derived from entonacion/cantar-con-tempo: leer el tempo del MusicXML para proponerlo al cantar.
 - 2026-11-11 14:20 · Derived from architecture: la página lee el MusicXML en JavaScript y produce el mismo formato de datos que hoy genera neopartitura.py.
 - 2026-11-11 14:20 · draft: Escribir en JavaScript el lector de MusicXML que hoy está en neopartitura.py, con el mismo formato de datos. Hecho cuando las pruebas automáticas muestran que, para los ejemplos de la biblioteca, el resultado es igual al de neopartitura.py; entonces se retira neopartitura.py.
 - 2026-11-11 17:49 · answer: cuánto se hace en este hilo y qué pasa con las direcciones antiguas de los ejemplos → A y A: lector, prueba, página repartida en piezas y retirada de neopartitura.py; las direcciones antiguas llevan a la página nueva (visualización validada).
