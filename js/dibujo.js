@@ -1,6 +1,8 @@
 // Dibujo de la neo-partitura: la letra arriba y, debajo de cada sílaba, la cuadrícula (filas = semitonos,
 // columnas = tiempo) con un bloque de color por nota, la línea del contorno de la melodía y la leyenda de colores.
 
+import { repartirEnLineas } from './lineas.js';
+
 const ROW = 5;            // alto de cada semitono (px)
 const TEXT_H = 20;        // franja de la letra
 const NAMES = ['Do', 'Do♯', 'Re', 'Mi♭', 'Mi', 'Fa', 'Fa♯', 'Sol', 'La♭', 'La', 'Si♭', 'Si'];
@@ -33,14 +35,9 @@ export function dibujar({ data, part, zoom, shown, secs, score, legend }) {
     return { i, evs, w: evs.reduce((s, e) => s + e.w, 0) + 4, label, end: m.end || secs.finEn(i) };
   }).filter(m => shown.has(secs.de[m.i]));   // solo las estrofas elegidas
   const maxW = score.clientWidth - 32 - 40;   // padding de main + margen izquierdo y barras
-  // reparte los compases en líneas; tras una doble barra (fin de estrofa) empieza línea nueva
-  const lines = []; let cur = [], cw = 0;
-  for (const m of measures) {
-    if (cur.length && cw + m.w > maxW) { lines.push(cur); cur = []; cw = 0; }
-    cur.push(m); cw += m.w;
-    if (m.end) { lines.push(cur); cur = []; cw = 0; }
-  }
-  if (cur.length) lines.push(cur);
+  // reparte los compases en líneas; tras una doble barra (fin de estrofa) empieza línea nueva,
+  // y un compás que no cabe solo en la pantalla (móvil en vertical) se parte en tramos
+  const lines = repartirEnLineas(measures, maxW);
 
   const LBL_H = lines.some(l => l.some(m => m.label)) ? 14 : 0;   // franja para "Estrofa 2", "rit."...
   const y = p => TEXT_H + (hi - p) * ROW;
@@ -55,8 +52,9 @@ export function dibujar({ data, part, zoom, shown, secs, score, legend }) {
     }
     let x = 30, pts = [], prev = null;
     for (const m of line) {
-      s += `<line x1="${x}" x2="${x}" y1="${TEXT_H - 4}" y2="${TEXT_H + GH}" stroke="var(--bar)" stroke-width="1"/>`;
-      s += `<text class="mnum" x="${x + 2}" y="${TEXT_H + GH + 11}">${m.i + 1}</text>`;
+      // barra del compás; discontinua si es un tramo que sigue el compás de la línea anterior
+      s += `<line x1="${x}" x2="${x}" y1="${TEXT_H - 4}" y2="${TEXT_H + GH}" stroke="var(--bar)" stroke-width="1"${m.cont ? ' stroke-dasharray="3 3"' : ''}/>`;
+      if (!m.cont) s += `<text class="mnum" x="${x + 2}" y="${TEXT_H + GH + 11}">${m.i + 1}</text>`;   // los tramos siguientes no repiten el número
       x += 2;
       for (const e of m.evs) {
         if (e.r) { if (pts.length) { s += poly(pts); pts = []; } prev = null; x += e.w; continue; }
