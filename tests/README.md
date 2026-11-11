@@ -12,4 +12,5 @@ Para añadir pruebas basta con crear un fichero con ese nombre en esta carpeta: 
 ## Pruebas actuales
 
 - `lector.test.mjs`: comprueba que el lector de MusicXML (`js/lector-musicxml.js`) da, para cada partitura de su lista `PARTITURAS`, exactamente los mismos datos que daba `neopartitura.py`, el conversor en Python ya retirado. Esos datos se guardaron en `referencia/` con la última versión de `neopartitura.py` y no se regeneran: si un cambio querido del lector los altera, hay que revisarlo con el propietario. También prueba casos sueltos (alteraciones, ligaduras, sinalefas, acordes, dobles barras) y los mensajes de error.
+- `biblioteca.test.mjs`: comprueba el índice de la biblioteca (`biblioteca/indice.json`): que cada partitura existe, se lee y sus estrofas existen, que todo MusicXML de la carpeta está en el índice, que el aviso de derechos del MusicXML está copiado en el índice (© A. Di Marco en El Noi de la Mare), que las direcciones antiguas de `examples/` llevan a la biblioteca, y la lectura del aviso de derechos de un fichero propio.
 - `ejemplos.test.mjs`: comprueba que las direcciones antiguas de `examples/` llevan a una partitura que existe.
