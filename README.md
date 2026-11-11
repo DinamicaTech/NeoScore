@@ -54,11 +54,10 @@ En la página puedes:
 | `neopartitura_template.html` | Plantilla de la página: dibuja la cuadrícula, los colores y la leyenda. |
 | `examples/` | Neo-partituras de ejemplo. |
 
-## Ejemplo
+## Ejemplos
 
-**[Ver la neo-partitura en el navegador](https://dinamicatech.github.io/NeoScore/examples/MuntanyesDelCanigo_neo.html)** · código en [`examples/MuntanyesDelCanigo_neo.html`](examples/MuntanyesDelCanigo_neo.html)
-
-*Muntanyes del Canigó* (tradicional catalana, harmonización de Nadal Puig), con las cuatro voces.
+- **[Muntanyes del Canigó](https://dinamicatech.github.io/NeoScore/examples/MuntanyesDelCanigo_neo.html)** · [código](examples/MuntanyesDelCanigo_neo.html): tradicional catalana, harmonización de Nadal Puig. Cuatro voces.
+- **[El Noi de la Mare](https://dinamicatech.github.io/NeoScore/examples/ElNoiDeLaMare_neo.html)** · [código](examples/ElNoiDeLaMare_neo.html): villancico popular catalán, versión coral de Abel Di Marco, Pbro. Cuatro voces y cinco estrofas; se abre con las estrofas 1, 2 y 5. © A. Di Marco: uso y duplicación permitidos solo con fines pastorales, prohibido su uso con fines económicos.
 
 ## Limitaciones conocidas
 
