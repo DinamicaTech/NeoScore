@@ -1,6 +1,8 @@
 // Lector de MusicXML: convierte el texto de una partitura MusicXML en los datos que dibuja la neo-partitura.
 // Formato de salida (el mismo que generaba neopartitura.py):
-//   {title, parts:[{name, measures:[{e:[{p:midi, d:negras, t?:sílaba, tie?:1} | {r:1, d}], w?:indicación, end?:1}]}]}
+//   {title, parts:[{name, oct?:semitonos, measures:[{e:[{p:midi, d:negras, t?:sílaba, tie?:1} | {r:1, d}], w?:indicación, end?:1}]}]}
+// p es la altura escrita. oct (solo si no es 0) es lo que hay que sumarle para la altura que suena: -12 en una voz
+// escrita en clave de sol con un 8 debajo (tenor), que suena una octava más grave. Lo usa la nota de referencia (sonido).
 // Funciona igual en el navegador y en Node (pruebas): no usa DOMParser ni librerías, trae su propio lector de XML.
 
 const STEP = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
@@ -53,7 +55,10 @@ export function leerMusicXML(texto, nombre = 'partitura') {
       measures.push(measure);
     }
     const id = p.attrs.id;
-    parts.push({ name: id in names ? names[id] : id, measures });
+    const part = { name: id in names ? names[id] : id, measures };
+    const octava = findall(p, 'measure/attributes/clef/clef-octave-change')[0];
+    if (octava && entero(octava.text)) part.oct = 12 * entero(octava.text);
+    parts.push(part);
   }
   if (!parts.length) throw new Error('La partitura no tiene ninguna voz (parte). Revisa que se haya exportado entera.');
   return { title, parts };

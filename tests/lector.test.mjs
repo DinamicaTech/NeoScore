@@ -21,6 +21,8 @@ const PARTITURAS = [
 for (const [origen, referencia] of PARTITURAS) {
   test(`${origen} da los mismos datos que neopartitura.py`, () => {
     const obtenido = leerMusicXML(leer(origen), origen);
+    // "oct" (octava a la que suena la voz) es nuevo, posterior a neopartitura.py: se prueba aparte, más abajo
+    for (const p of obtenido.parts) delete p.oct;
     const esperado = JSON.parse(leer(referencia));
     assert.deepStrictEqual(obtenido, esperado,
       `El lector ya no lee ${origen} como neopartitura.py (${referencia}). Corrige js/lector-musicxml.js.`);
@@ -71,4 +73,15 @@ test('errores con explicación de cómo arreglarlo', () => {
   assert.throws(() => leerMusicXML('PK\x03\x04...'), /comprimido \(\.mxl\)/);
   assert.throws(() => leerMusicXML('<html><body></body></html>'), /no es una partitura MusicXML/);
   assert.throws(() => leerMusicXML('<score-partwise><part-list>'), /falta cerrar/);
+});
+
+test('oct: una voz en clave de sol con un 8 debajo (tenor) suena una octava más grave', () => {
+  const datos = leerMusicXML(leer('sources/ElNoiDeLaMare_completa.musicxml'));
+  assert.deepEqual(datos.parts.map(p => [p.name, p.oct]), [['Soprano', undefined], ['Alto', undefined], ['Tenor', -12], ['Bajo', undefined]]);
+  const clave = cambio => leerMusicXML(partitura(`<part-list><score-part id="P1"><part-name>T</part-name></score-part></part-list>
+    <part id="P1"><measure number="1"><attributes><divisions>1</divisions><clef><sign>G</sign><line>2</line>${cambio}</clef></attributes></measure></part>`)).parts[0];
+  assert.equal(clave('<clef-octave-change>-1</clef-octave-change>').oct, -12);
+  assert.equal(clave('<clef-octave-change>1</clef-octave-change>').oct, 12);
+  assert.equal('oct' in clave(''), false);
+  assert.equal('oct' in clave('<clef-octave-change>0</clef-octave-change>'), false);
 });

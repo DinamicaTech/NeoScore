@@ -24,6 +24,7 @@ const poly = pts => `<polyline points="${pts.map(p => p.join(',')).join(' ')}" f
  */
 export function dibujar({ data, part, zoom, shown, secs, score, legend }) {
   const P = data.parts[part], Q = zoom;
+  const oct = P.oct || 0;   // voces escritas una octava más alta de lo que suenan (tenor en clave de sol con un 8)
   const notes = P.measures.flatMap(m => m.e).filter(e => !e.r);
   if (!notes.length) { score.innerHTML = '<p>Esta voz no tiene notas. Elige otra voz arriba.</p>'; legend.innerHTML = ''; return; }
   const lo = Math.min(...notes.map(e => e.p)), hi = Math.max(...notes.map(e => e.p));
@@ -65,6 +66,8 @@ export function dibujar({ data, part, zoom, shown, secs, score, legend }) {
         const k = ((e.p - first) % 12 + 12) % 12, yy = y(e.p);
         const join = (e.tie || !e.t) && prev === e.p;   // ligadura o melisma en la misma nota
         s += `<rect x="${x + (join ? -1 : 1)}" y="${yy}" width="${e.w - (join ? 1 : 2)}" height="${ROW}" rx="1.5" fill="${color(k)}"/>`;
+        // zona tocable (sílaba y bloque): js/sonido.js hace sonar la altura real (data-p)
+        s += `<rect class="toque" x="${x}" y="0" width="${e.w}" height="${TEXT_H + GH}" data-p="${e.p + oct}"><title>Toca para oír esta nota (${NAMES[e.p % 12]})</title></rect>`;
         pts.push([x + 1, yy + ROW / 2], [x + e.w - 1, yy + ROW / 2]);
         prev = e.p; x += e.w;
       }
