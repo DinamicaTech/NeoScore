@@ -8,7 +8,8 @@
 </head>
 <body>
 <!-- Piezas de la página (cada una en su fichero, para poder cambiarlas por separado):
-     js/pagina.js          qué partitura se abre y su carga
+     js/pagina.js          selector de partituras, abrir fichero propio, aviso de derechos y carga
+     js/biblioteca.js      índice de la biblioteca (biblioteca/indice.json) y partitura propia guardada
      js/lector-musicxml.js lectura del MusicXML
      js/controles.js       controles de la cabecera (voz, estrofas, tamaño)
      js/estrofas.js        estrofas de la partitura
@@ -16,12 +17,14 @@
      js/sonido.js          nota de referencia: tocar una sílaba la hace sonar (Tone.js)
      css/neopartitura.css   estilos -->
 <header>
+  <div class="ctrl" id="elegir"><select id="selector" title="Elegir una partitura de la biblioteca, o la tuya guardada en este navegador"></select><button id="abrir" title="Abrir una partitura MusicXML (.musicxml) de tu equipo; se queda solo en este navegador, no se sube a ningún sitio">Abrir fichero…</button><button id="olvidar" hidden title="Borrar de este navegador la partitura propia guardada">Olvidar la mía</button><input type="file" id="fichero" accept=".musicxml,.xml" hidden></div>
   <h1 id="titulo"></h1>
   <div class="ctrl" id="voices"></div>
   <details class="ctrl" id="secs" hidden title="Elegir qué estrofas se ven"><summary></summary><div id="seclist"></div></details>
   <div class="ctrl" id="sonido" hidden title="Elige con qué sonido se oye la nota al tocar una sílaba">Sonido</div>
   <div class="ctrl" id="tamano" hidden>Tamaño <input type="range" id="zoom" min="12" max="70" value="40" title="Hacer la partitura más ancha o más estrecha"></div>
 </header>
+<p id="derechos" hidden></p>
 <div id="aviso"></div>
 <div id="legend"></div>
 <main id="score"></main>

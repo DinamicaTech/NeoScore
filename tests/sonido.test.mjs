@@ -37,8 +37,9 @@ test('cada sonido grabado tiene sus ficheros y su licencia en el repositorio', (
   }
 });
 
-test('las grabaciones cubren todas las notas de las partituras de ejemplo (como mucho a 3 semitonos)', () => {
-  for (const origen of ['sources/ElNoiDeLaMare_completa.musicxml', 'sources/MuntanyesDelCanigo.musicxml']) {
+test('las grabaciones cubren todas las notas de las partituras de la biblioteca (como mucho a 3 semitonos)', () => {
+  const indice = JSON.parse(readFileSync(new URL('biblioteca/indice.json', raiz), 'utf8'));
+  for (const origen of indice.partituras.map(p => 'biblioteca/' + p.fichero)) {
     const datos = leerMusicXML(readFileSync(new URL(origen, raiz), 'utf8'));
     const alturas = datos.parts.flatMap(p => p.measures.flatMap(m => m.e).filter(e => !e.r).map(e => e.p + (p.oct || 0)));
     for (const s of SONIDOS.filter(s => s.tipo === 'grabado')) {
