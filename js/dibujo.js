@@ -5,6 +5,7 @@ import { repartirEnLineas } from './lineas.js';
 
 const ROW = 5;            // alto de cada semitono (px)
 const TEXT_H = 20;        // franja de la letra
+const IZQ = 1;            // margen izquierdo del dibujo: lo justo para que se vea la primera barra
 const NAMES = ['Do', 'Do♯', 'Re', 'Mi♭', 'Mi', 'Fa', 'Fa♯', 'Sol', 'La♭', 'La', 'Si♭', 'Si'];
 // 12 colores bien distintos, por semitonos desde la primera nota (0 = azul)
 const PALETTE = ['#2D6FD6', '#9CC3EE', '#7B4FD1', '#E89AC7', '#D6336C', '#F08C2E',
@@ -34,7 +35,9 @@ export function dibujar({ data, part, zoom, shown, secs, score, legend }) {
     const label = m.w || data.parts.map(q => q.measures[i] && q.measures[i].w).find(Boolean);
     return { i, evs, w: evs.reduce((s, e) => s + e.w, 0) + 4, label, end: m.end || secs.finEn(i) };
   }).filter(m => shown.has(secs.de[m.i]));   // solo las estrofas elegidas
-  const maxW = score.clientWidth - 32 - 40;   // padding de main + margen izquierdo y barras
+  // ancho para los compases: el de la partitura sin su padding, el margen izquierdo y la última barra
+  const cs = getComputedStyle(score);
+  const maxW = score.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - IZQ - 2;
   // reparte los compases en líneas; tras una doble barra (fin de estrofa) empieza línea nueva,
   // y un compás que no cabe solo en la pantalla (móvil en vertical) se parte en tramos
   const lines = repartirEnLineas(measures, maxW);
@@ -42,15 +45,15 @@ export function dibujar({ data, part, zoom, shown, secs, score, legend }) {
   const LBL_H = lines.some(l => l.some(m => m.label)) ? 14 : 0;   // franja para "Estrofa 2", "rit."...
   const y = p => TEXT_H + (hi - p) * ROW;
   score.innerHTML = lines.map(line => {
-    const W = 30 + line.reduce((s, m) => s + m.w, 0);
+    const W = IZQ + 1 + line.reduce((s, m) => s + m.w, 0);
     let s = `<svg width="${W}" height="${LBL_H + TEXT_H + GH + 4}" role="img"><g transform="translate(0 ${LBL_H})">`;
-    let lx = 30;
+    let lx = IZQ;
     for (const m of line) { if (m.label) s += `<text class="lbl" x="${lx + 3}" y="-3">${esc(m.label)}</text>`; lx += m.w; }
     for (let p = lo; p <= hi; p++) {
       const ref = (p - first) % 12 === 0;
-      s += `<line x1="30" x2="${W}" y1="${y(p) + ROW / 2}" y2="${y(p) + ROW / 2}" stroke="var(${ref ? '--ref' : '--grid'})" stroke-width="${ref ? 1.2 : 0.6}"/>`;
+      s += `<line x1="${IZQ}" x2="${W}" y1="${y(p) + ROW / 2}" y2="${y(p) + ROW / 2}" stroke="var(${ref ? '--ref' : '--grid'})" stroke-width="${ref ? 1.2 : 0.6}"/>`;
     }
-    let x = 30, pts = [], prev = null;
+    let x = IZQ, pts = [], prev = null;
     for (const m of line) {
       // barra del compás; discontinua si es un tramo que sigue el compás de la línea anterior
       s += `<line x1="${x}" x2="${x}" y1="${TEXT_H - 4}" y2="${TEXT_H + GH}" stroke="var(--bar)" stroke-width="1"${m.cont ? ' stroke-dasharray="3 3"' : ''}/>`;

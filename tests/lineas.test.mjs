@@ -41,13 +41,13 @@ test('una nota sola más ancha que la línea se estrecha hasta caber', () => {
   assert.ok(ancho(lineas[0]) <= 200);
 });
 
-// Las partituras de ejemplo, en un móvil de 320 y de 360 px, con el control de tamaño al mínimo, en medio y al máximo.
+// Las partituras de ejemplo, en un móvil de 320 y de 360 px, con el control de tamaño al mínimo (12), en medio y al máximo.
 // El ancho de la letra se estima (8 px por letra, más que lo que mide de verdad a 14 px) porque Node no mide textos.
 for (const f of ['MuntanyesDelCanigo.musicxml', 'ElNoiDeLaMare_completa.musicxml']) {
   const data = leerMusicXML(readFileSync(new URL('../sources/' + f, import.meta.url), 'utf8'), f);
-  for (const pantalla of [320, 360]) for (const zoom of [24, 40, 70]) {
+  for (const pantalla of [320, 360]) for (const zoom of [12, 40, 70]) {
     test(`${f}: en ${pantalla} px con tamaño ${zoom} ninguna línea pasa del ancho`, () => {
-      const maxW = pantalla - 32 - 40;   // como en js/dibujo.js
+      const maxW = pantalla - 2 * 8 - 1 - 2;   // como en js/dibujo.js: padding de 8 px en el móvil, margen izquierdo y última barra
       for (const P of data.parts) {
         const compases = P.measures.map((m, i) => {
           const evs = m.e.map(e => ({ ...e, w: Math.max(e.d * zoom, e.t ? e.t.length * 8 + 6 : 6) }));
