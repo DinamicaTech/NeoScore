@@ -129,13 +129,16 @@ function iniciar() {
         const ins = await instrumento(elegido);
         if (nota.cancelada) return;
         ins.empezar(nota.midi); nota.sonando = ins; nota.inicio = performance.now();
-        nota.tope = setTimeout(() => terminar(e.pointerId, nota), MAXIMO * 1000);   // por si el navegador no avisa al soltar
+        // un toque rápido (o la primera nota, mientras se preparaba el sonido) ya se ha soltado: suena lo mínimo y se calla
+        if (nota.soltada) terminar(e.pointerId, nota);
+        else nota.tope = setTimeout(() => terminar(e.pointerId, nota), MAXIMO * 1000);   // por si el navegador no avisa al soltar
         if (aviso.className === 'error' && aviso.textContent.startsWith('No suena')) { aviso.className = ''; aviso.textContent = ''; }
       } catch (err) { t.classList.remove('sonando'); fallo(err); }
     }, e.pointerType === 'touch' ? ESPERA_TACTIL : 0);
   });
   function terminar(id, nota) {
     if (activas.get(id) === nota) activas.delete(id);
+    if (!nota.sonando) { nota.soltada = true; if (nota.cancelada) nota.t.classList.remove('sonando'); return; }   // aún no suena: lo cerrará al empezar
     clearTimeout(nota.tope);
     const resto = nota.sonando ? Math.max(0, DURACION * 1000 - (performance.now() - nota.inicio)) : 0;
     setTimeout(() => { if (nota.sonando) nota.sonando.soltar(nota.midi); nota.t.classList.remove('sonando'); }, resto);
