@@ -21,4 +21,3 @@ Las líneas se cortan según el ancho de la pantalla y un compás que no cabe si
 - 2026-11-11 17:54 · answer: cómo encajarla en vertical → A, cortar las líneas en tramos más cortos según el ancho de pantalla, manteniendo la cuadrícula.
 - 2026-11-11 18:03 · Podemos eliminar el margen izquierdo para ganar algo de espacio en la pantalla ?
 - 2026-11-11 18:03 · Igualmente, la pantalla debe soportar rotación automática ya que en apaisado seguirá siendo más cómoda
-- 2026-11-11 18:07 · validado
