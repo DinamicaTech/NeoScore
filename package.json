@@ -1,0 +1,5 @@
+{
+  "//": "Solo indica que los ficheros .js de la web son módulos de JavaScript (para las pruebas con Node). No hay dependencias.",
+  "type": "module",
+  "private": true
+}
