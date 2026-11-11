@@ -23,13 +23,15 @@ Como los colores son relativos a la primera nota, si se cambia el tono de la can
 
 NeoScore es una pequeña web que funciona entera en el navegador: lee directamente la partitura en **MusicXML** y la dibuja. Está publicada en **https://dinamicatech.github.io/NeoScore**.
 
-Para abrir una partitura concreta se indica su dirección dentro de la web, y opcionalmente qué estrofas se ven al abrir:
+Arriba a la izquierda hay un **desplegable con las partituras de la biblioteca**: al elegir una, se abre. Con **Abrir fichero…** puedes abrir un MusicXML de tu equipo: se queda solo en tu navegador (no se sube a ningún sitio), el navegador lo recuerda y aparece en el desplegable como "Mi partitura"; **Olvidar la mía** lo borra. Bajo el título se muestra siempre la autoría y el aviso de derechos de la partitura.
+
+También se puede abrir una partitura concreta con su dirección dentro de la web, y opcionalmente qué estrofas se ven al abrir:
 
 ```
-https://dinamicatech.github.io/NeoScore/?partitura=sources/ElNoiDeLaMare_completa.musicxml&estrofas=1,2,5
+https://dinamicatech.github.io/NeoScore/?partitura=biblioteca/ElNoiDeLaMare_completa.musicxml&estrofas=1,2,5
 ```
 
-Para añadir una canción, expórtala a MusicXML sin comprimir (por ejemplo, desde MuseScore: *Archivo → Exportar → MusicXML*, fichero `.musicxml`) y guárdala en el repositorio.
+Para añadir una canción a la biblioteca, expórtala a MusicXML sin comprimir (por ejemplo, desde MuseScore: *Archivo → Exportar → MusicXML*, fichero `.musicxml`), guárdala en la carpeta `biblioteca/` y añádela a la lista `biblioteca/indice.json` con su título, las estrofas que se ven al abrir (vacío = todas), su autoría y su aviso de derechos.
 
 Para probar la web en tu equipo hace falta servirla (el navegador no deja leer la partitura si se abre `index.html` con doble clic). Con Python 3 instalado, en la carpeta del proyecto:
 
@@ -56,16 +58,18 @@ En la página puedes:
 | `js/dibujo.js` | Dibuja la cuadrícula, los colores y la leyenda. |
 | `js/lineas.js` | Reparte los compases en líneas según el ancho de la pantalla. |
 | `js/controles.js`, `js/estrofas.js` | Controles de voz, estrofas y tamaño. |
-| `js/pagina.js` | Decide qué partitura se abre y la carga. |
+| `js/pagina.js` | Selector de partituras, botón para abrir un fichero propio, aviso de derechos y carga de la partitura. |
+| `js/biblioteca.js` | Lee el índice de la biblioteca y guarda en el navegador la partitura propia. |
 | `css/neopartitura.css` | Estilos de la página. |
 | `examples/` | Direcciones antiguas de los ejemplos: llevan a la página con su partitura. |
-| `sources/` | MusicXML de los ejemplos y documentos de requisitos. |
+| `biblioteca/` | Las partituras de la biblioteca (MusicXML) y su lista, `indice.json`. |
+| `sources/` | Ficheros originales de requisitos (documentos y MusicXML de partida), sin cambios. |
 | `tests/` | Pruebas automáticas. |
 
 ## Ejemplos
 
-- **[Muntanyes del Canigó](https://dinamicatech.github.io/NeoScore/?partitura=sources/MuntanyesDelCanigo.musicxml)** · [MusicXML](sources/MuntanyesDelCanigo.musicxml): tradicional catalana, harmonización de Nadal Puig. Cuatro voces.
-- **[El Noi de la Mare](https://dinamicatech.github.io/NeoScore/?partitura=sources/ElNoiDeLaMare_completa.musicxml&estrofas=1,2,5)** · [MusicXML](sources/ElNoiDeLaMare_completa.musicxml): villancico popular catalán, versión coral de Abel Di Marco, Pbro. Cuatro voces y cinco estrofas; se abre con las estrofas 1, 2 y 5. © A. Di Marco: uso y duplicación permitidos solo con fines pastorales, prohibido su uso con fines económicos.
+- **[Muntanyes del Canigó](https://dinamicatech.github.io/NeoScore/?partitura=biblioteca/MuntanyesDelCanigo.musicxml)** · [MusicXML](biblioteca/MuntanyesDelCanigo.musicxml): tradicional catalana, harmonización de Nadal Puig. Cuatro voces.
+- **[El Noi de la Mare](https://dinamicatech.github.io/NeoScore/?partitura=biblioteca/ElNoiDeLaMare_completa.musicxml&estrofas=1,2,5)** · [MusicXML](biblioteca/ElNoiDeLaMare_completa.musicxml): villancico popular catalán, versión coral de Abel Di Marco, Pbro. Cuatro voces y cinco estrofas; se abre con las estrofas 1, 2 y 5. © A. Di Marco: uso y duplicación permitidos solo con fines pastorales, prohibido su uso con fines económicos.
 
 ## Pruebas
 
