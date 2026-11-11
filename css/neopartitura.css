@@ -15,6 +15,9 @@ h1 { font-size:22px; font-weight:500; margin:0; flex:1 1 auto; }
 main { max-width:1200px; margin:0 auto; padding:8px 16px 40px; }
 main svg { display:block; margin-bottom:18px; overflow:visible; }
 .syl { font-size:14px; fill:var(--fg); }
+.toque { fill:transparent; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.toque:hover { fill:var(--ref); fill-opacity:.25; }
+.toque.sonando { fill:var(--ref); fill-opacity:.55; }
 .mnum { font-size:9px; fill:var(--muted); }
 .lbl { font-size:11px; font-style:italic; fill:var(--muted); }
 #secs { position:relative; }

@@ -13,16 +13,19 @@
      js/controles.js       controles de la cabecera (voz, estrofas, tamaño)
      js/estrofas.js        estrofas de la partitura
      js/dibujo.js          dibujo de la neo-partitura y la leyenda
+     js/sonido.js          nota de referencia: tocar una sílaba la hace sonar (Tone.js)
      css/neopartitura.css   estilos -->
 <header>
   <h1 id="titulo"></h1>
   <div class="ctrl" id="voices"></div>
   <details class="ctrl" id="secs" hidden title="Elegir qué estrofas se ven"><summary></summary><div id="seclist"></div></details>
+  <div class="ctrl" id="sonido" hidden title="Elige con qué sonido se oye la nota al tocar una sílaba">Sonido</div>
   <div class="ctrl" id="tamano" hidden>Tamaño <input type="range" id="zoom" min="24" max="70" value="40" title="Hacer la partitura más ancha o más estrecha"></div>
 </header>
 <div id="aviso"></div>
 <div id="legend"></div>
 <main id="score"></main>
 <script type="module" src="js/pagina.js"></script>
+<script type="module" src="js/sonido.js"></script>
 </body>
 </html>
