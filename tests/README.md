@@ -11,4 +11,5 @@ Para añadir pruebas basta con crear un fichero con ese nombre en esta carpeta: 
 
 ## Pruebas actuales
 
-- `test_ejemplos.py`: convierte cada ejemplo de `examples/` desde su MusicXML de `sources/` con `neopartitura.py` y comprueba que sale exactamente igual que la página guardada. Si un cambio querido altera los ejemplos, regenéralos con `python tests/test_ejemplos.py --actualizar` y revísalos antes de subirlos. Para añadir un ejemplo, añádelo a la lista `EJEMPLOS` del fichero.
+- `lector.test.mjs`: comprueba que el lector de MusicXML (`js/lector-musicxml.js`) da, para cada partitura de su lista `PARTITURAS`, exactamente los mismos datos que daba `neopartitura.py`, el conversor en Python ya retirado. Esos datos se guardaron en `referencia/` con la última versión de `neopartitura.py` y no se regeneran: si un cambio querido del lector los altera, hay que revisarlo con el propietario. También prueba casos sueltos (alteraciones, ligaduras, sinalefas, acordes, dobles barras) y los mensajes de error.
+- `ejemplos.test.mjs`: comprueba que las direcciones antiguas de `examples/` llevan a una partitura que existe.

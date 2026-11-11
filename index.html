@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NeoScore · neo-partitura</title>
+<link rel="stylesheet" href="css/neopartitura.css">
+</head>
+<body>
+<!-- Piezas de la página (cada una en su fichero, para poder cambiarlas por separado):
+     js/pagina.js          qué partitura se abre y su carga
+     js/lector-musicxml.js lectura del MusicXML
+     js/controles.js       controles de la cabecera (voz, estrofas, tamaño)
+     js/estrofas.js        estrofas de la partitura
+     js/dibujo.js          dibujo de la neo-partitura y la leyenda
+     css/neopartitura.css   estilos -->
+<header>
+  <h1 id="titulo"></h1>
+  <div class="ctrl" id="voices"></div>
+  <details class="ctrl" id="secs" hidden title="Elegir qué estrofas se ven"><summary></summary><div id="seclist"></div></details>
+  <div class="ctrl" id="tamano" hidden>Tamaño <input type="range" id="zoom" min="24" max="70" value="40" title="Hacer la partitura más ancha o más estrecha"></div>
+</header>
+<div id="aviso"></div>
+<div id="legend"></div>
+<main id="score"></main>
+<script type="module" src="js/pagina.js"></script>
+</body>
+</html>

@@ -21,23 +21,23 @@ Como los colores son relativos a la primera nota, si se cambia el tono de la can
 
 ## Uso
 
-Hace falta Python 3 sin librerías adicionales. Exporta la partitura a **MusicXML** (por ejemplo, desde MuseScore: *Archivo → Exportar → MusicXML*) y ejecuta:
+NeoScore es una pequeña web que funciona entera en el navegador: lee directamente la partitura en **MusicXML** y la dibuja. Está publicada en **https://dinamicatech.github.io/NeoScore**.
 
-```bash
-python neopartitura.py mi_cancion.musicxml
+Para abrir una partitura concreta se indica su dirección dentro de la web, y opcionalmente qué estrofas se ven al abrir:
+
+```
+https://dinamicatech.github.io/NeoScore/?partitura=sources/ElNoiDeLaMare_completa.musicxml&estrofas=1,2,5
 ```
 
-Esto genera `mi_cancion_neo.html`, una página autónoma que se abre con cualquier navegador. También puedes indicar el nombre de salida:
+Para añadir una canción, expórtala a MusicXML sin comprimir (por ejemplo, desde MuseScore: *Archivo → Exportar → MusicXML*, fichero `.musicxml`) y guárdala en el repositorio.
+
+Para probar la web en tu equipo hace falta servirla (el navegador no deja leer la partitura si se abre `index.html` con doble clic). Con Python 3 instalado, en la carpeta del proyecto:
 
 ```bash
-python neopartitura.py mi_cancion.musicxml salida.html
+python -m http.server 8000
 ```
 
-Si la canción tiene varias estrofas, puedes decidir cuáles se ven al abrir la página:
-
-```bash
-python neopartitura.py mi_cancion.musicxml --estrofas 1,2,5
-```
+y abre http://localhost:8000 en el navegador.
 
 En la página puedes:
 
@@ -50,23 +50,27 @@ En la página puedes:
 
 | Archivo | Qué es |
 | --- | --- |
-| `neopartitura.py` | Lee el MusicXML (notas, duraciones, silencios, ligaduras y letra) y genera el HTML. |
-| `neopartitura_template.html` | Plantilla de la página: dibuja la cuadrícula, los colores y la leyenda. |
-| `examples/` | Neo-partituras de ejemplo. |
+| `index.html` | La página. |
+| `js/lector-musicxml.js` | Lee el MusicXML (notas, duraciones, silencios, ligaduras, letra, indicaciones y dobles barras). |
+| `js/dibujo.js` | Dibuja la cuadrícula, los colores y la leyenda. |
+| `js/controles.js`, `js/estrofas.js` | Controles de voz, estrofas y tamaño. |
+| `js/pagina.js` | Decide qué partitura se abre y la carga. |
+| `css/neopartitura.css` | Estilos de la página. |
+| `examples/` | Direcciones antiguas de los ejemplos: llevan a la página con su partitura. |
 | `sources/` | MusicXML de los ejemplos y documentos de requisitos. |
 | `tests/` | Pruebas automáticas. |
 
 ## Ejemplos
 
-- **[Muntanyes del Canigó](https://dinamicatech.github.io/NeoScore/examples/MuntanyesDelCanigo_neo.html)** · [código](examples/MuntanyesDelCanigo_neo.html): tradicional catalana, harmonización de Nadal Puig. Cuatro voces.
-- **[El Noi de la Mare](https://dinamicatech.github.io/NeoScore/examples/ElNoiDeLaMare_neo.html)** · [código](examples/ElNoiDeLaMare_neo.html): villancico popular catalán, versión coral de Abel Di Marco, Pbro. Cuatro voces y cinco estrofas; se abre con las estrofas 1, 2 y 5. © A. Di Marco: uso y duplicación permitidos solo con fines pastorales, prohibido su uso con fines económicos.
+- **[Muntanyes del Canigó](https://dinamicatech.github.io/NeoScore/?partitura=sources/MuntanyesDelCanigo.musicxml)** · [MusicXML](sources/MuntanyesDelCanigo.musicxml): tradicional catalana, harmonización de Nadal Puig. Cuatro voces.
+- **[El Noi de la Mare](https://dinamicatech.github.io/NeoScore/?partitura=sources/ElNoiDeLaMare_completa.musicxml&estrofas=1,2,5)** · [MusicXML](sources/ElNoiDeLaMare_completa.musicxml): villancico popular catalán, versión coral de Abel Di Marco, Pbro. Cuatro voces y cinco estrofas; se abre con las estrofas 1, 2 y 5. © A. Di Marco: uso y duplicación permitidos solo con fines pastorales, prohibido su uso con fines económicos.
 
 ## Pruebas
 
-Cada cambio propuesto en GitHub pasa por unas pruebas automáticas (acción **Pruebas**), que también se ejecutan cada lunes. La primera comprueba que los ejemplos siguen saliendo exactamente igual. Para ejecutarlas en tu equipo:
+Cada cambio propuesto en GitHub pasa por unas pruebas automáticas (acción **Pruebas**), que también se ejecutan cada lunes. Entre otras cosas comprueban que el lector sigue leyendo los ejemplos exactamente igual. Para ejecutarlas en tu equipo hace falta Node:
 
 ```bash
-python -m unittest discover -s tests -v
+node --test tests/*.test.mjs
 ```
 
 Más detalles en [tests/README.md](tests/README.md).
@@ -75,6 +79,7 @@ Más detalles en [tests/README.md](tests/README.md).
 
 - Las notas muy cortas se ensanchan lo justo para que quepa la sílaba, así que en esos puntos el ritmo es aproximado.
 - Los guiones entre sílabas solo aparecen si el MusicXML los indica.
+- Solo se leen ficheros MusicXML sin comprimir (`.musicxml`), no los comprimidos (`.mxl`).
 - Se lee solo la primera línea de letra y se ignoran los acordes dentro de una misma voz.
 - Las repeticiones (casillas 1ª/2ª, *da capo*) no se despliegan.
 

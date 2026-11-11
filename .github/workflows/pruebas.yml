@@ -18,7 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Pruebas de Python (unittest)
-        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
+        run: |
+          shopt -s nullglob
+          files=(tests/test_*.py)
+          if [ ${#files[@]} -eq 0 ]; then echo "No hay pruebas de Python."; exit 0; fi
+          python3 -m unittest discover -s tests -p 'test_*.py' -v
       - name: Pruebas de JavaScript (node:test)
         run: |
           shopt -s nullglob

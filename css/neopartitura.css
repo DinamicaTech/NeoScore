@@ -1,0 +1,29 @@
+/* Estilos de la neo-partitura: cabecera, controles, leyenda, partitura, impresión y modo oscuro. */
+:root { --bg:#fbfaf7; --fg:#1f1e1c; --muted:#8a877f; --grid:#e4e1d8; --ref:#b9c9e6; --bar:#cfcbc0; }
+@media (prefers-color-scheme: dark) { :root { --bg:#1b1b1a; --fg:#ecebe6; --muted:#8f8c84; --grid:#2f2e2b; --ref:#2c3c5a; --bar:#46443f; } }
+* { box-sizing: border-box; }
+[hidden] { display:none !important; }
+body { margin:0; background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { padding:20px 16px 8px; max-width:1200px; margin:0 auto; display:flex; flex-wrap:wrap; gap:12px 24px; align-items:center; }
+h1 { font-size:22px; font-weight:500; margin:0; flex:1 1 auto; }
+.ctrl { display:flex; gap:6px; align-items:center; font-size:13px; color:var(--muted); }
+.ctrl button { font:inherit; color:var(--fg); background:transparent; border:1px solid var(--bar); border-radius:6px; padding:4px 10px; cursor:pointer; }
+.ctrl button.on { background:var(--fg); color:var(--bg); border-color:var(--fg); }
+#legend { max-width:1200px; margin:0 auto; padding:0 16px 8px; display:flex; flex-wrap:wrap; gap:8px 14px; font-size:12px; color:var(--muted); }
+#legend span { display:inline-flex; align-items:center; gap:4px; }
+#legend i { width:16px; height:8px; border-radius:2px; display:inline-block; }
+main { max-width:1200px; margin:0 auto; padding:8px 16px 40px; }
+main svg { display:block; margin-bottom:18px; overflow:visible; }
+.syl { font-size:14px; fill:var(--fg); }
+.mnum { font-size:9px; fill:var(--muted); }
+.lbl { font-size:11px; font-style:italic; fill:var(--muted); }
+#secs { position:relative; }
+#secs summary { cursor:pointer; color:var(--fg); border:1px solid var(--bar); border-radius:6px; padding:4px 10px; list-style:none; }
+#secs summary::after { content:" ▾"; color:var(--muted); }
+#seclist { position:absolute; top:calc(100% + 4px); left:0; z-index:5; background:var(--bg); border:1px solid var(--bar); border-radius:6px; padding:6px 10px; min-width:200px; display:flex; flex-direction:column; gap:4px; color:var(--fg); }
+#seclist label { display:flex; gap:6px; align-items:center; cursor:pointer; white-space:nowrap; }
+#seclist .all { border-bottom:1px solid var(--grid); padding-bottom:4px; margin-bottom:2px; }
+@media print { header .ctrl { display:none; } body { background:#fff; color:#000; } main svg { break-inside:avoid; } }
+#aviso { max-width:1200px; margin:0 auto; padding:0 16px 8px; font-size:13px; color:var(--fg); }
+#aviso.error { border:1px solid #D6336C; border-radius:6px; padding:10px 14px; }
+#aviso a { color:inherit; }
