@@ -23,6 +23,7 @@ for (const [origen, referencia] of PARTITURAS) {
     const obtenido = leerMusicXML(leer(origen), origen);
     // "oct" (octava a la que suena la voz) es nuevo, posterior a neopartitura.py: se prueba aparte, más abajo
     for (const p of obtenido.parts) delete p.oct;
+    delete obtenido.tempo;   // también posterior (modo de canto): se prueba aparte, más abajo
     const esperado = JSON.parse(leer(referencia));
     assert.deepStrictEqual(obtenido, esperado,
       `El lector ya no lee ${origen} como neopartitura.py (${referencia}). Corrige js/lector-musicxml.js.`);
@@ -84,4 +85,15 @@ test('oct: una voz en clave de sol con un 8 debajo (tenor) suena una octava más
   assert.equal(clave('<clef-octave-change>1</clef-octave-change>').oct, 12);
   assert.equal('oct' in clave(''), false);
   assert.equal('oct' in clave('<clef-octave-change>0</clef-octave-change>'), false);
+});
+
+test('tempo: el de la partitura en negras por minuto, si lo trae', () => {
+  assert.equal(leerMusicXML(leer('sources/ElNoiDeLaMare_completa.musicxml')).tempo, 80);
+  assert.equal('tempo' in leerMusicXML(leer('sources/MuntanyesDelCanigo.musicxml')), false);
+  const con = dir => leerMusicXML(unaNota(`<direction><direction-type>${dir}</direction-type></direction>`));
+  assert.equal(con('<metronome><beat-unit>quarter</beat-unit><per-minute>96</per-minute></metronome>').tempo, 96);
+  assert.equal(con('<metronome><beat-unit>half</beat-unit><per-minute>60</per-minute></metronome>').tempo, 120);
+  assert.equal(con('<metronome><beat-unit>quarter</beat-unit><beat-unit-dot/><per-minute>60</per-minute></metronome>').tempo, 90);
+  assert.equal(leerMusicXML(unaNota('<direction><direction-type><words>x</words></direction-type><sound tempo="72.5"/></direction>')).tempo, 73);
+  assert.equal('tempo' in con('<words>Andante</words>'), false);
 });
