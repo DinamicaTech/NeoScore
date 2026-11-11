@@ -1,7 +1,6 @@
 ---
 title: Lector de MusicXML en JavaScript
 depends_on: [architecture, architecture/pruebas, biblioteca]
-status: draft
 threads:
   - 2026-11-11 17:41 · Lector de MusicXML en JavaScript | https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv?thread=cmsg_01KVLuMPf5x5gSm2uLfB6SDv64KQEZ9AHMdT7SPXHwoxzi
 ---
@@ -18,6 +17,8 @@ La web es index.html?partitura=<ruta>&estrofas=1,2,5, repartida en piezas para q
 - 2026-11-11 17:41 · Retirados neopartitura.py, neopartitura_template.html y tests/test_ejemplos.py. Los datos que daba neopartitura.py con los dos ejemplos se guardan en tests/referencia/ y tests/lector.test.mjs comprueba que el lector da exactamente los mismos.
 - 2026-11-11 17:41 · Las direcciones antiguas examples/*_neo.html pasan a ser páginas que llevan a index.html con su partitura y sus estrofas (El Noi de la Mare con la 1, la 2 y la 5); tests/ejemplos.test.mjs comprueba que esa partitura existe.
 
+- 2026-11-11 17:49 · Validado por el propietario: el nodo deja de ser borrador.
 ## Requirements
 - 2026-11-11 14:20 · Derived from architecture: la página lee el MusicXML en JavaScript y produce el mismo formato de datos que hoy genera neopartitura.py.
 - 2026-11-11 14:20 · draft: Escribir en JavaScript el lector de MusicXML que hoy está en neopartitura.py, con el mismo formato de datos. Hecho cuando las pruebas automáticas muestran que, para los ejemplos de la biblioteca, el resultado es igual al de neopartitura.py; entonces se retira neopartitura.py.
+- 2026-11-11 17:49 · answer: cuánto se hace en este hilo y qué pasa con las direcciones antiguas de los ejemplos → A y A: lector, prueba, página repartida en piezas y retirada de neopartitura.py; las direcciones antiguas llevan a la página nueva (visualización validada).
