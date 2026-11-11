@@ -8,6 +8,7 @@ Las "CVP rules" las escribe Claude Visual Project y las sustituye "Update rules"
 
 ## Decisions
 - 2026-11-11 13:58 · Creado por Claude Visual Project con su versión 14 de las reglas.
+- 2026-11-11 14:20 · Las reglas de trabajo del propietario (sources/alcance-inicial.md § introducción y § Cómo quiero que trabajes) pasan a Project rules, con la carga de requisitos inicial.
 
 ## CVP rules
 <!-- cvp-rules 14 begin · Written by Claude Visual Project ("Update rules" in the page). Do not edit: an update replaces everything up to the end marker. Add your own rules under ## Project rules. -->
@@ -68,3 +69,10 @@ Once confirmed, the change is atomic: do all of it in this thread and one branch
 <!-- Rules of this project for every thread, added by its people or by threads with the owner's OK. -->
 - Working docs are written in Spanish.
 - Claude project: https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv
+- Respóndeme en español. Yo no tengo formación musical: explica los conceptos musicales con palabras sencillas cuando haga falta.
+- Mantén la filosofía: simple, legible para no músicos, compacto, una página HTML autónoma y Python sin librerías externas, salvo que acordemos lo contrario. (Acordado el 2026-11-11 14:20: la web pasa a ser una pequeña web estática y usa Tone.js y pitchy; ver architecture.)
+- Antes de cambiar una decisión de diseño ya tomada (colores, filas, disposición), proponlo y espera a que lo confirme.
+- Si una partitura sale mal, comprueba primero si el problema está en el MusicXML de origen (por ejemplo, estrofas que solo aparecen como texto en el PDF) antes de tocar el conversor.
+- Cuando añadas letra a mano, dime qué silabación has usado para que la revise.
+- Mantén el README actualizado (en español) cuando cambie el uso o las funciones.
+- Respeta siempre el aviso de derechos de cada partitura (por ejemplo, © A. Di Marco: solo fines pastorales, sin fines económicos).

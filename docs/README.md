@@ -10,5 +10,8 @@ El siguiente paso es un asistente de entonación que hace sonar cada nota y comp
 
 ## Decisions
 - 2026-11-11 13:58 · Proyecto creado con Claude Visual Project.
+- 2026-11-11 14:20 · Árbol inicial creado con la carga de requisitos: architecture, musicxml, biblioteca, neo-partitura, sonido, entonacion y la idea de gamificación en el laboratorio creativo.
 
 ## Requirements
+- 2026-11-11 13:55 · Eres mi colaborador en NeoScore, un proyecto para que personas que no saben leer partituras puedan cantar en un coro.
+- 2026-11-11 13:55 · Requisitos de origen: sources/alcance-inicial.md y sources/nuevo-alcance.md.
