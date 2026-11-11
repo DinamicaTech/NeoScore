@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__ · neo-partitura</title>
+<style>
+  :root { --bg:#fbfaf7; --fg:#1f1e1c; --muted:#8a877f; --grid:#e4e1d8; --ref:#b9c9e6; --bar:#cfcbc0; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#1b1b1a; --fg:#ecebe6; --muted:#8f8c84; --grid:#2f2e2b; --ref:#2c3c5a; --bar:#46443f; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { padding:20px 16px 8px; max-width:1200px; margin:0 auto; display:flex; flex-wrap:wrap; gap:12px 24px; align-items:center; }
+  h1 { font-size:22px; font-weight:500; margin:0; flex:1 1 auto; }
+  .ctrl { display:flex; gap:6px; align-items:center; font-size:13px; color:var(--muted); }
+  .ctrl button { font:inherit; color:var(--fg); background:transparent; border:1px solid var(--bar); border-radius:6px; padding:4px 10px; cursor:pointer; }
+  .ctrl button.on { background:var(--fg); color:var(--bg); border-color:var(--fg); }
+  #legend { max-width:1200px; margin:0 auto; padding:0 16px 8px; display:flex; flex-wrap:wrap; gap:8px 14px; font-size:12px; color:var(--muted); }
+  #legend span { display:inline-flex; align-items:center; gap:4px; }
+  #legend i { width:16px; height:8px; border-radius:2px; display:inline-block; }
+  main { max-width:1200px; margin:0 auto; padding:8px 16px 40px; }
+  main svg { display:block; margin-bottom:18px; overflow:visible; }
+  .syl { font-size:14px; fill:var(--fg); }
+  .mnum { font-size:9px; fill:var(--muted); }
+  @media print { header .ctrl { display:none; } body { background:#fff; color:#000; } main svg { break-inside:avoid; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>__TITLE__</h1>
+  <div class="ctrl" id="voices"></div>
+  <div class="ctrl">Tamaño <input type="range" id="zoom" min="24" max="70" value="40"></div>
+</header>
+<div id="legend"></div>
+<main id="score"></main>
+<script>
+const DATA = __DATA__;
+const ROW = 5;            // alto de cada semitono (px)
+const TEXT_H = 20;        // franja de la letra
+const NAMES = ['Do','Do♯','Re','Mi♭','Mi','Fa','Fa♯','Sol','La♭','La','Si♭','Si'];
+// 12 colores bien distintos, por semitonos desde la primera nota (0 = azul)
+const PALETTE = ['#2D6FD6', '#9CC3EE', '#7B4FD1', '#E89AC7', '#D6336C', '#F08C2E',
+                 '#8C5A4B', '#E8B923', '#9DBF3B', '#2E9E5B', '#17B5C4', '#8A8F98'];
+const color = k => PALETTE[k];
+
+let part = Math.max(0, DATA.parts.findIndex(p => /alt/i.test(p.name)));
+const score = document.getElementById('score'), zoom = document.getElementById('zoom');
+let canvas = document.createElement('canvas').getContext('2d');
+const textW = t => { canvas.font = '14px system-ui, sans-serif'; return canvas.measureText(t).width; };
+
+function layout() {
+  const P = DATA.parts[part], Q = +zoom.value;
+  const notes = P.measures.flat().filter(e => !e.r);
+  const lo = Math.min(...notes.map(e => e.p)), hi = Math.max(...notes.map(e => e.p));
+  const first = notes[0].p, rows = hi - lo + 1, GH = rows * ROW;
+  // ancho de cada evento: proporcional a la duración, pero sin pisar la sílaba
+  const measures = P.measures.map((m, i) => {
+    const evs = m.map(e => ({ ...e, w: Math.max(e.d * Q, e.t ? textW(e.t) + 6 : 6) }));
+    return { i, evs, w: evs.reduce((s, e) => s + e.w, 0) + 4 };
+  });
+  const maxW = score.clientWidth - 32 - 40;   // padding de main + margen izquierdo y barras
+  const lines = []; let cur = [], cw = 0;
+  for (const m of measures) { if (cur.length && cw + m.w > maxW) { lines.push(cur); cur = []; cw = 0; } cur.push(m); cw += m.w; }
+  if (cur.length) lines.push(cur);
+
+  const y = p => TEXT_H + (hi - p) * ROW;
+  score.innerHTML = lines.map(line => {
+    const W = 30 + line.reduce((s, m) => s + m.w, 0);
+    let s = `<svg width="${W}" height="${TEXT_H + GH + 4}" role="img">`;
+    for (let p = lo; p <= hi; p++) {
+      const ref = (p - first) % 12 === 0;
+      s += `<line x1="30" x2="${W}" y1="${y(p) + ROW / 2}" y2="${y(p) + ROW / 2}" stroke="var(${ref ? '--ref' : '--grid'})" stroke-width="${ref ? 1.2 : 0.6}"/>`;
+    }
+    let x = 30, pts = [], prev = null;
+    for (const m of line) {
+      s += `<line x1="${x}" x2="${x}" y1="${TEXT_H - 4}" y2="${TEXT_H + GH}" stroke="var(--bar)" stroke-width="1"/>`;
+      s += `<text class="mnum" x="${x + 2}" y="${TEXT_H + GH + 11}">${m.i + 1}</text>`;
+      x += 2;
+      for (const e of m.evs) {
+        if (e.r) { if (pts.length) { s += poly(pts); pts = []; } prev = null; x += e.w; continue; }
+        if (e.t) s += `<text class="syl" x="${x + 1}" y="${TEXT_H - 6}">${e.t}</text>`;
+        const k = ((e.p - first) % 12 + 12) % 12, yy = y(e.p);
+        const join = (e.tie || !e.t) && prev === e.p;   // ligadura o melisma en la misma nota
+        s += `<rect x="${x + (join ? -1 : 1)}" y="${yy}" width="${e.w - (join ? 1 : 2)}" height="${ROW}" rx="1.5" fill="${color(k)}"/>`;
+        pts.push([x + 1, yy + ROW / 2], [x + e.w - 1, yy + ROW / 2]);
+        prev = e.p; x += e.w;
+      }
+      x += 2;
+    }
+    if (pts.length) s += poly(pts);
+    return s + `<line x1="${x}" x2="${x}" y1="${TEXT_H - 4}" y2="${TEXT_H + GH}" stroke="var(--bar)"/></svg>`;
+  }).join('');
+
+  const used = new Set(notes.map(e => ((e.p - first) % 12 + 12) % 12));
+  document.getElementById('legend').innerHTML =
+    [...Array(12).keys()].filter(k => used.has(k)).map(k =>
+      `<span><i style="background:${color(k)}"></i>${k === 0 ? 'primera nota' : '+' + k}<small>&nbsp;(${NAMES[(first + k) % 12]})</small></span>`).join('');
+}
+const poly = pts => `<polyline points="${pts.map(p => p.join(',')).join(' ')}" fill="none" stroke="var(--muted)" stroke-width="0.7" opacity="0.7"/>`;
+
+const vbox = document.getElementById('voices');
+vbox.innerHTML = 'Voz ' + DATA.parts.map((p, i) => `<button data-i="${i}">${p.name}</button>`).join('');
+const mark = () => vbox.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.i === part));
+vbox.onclick = e => { if (e.target.dataset.i) { part = +e.target.dataset.i; mark(); layout(); } };
+zoom.oninput = layout; addEventListener('resize', layout);
+mark(); layout();
+</script>
+</body>
+</html>
