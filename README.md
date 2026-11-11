@@ -46,6 +46,7 @@ En la página puedes:
 - Elegir la **voz** (Soprano, Alto, Tenor, Baix…) si la partitura tiene varias.
 - Elegir qué **estrofas** ver en el desplegable. Cada estrofa termina donde la partitura tiene una doble barra y toma su nombre de la indicación de texto del primer compás ("Estrofa 2"…). El navegador recuerda la última selección.
 - Ajustar el **tamaño** con el control deslizante.
+- Leerla en el **móvil en vertical**: las líneas se cortan según el ancho de la pantalla, y si un compás no cabe entero sigue en la línea siguiente (esa barra se dibuja discontinua y no repite el número del compás).
 - **Imprimir**: los controles se ocultan y cada línea se mantiene entera en la página.
 
 ## Archivos
@@ -55,6 +56,7 @@ En la página puedes:
 | `index.html` | La página. |
 | `js/lector-musicxml.js` | Lee el MusicXML (notas, duraciones, silencios, ligaduras, letra, indicaciones y dobles barras). |
 | `js/dibujo.js` | Dibuja la cuadrícula, los colores y la leyenda. |
+| `js/lineas.js` | Reparte los compases en líneas según el ancho de la pantalla. |
 | `js/controles.js`, `js/estrofas.js` | Controles de voz, estrofas y tamaño. |
 | `js/pagina.js` | Selector de partituras, botón para abrir un fichero propio, aviso de derechos y carga de la partitura. |
 | `js/biblioteca.js` | Lee el índice de la biblioteca y guarda en el navegador la partitura propia. |
