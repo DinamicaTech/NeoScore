@@ -2,6 +2,8 @@
 :root { --bg:#fbfaf7; --fg:#1f1e1c; --muted:#8a877f; --grid:#e4e1d8; --ref:#b9c9e6; --bar:#cfcbc0; }
 @media (prefers-color-scheme: dark) { :root { --bg:#1b1b1a; --fg:#ecebe6; --muted:#8f8c84; --grid:#2f2e2b; --ref:#2c3c5a; --bar:#46443f; } }
 * { box-sizing: border-box; }
+/* al girar el móvil a apaisado, que el navegador no agrande el texto por su cuenta */
+html { -webkit-text-size-adjust:100%; text-size-adjust:100%; }
 [hidden] { display:none !important; }
 body { margin:0; background:var(--bg); color:var(--fg); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
 header { padding:20px 16px 8px; max-width:1200px; margin:0 auto; display:flex; flex-wrap:wrap; gap:12px 24px; align-items:center; }
@@ -31,3 +33,5 @@ main svg { -webkit-user-select:none; user-select:none; }
 #aviso { max-width:1200px; margin:0 auto; padding:0 16px 8px; font-size:13px; color:var(--fg); }
 #aviso.error { border:1px solid #D6336C; border-radius:6px; padding:10px 14px; }
 #aviso a { color:inherit; }
+/* móvil: menos margen a los lados para ganar espacio para la partitura */
+@media (max-width: 600px) { header, #legend, #aviso, main { padding-left:8px; padding-right:8px; } }

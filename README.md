@@ -45,6 +45,7 @@ En la página puedes:
 - Elegir qué **estrofas** ver en el desplegable. Cada estrofa termina donde la partitura tiene una doble barra y toma su nombre de la indicación de texto del primer compás ("Estrofa 2"…). El navegador recuerda la última selección.
 - Ajustar el **tamaño** con el control deslizante.
 - **Oír una nota**: al tocar una sílaba (o su bloque de color) suena su nota, como referencia para afinar; si se mantiene pulsada, sigue sonando hasta soltarla. En **Sonido** se elige con qué se oye: **Voz** (una voz sintética que canta "a") o **Piano** (un piano de cola grabado). El navegador recuerda la elección. En iPhone, si no se oye nada, quita el interruptor de silencio.
+- Leerla en el **móvil en vertical**: las líneas se cortan según el ancho de la pantalla, y si un compás no cabe entero sigue en la línea siguiente (esa barra se dibuja discontinua y no repite el número del compás).
 - **Imprimir**: los controles se ocultan y cada línea se mantiene entera en la página.
 
 ## Archivos
@@ -54,6 +55,7 @@ En la página puedes:
 | `index.html` | La página. |
 | `js/lector-musicxml.js` | Lee el MusicXML (notas, duraciones, silencios, ligaduras, letra, indicaciones y dobles barras). |
 | `js/dibujo.js` | Dibuja la cuadrícula, los colores y la leyenda. |
+| `js/lineas.js` | Reparte los compases en líneas según el ancho de la pantalla. |
 | `js/controles.js`, `js/estrofas.js` | Controles de voz, estrofas y tamaño. |
 | `js/pagina.js` | Decide qué partitura se abre y la carga. |
 | `js/sonido.js` | Nota de referencia: hace sonar la nota de la sílaba tocada, con el sonido elegido. |
