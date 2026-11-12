@@ -1,7 +1,6 @@
 ---
 title: Revisión al acabar
 depends_on: [entonacion/cantar-con-tempo, reproducir-partitura]
-status: draft
 threads:
   - 2026-11-12 11:00 · Repasar las sílabas desafinadas al acabar | https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv?thread=cmsg_01KVLuMPf5x5gSm2uLfB6SDvWDTEbhXfvrB1mdUeepfBik
 ---
@@ -23,6 +22,7 @@ El botón 📋 Repaso muestra el último intento aunque se recargue la página, 
 - 2026-11-12 11:00 · [replaced by 2026-11-12 11:50] Hecho cuando: al acabar la canción con el micrófono, la lista muestra las sílabas fuera del margen; al tocar una suena su nota; 🔁 vuelve a tocar su compás y lo vuelve a marcar; y 📋 Repaso con el historial funciona tras recargar. Lo valida el propietario en la página de prueba, en PC y en móvil.
 
 - 2026-11-12 11:50 · Hecho cuando: al acabar la canción con el micrófono, o al pulsar ⏹ Terminar antes, la lista muestra las sílabas fuera del margen (de lo cantado hasta ahí); al tocar una suena su nota; 🔁 vuelve a tocar su compás y lo vuelve a marcar; y 📋 Repaso con el historial (también de los intentos terminados antes) funciona tras recargar. Lo valida el propietario en la página de prueba, en PC y en móvil.
+- 2026-11-12 11:50 · Validado por el propietario: el nodo deja de ser borrador.
 
 ## Requirements
 - 2026-11-11 13:55 · De esa forma, al acabar la canción se puede revisar los puntos en los que no se ha cantado de forma afinada para ir mejorando.
@@ -39,3 +39,4 @@ El botón 📋 Repaso muestra el último intento aunque se recargue la página, 
 - 2026-11-12 11:50 · Faltaría un botón para parar el 'afinamiento' y ver el resultado, para no tener que esperar hasta el final de la partitura
 - 2026-11-12 11:50 · La opción B, eso permite repasar solo una parte de la partitura varias veces para mejorarla y no tener que cantarla toda.
 - 2026-11-12 11:50 · answer: ¿cuenta en el historial un intento terminado antes con ⏹ Terminar? → B, sí, con las notas que dio tiempo a cantar, para poder practicar solo una parte varias veces.
+- 2026-11-12 11:50 · Ok, ya puedes publicar y, si no hay nada más, cerrar este hilo y PR
