@@ -1,6 +1,5 @@
 ---
 title: Vista de letra
-status: draft
 depends_on: [neo-partitura/controles, biblioteca/selector-y-carga, musicxml/lector-javascript]
 threads:
   - 2026-11-12 19:40 · Vista de letra y ficheros .txt | https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv?thread=cmsg_01KVLuMPf5x5gSm2uLfB6SDv7y1RtXhucqaqinUsEan1vz
@@ -24,6 +23,8 @@ También se puede abrir con "Abrir fichero…" un .txt con solo la letra (un ver
 - 2026-11-12 20:05 · Muntanyes del Canigó lleva su letra en biblioteca/MuntanyesDelCanigo.txt, escrita a partir de las sílabas de la voz de soprano de su MusicXML: cuatro estrofas de cinco versos (el último se repite, como se canta), con la puntuación añadida a mano; "ara-a l'estiu" se escribe "ara a l'estiu".
 - 2026-11-12 19:40 · Hecho cuando: con una partitura de la biblioteca se puede pasar a Letra y leerla por estrofas, sin notas y sin poder tocar nada; al abrir un .txt se ve su letra en Letra sin botón de vista ni controles musicales; las pruebas automáticas pasan (tests/letra.test.mjs) y el propietario lo valida en la página de prueba. Además, un .txt con el nombre de una partitura se ve en la vista Letra de esa partitura, y Muntanyes del Canigó se lee en Letra con su letra en versos.
 
+- 2026-11-12 20:57 · Validado por el propietario: el nodo deja de ser borrador.
+
 ## Requirements
 - 2026-11-12 19:15 · Vamos a añadir un nuevo modo a 'neo-score' y 'pentragrama': 'letra'.
 - 2026-11-12 19:15 · Mostrará solo la letra de la canción (sin notas) de forma legible (sin tiempos). No se podrá reproducir una nota ni seleccionar un compás.
@@ -37,3 +38,4 @@ También se puede abrir con "Abrir fichero…" un .txt con solo la letra (un ver
 - 2026-11-12 19:30 · [answered 2026-11-12 20:05] question: Unir un .txt con su MusicXML del mismo nombre: ¿con qué partituras se une? A) con la propia guardada y con las de la biblioteca (y la biblioteca puede llevar el .txt de una canción a su lado); B) solo con la propia. ¿Se oculta Voz en vista de letra con un .txt unido? A) sí; B) no. ¿Y las estrofas? A) misma elección si coinciden en número, si no todas; B) siempre todas. Recomendación: A en las tres.
 - 2026-11-12 20:05 · Ok a ficheros separados
 - 2026-11-12 20:05 · answer: con qué partituras se une un .txt → A, con la propia guardada y con las de la biblioteca (que puede llevar el .txt de una canción); en vista Letra con un .txt unido se oculta Voz → A; estrofas → A, la misma elección si coinciden en número, si no todas.
+- 2026-11-12 20:57 · Ok, puedes actualizar todo en GitHub?
