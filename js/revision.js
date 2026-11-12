@@ -35,6 +35,8 @@ score.addEventListener('dibujada', () => {
   else if (!panel.hidden) pintar();
 });
 
+boton.hidden = !guardado();   // por si la partitura se ha dibujado antes de cargar este módulo
+
 // Al acabar la canción (o un compás repetido) con el micrófono: se abre o se actualiza el repaso.
 document.addEventListener('canto-guardado', e => {
   boton.hidden = !guardado();
