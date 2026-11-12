@@ -8,9 +8,13 @@
 import { prepararPentagrama } from './pentagrama-xml.js';
 import { secuencia } from './afinacion.js';
 
-// Un color por voz (por su orden en la partitura), lejos del verde, rosa y azul de afinada / alta / baja.
-export const COLORES_VOZ = ['#7048E8', '#E8590C', '#0C8599', '#A61E4D', '#5C940D', '#862E9C', '#B08900', '#495057'];
-export const colorVoz = i => COLORES_VOZ[i % COLORES_VOZ.length];
+// Un color por voz (por su orden en la partitura), lejos del verde, rosa y azul de afinada / alta / baja:
+// violeta, naranja, cian, granate, oliva, morado, ocre y gris. Sobre fondo claro, oscuros (la mitad de luminosidad
+// de los de fondo oscuro), para que se lean bien en el móvil; en modo oscuro, los claros.
+export const COLORES_VOZ = ['#2E1187', '#742C06', '#06434C', '#530F26', '#2E4A07', '#43174E', '#584400', '#24282C'];
+export const COLORES_VOZ_OSCURO = ['#7048E8', '#E8590C', '#0C8599', '#A61E4D', '#5C940D', '#862E9C', '#B08900', '#495057'];
+const modoOscuro = () => typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches;
+export const colorVoz = i => (modoOscuro() ? COLORES_VOZ_OSCURO : COLORES_VOZ)[i % COLORES_VOZ.length];
 const NAMES = ['Do', 'Do♯', 'Re', 'Mi♭', 'Mi', 'Fa', 'Fa♯', 'Sol', 'La♭', 'La', 'Si♭', 'Si'];
 const SVG = 'http://www.w3.org/2000/svg';
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
