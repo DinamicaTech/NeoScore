@@ -45,13 +45,19 @@ function cargarTone() {
 }
 
 const instrumentos = {};
-function instrumento(id) {
-  if (!instrumentos[id]) instrumentos[id] = crear(SONIDOS.find(s => s.id === id)).catch(e => { delete instrumentos[id]; throw e; });
-  return instrumentos[id];
+/** Prepara un sonido de SONIDOS (por su id); `bajar`: decibelios más suave (el modo de canto lo usa muy suave). */
+export function instrumento(id, bajar = 0) {
+  const k = id + ':' + bajar;
+  if (!instrumentos[k]) instrumentos[k] = crear(SONIDOS.find(s => s.id === id), bajar).catch(e => { delete instrumentos[k]; throw e; });
+  return instrumentos[k];
 }
+let elegido = POR_DEFECTO;
+/** El sonido elegido en la cabecera. */
+export const sonidoElegido = () => elegido;
+export { cargarTone };
 
 // Cada instrumento: { empezar(midi), soltar(midi) }. La nota suena desde empezar hasta soltar.
-async function crear(s) {
+async function crear(s, bajar = 0) {
   const T = await cargarTone();
   if (s.tipo === 'grabado') {
     return new Promise((ok, mal) => {
@@ -60,6 +66,7 @@ async function crear(s) {
         onload: () => ok({ empezar: m => sampler.triggerAttack(nombreTone(m)), soltar: m => sampler.triggerRelease(nombreTone(m)) }),
         onerror: () => mal(new Error(`no se han podido descargar las grabaciones de "${s.nombre}" (${s.carpeta})`)),
       }).toDestination();
+      sampler.volume.value = -bajar;
     });
   }
   // Voz sintética: una onda rica en armónicos, con un vibrato suave, pasada por tres filtros que imitan
@@ -73,7 +80,7 @@ async function crear(s) {
     oscillator: { type: 'sawtooth' },
     envelope: { attack: 0.12, decay: 0.2, sustain: 0.85, release: 0.35 },
   }).connect(vibrato);
-  voz.volume.value = -6;
+  voz.volume.value = -6 - bajar;
   const hz = m => T.Frequency(m, 'midi').toFrequency();
   return { empezar: m => voz.triggerAttack(hz(m)), soltar: m => voz.triggerRelease(hz(m)) };
 }
@@ -81,7 +88,6 @@ async function crear(s) {
 function iniciar() {
   const caja = document.getElementById('sonido'), score = document.getElementById('score');
   if (!caja || !score) return;
-  let elegido = POR_DEFECTO;
   try { const g = localStorage.getItem(GUARDADO); if (SONIDOS.some(s => s.id === g)) elegido = g; } catch (e) {}
   const aviso = document.getElementById('aviso');
   const fallo = e => {
@@ -123,13 +129,16 @@ function iniciar() {
         const ins = await instrumento(elegido);
         if (nota.cancelada) return;
         ins.empezar(nota.midi); nota.sonando = ins; nota.inicio = performance.now();
-        nota.tope = setTimeout(() => terminar(e.pointerId, nota), MAXIMO * 1000);   // por si el navegador no avisa al soltar
+        // un toque rápido (o la primera nota, mientras se preparaba el sonido) ya se ha soltado: suena lo mínimo y se calla
+        if (nota.soltada) terminar(e.pointerId, nota);
+        else nota.tope = setTimeout(() => terminar(e.pointerId, nota), MAXIMO * 1000);   // por si el navegador no avisa al soltar
         if (aviso.className === 'error' && aviso.textContent.startsWith('No suena')) { aviso.className = ''; aviso.textContent = ''; }
       } catch (err) { t.classList.remove('sonando'); fallo(err); }
     }, e.pointerType === 'touch' ? ESPERA_TACTIL : 0);
   });
   function terminar(id, nota) {
     if (activas.get(id) === nota) activas.delete(id);
+    if (!nota.sonando) { nota.soltada = true; if (nota.cancelada) nota.t.classList.remove('sonando'); return; }   // aún no suena: lo cerrará al empezar
     clearTimeout(nota.tope);
     const resto = nota.sonando ? Math.max(0, DURACION * 1000 - (performance.now() - nota.inicio)) : 0;
     setTimeout(() => { if (nota.sonando) nota.sonando.soltar(nota.midi); nota.t.classList.remove('sonando'); }, resto);

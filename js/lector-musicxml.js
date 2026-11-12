@@ -1,8 +1,9 @@
 // Lector de MusicXML: convierte el texto de una partitura MusicXML en los datos que dibuja la neo-partitura.
 // Formato de salida (el mismo que generaba neopartitura.py):
-//   {title, parts:[{name, oct?:semitonos, measures:[{e:[{p:midi, d:negras, t?:sílaba, tie?:1} | {r:1, d}], w?:indicación, end?:1}]}]}
+//   {title, tempo?, parts:[{name, oct?:semitonos, measures:[{e:[{p:midi, d:negras, t?:sílaba, tie?:1} | {r:1, d}], w?:indicación, end?:1}]}]}
 // p es la altura escrita. oct (solo si no es 0) es lo que hay que sumarle para la altura que suena: -12 en una voz
 // escrita en clave de sol con un 8 debajo (tenor), que suena una octava más grave. Lo usa la nota de referencia (sonido).
+// tempo (solo si la partitura lo trae) es la velocidad al empezar, en negras por minuto; lo usa el modo de canto.
 // Funciona igual en el navegador y en Node (pruebas): no usa DOMParser ni librerías, trae su propio lector de XML.
 
 const STEP = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
@@ -61,7 +62,28 @@ export function leerMusicXML(texto, nombre = 'partitura') {
     parts.push(part);
   }
   if (!parts.length) throw new Error('La partitura no tiene ninguna voz (parte). Revisa que se haya exportado entera.');
-  return { title, parts };
+  const tempo = leerTempo(root);
+  return tempo ? { title, tempo, parts } : { title, parts };
+}
+
+// Negras por la unidad de la indicación de metrónomo (♩ = 80, ♪ = 120, 𝅗𝅥 = 60…).
+const UNIDAD = { whole: 4, half: 2, quarter: 1, eighth: 0.5, '16th': 0.25 };
+/** Tempo con el que empieza la partitura, en negras por minuto: el primer <sound tempo>, si no la primera
+ *  indicación de metrónomo. null si no trae ninguno (o no es un número razonable). */
+function leerTempo(root) {
+  const medidas = findall(root, 'part/measure');
+  for (const m of medidas) {
+    for (const s of [...findall(m, 'sound'), ...findall(m, 'direction/sound')]) {
+      const t = parseFloat(s.attrs.tempo);
+      if (t >= 20 && t <= 400) return Math.round(t);
+    }
+  }
+  for (const met of findall(root, 'part/measure/direction/direction-type/metronome')) {
+    const pm = parseFloat(findtext(met, 'per-minute')), u = UNIDAD[(findtext(met, 'beat-unit') || '').trim()];
+    const punto = find(met, 'beat-unit-dot') ? 1.5 : 1;
+    if (pm > 0 && u) { const t = Math.round(pm * u * punto); if (t >= 20 && t <= 400) return t; }
+  }
+  return null;
 }
 
 function entero(s) {

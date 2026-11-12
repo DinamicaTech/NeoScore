@@ -40,3 +40,24 @@ main svg { -webkit-user-select:none; user-select:none; }
 #derechos b { font-weight:500; color:var(--fg); }
 /* móvil: menos margen a los lados para ganar espacio para la partitura */
 @media (max-width: 600px) { header, #legend, #aviso, #derechos, main { padding-left:8px; padding-right:8px; } }
+/* Modo de canto (entonacion/cantar-con-tempo) */
+:root { --afinada:#2E9E5B; --alta:#D6336C; --baja:#2D6FD6; }
+@media (prefers-color-scheme: dark) { :root { --afinada:#4cc27f; --alta:#ef5b8c; --baja:#5d95ec; } }
+#canto { flex-wrap:wrap; }
+#canto label { display:inline-flex; gap:4px; align-items:center; cursor:pointer; }
+#tempo { font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--bar); border-radius:6px; padding:3px 4px; width:4.2em; }
+#margen { font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--bar); border-radius:6px; padding:4px 4px; }
+#cantar.on { background:var(--alta); border-color:var(--alta); color:#fff; }
+#canto-estado { max-width:1200px; margin:0 auto 6px; padding:6px 16px; font-size:14px; color:var(--fg); position:sticky; top:0; z-index:4; background:var(--bg); border-bottom:1px solid var(--grid); }
+#canto-estado.error { border:1px solid #D6336C; border-radius:6px; }
+#canto-estado small { color:var(--muted); }
+.c-afinada { color:var(--afinada); } .c-alta { color:var(--alta); } .c-baja { color:var(--baja); }
+.toque.toca { fill:var(--ref); fill-opacity:.4; }
+.cantado { pointer-events:none; }
+.cantado .traza { fill:none; stroke:var(--fg); stroke-width:1.6; stroke-linejoin:round; stroke-linecap:round; opacity:.85; }
+.cantado .caja { fill:none; stroke-width:1.4; }
+.cantado .caja.c-afinada { stroke:var(--afinada); } .cantado .caja.c-alta { stroke:var(--alta); } .cantado .caja.c-baja { stroke:var(--baja); }
+.cantado .marca { font-size:8px; text-anchor:middle; }
+.cantado .marca.c-afinada { fill:var(--afinada); } .cantado .marca.c-alta { fill:var(--alta); } .cantado .marca.c-baja { fill:var(--baja); }
+.cantado .marca.sin-oir { fill:var(--muted); font-size:12px; }
+@media (max-width: 600px) { #canto-estado { padding-left:8px; padding-right:8px; } }

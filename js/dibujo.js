@@ -3,8 +3,8 @@
 
 import { repartirEnLineas } from './lineas.js';
 
-const ROW = 5;            // alto de cada semitono (px)
-const TEXT_H = 20;        // franja de la letra
+export const ROW = 5;            // alto de cada semitono (px)
+export const TEXT_H = 20;        // franja de la letra
 const IZQ = 1;            // margen izquierdo del dibujo: lo justo para que se vea la primera barra
 const NAMES = ['Do', 'Do♯', 'Re', 'Mi♭', 'Mi', 'Fa', 'Fa♯', 'Sol', 'La♭', 'La', 'Si♭', 'Si'];
 // 12 colores bien distintos, por semitonos desde la primera nota (0 = azul)
@@ -45,9 +45,11 @@ export function dibujar({ data, part, zoom, shown, secs, score, legend }) {
 
   const LBL_H = lines.some(l => l.some(m => m.label)) ? 14 : 0;   // franja para "Estrofa 2", "rit."...
   const y = p => TEXT_H + (hi - p) * ROW;
+  let n = 0;   // número de orden de cada nota (data-n), el mismo que da secuencia() de js/afinacion.js
   score.innerHTML = lines.map(line => {
     const W = IZQ + 1 + line.reduce((s, m) => s + m.w, 0);
-    let s = `<svg width="${W}" height="${LBL_H + TEXT_H + GH + 4}" role="img"><g transform="translate(0 ${LBL_H})">`;
+    // data-hi: la nota más aguda (fila de arriba), para que el modo de canto (js/canto.js) sepa dónde va cada altura
+    let s = `<svg width="${W}" height="${LBL_H + TEXT_H + GH + 4}" role="img"><g class="lienzo" transform="translate(0 ${LBL_H})" data-hi="${hi}" data-lo="${lo}">`;
     let lx = IZQ;
     for (const m of line) { if (m.label) s += `<text class="lbl" x="${lx + 3}" y="-3">${esc(m.label)}</text>`; lx += m.w; }
     for (let p = lo; p <= hi; p++) {
@@ -66,8 +68,9 @@ export function dibujar({ data, part, zoom, shown, secs, score, legend }) {
         const k = ((e.p - first) % 12 + 12) % 12, yy = y(e.p);
         const join = (e.tie || !e.t) && prev === e.p;   // ligadura o melisma en la misma nota
         s += `<rect x="${x + (join ? -1 : 1)}" y="${yy}" width="${e.w - (join ? 1 : 2)}" height="${ROW}" rx="1.5" fill="${color(k)}"/>`;
-        // zona tocable (sílaba y bloque): js/sonido.js hace sonar la altura real (data-p)
-        s += `<rect class="toque" x="${x}" y="0" width="${e.w}" height="${TEXT_H + GH}" data-p="${e.p + oct}"><title>Toca para oír esta nota (${NAMES[e.p % 12]})</title></rect>`;
+        // zona tocable (sílaba y bloque): js/sonido.js hace sonar la altura real (data-p); js/canto.js la marca
+        // cuando toca cantarla (data-n) y dibuja encima lo cantado (data-e: altura escrita, la de la fila)
+        s += `<rect class="toque" x="${x}" y="0" width="${e.w}" height="${TEXT_H + GH}" data-p="${e.p + oct}" data-e="${e.p}" data-n="${n++}"><title>Toca para oír esta nota (${NAMES[e.p % 12]})</title></rect>`;
         pts.push([x + 1, yy + ROW / 2], [x + e.w - 1, yy + ROW / 2]);
         prev = e.p; x += e.w;
       }
@@ -76,6 +79,7 @@ export function dibujar({ data, part, zoom, shown, secs, score, legend }) {
     if (pts.length) s += poly(pts);
     return s + `<line x1="${x}" x2="${x}" y1="${TEXT_H - 4}" y2="${TEXT_H + GH}" stroke="var(--bar)"/></g></svg>`;
   }).join('');
+  score.dispatchEvent(new CustomEvent('dibujada'));   // js/canto.js vuelve a pintar lo ya cantado
 
   const used = new Set(notes.map(e => ((e.p - first) % 12 + 12) % 12));
   legend.innerHTML =

@@ -5,6 +5,8 @@ import { dibujar } from './dibujo.js';
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 let quitarAnterior = () => {};
+/** Lo que se ve ahora: { data, part, shown, secs }. Lo lee el modo de canto (js/canto.js). */
+export const actual = {};
 
 /** Muestra una partitura con sus controles. shownInicial: estrofas visibles al abrir (índices desde 0), o null para todas. */
 export function mostrarPartitura(data, shownInicial = null) {
@@ -17,7 +19,7 @@ export function mostrarPartitura(data, shownInicial = null) {
   let shown = new Set((shownInicial || SECTIONS.map((_, k) => k)).filter(k => k >= 0 && k < SECTIONS.length));
   try { const s = JSON.parse(localStorage.getItem(STORE)); if (Array.isArray(s) && s.length) shown = new Set(s.filter(k => k < SECTIONS.length)); } catch (e) {}
 
-  const redibujar = () => dibujar({ data, part, zoom: +zoom.value, shown, secs, score, legend });
+  const redibujar = () => { Object.assign(actual, { data, part, shown, secs }); dibujar({ data, part, zoom: +zoom.value, shown, secs, score, legend }); };
 
   document.title = data.title + ' · neo-partitura';
   $('tamano').hidden = false;
