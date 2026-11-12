@@ -15,8 +15,10 @@
      js/estrofas.js        estrofas de la partitura
      js/dibujo.js          dibujo de la neo-partitura y la leyenda
      js/sonido.js          nota de referencia: tocar una sílaba la hace sonar (Tone.js)
-     js/canto.js           modo de canto: al tempo, escucha el micrófono (pitchy) y dibuja lo cantado
-     js/afinacion.js       cálculos del modo de canto (orden y momento de las notas, afinada / alta / baja)
+     js/reproductor.js     reproductor: la partitura entera al tempo, con pausa, acompañamiento y micrófono
+     js/reproduccion.js    cálculos del reproductor (reloj con pausa, qué nota suena)
+     js/canto.js           escuchar al cantante con el micrófono (pitchy) y dibujar lo cantado
+     js/afinacion.js       cálculos del canto (orden y momento de las notas, afinada / alta / baja)
      css/neopartitura.css   estilos -->
 <header>
   <div class="ctrl" id="elegir"><select id="selector" title="Elegir una partitura de la biblioteca, o la tuya guardada en este navegador"></select><button id="abrir" title="Abrir una partitura MusicXML (.musicxml) de tu equipo; se queda solo en este navegador, no se sube a ningún sitio">Abrir fichero…</button><button id="olvidar" hidden title="Borrar de este navegador la partitura propia guardada">Olvidar la mía</button><input type="file" id="fichero" accept=".musicxml,.xml" hidden></div>
@@ -24,16 +26,16 @@
   <div class="ctrl" id="voices"></div>
   <details class="ctrl" id="secs" hidden title="Elegir qué estrofas se ven"><summary></summary><div id="seclist"></div></details>
   <div class="ctrl" id="sonido" hidden title="Elige con qué sonido se oye la nota al tocar una sílaba">Sonido</div>
-  <div class="ctrl" id="canto" hidden><button id="cantar">🎤 Cantar</button><label title="Velocidad: negras por minuto">Tempo <input type="number" id="tempo" min="30" max="200" step="5" value="80"></label><select id="margen" title="Cuánto te puedes desviar de la nota para que cuente como afinada"></select><label title="Hacer sonar muy suave la nota de cada sílaba mientras cantas (mejor con auriculares, para que el micrófono no la oiga)"><input type="checkbox" id="guia" checked> Nota guía</label></div>
+  <div class="ctrl" id="reproductor" hidden><button id="play">▶ Reproducir</button><button id="reiniciar" disabled title="Volver al principio de la partitura">⏮</button><label title="Velocidad: negras por minuto">Tempo <input type="number" id="tempo" min="30" max="200" step="5" value="80"></label><details id="acomp" hidden title="Sumar otras voces, más suaves que la tuya, para oír la armonía"><summary>Acompañamiento</summary><div id="acomplist"></div></details><button id="micro" aria-pressed="false">🎤 Micrófono</button><select id="margen" hidden title="Cuánto te puedes desviar de la nota para que cuente como afinada"></select></div>
   <div class="ctrl" id="tamano" hidden>Tamaño <input type="range" id="zoom" min="12" max="70" value="40" title="Hacer la partitura más ancha o más estrecha"></div>
 </header>
 <p id="derechos" hidden></p>
 <div id="aviso"></div>
 <div id="legend"></div>
-<div id="canto-estado" hidden></div>
+<div id="estado-repro" hidden><span id="estado-texto"></span><span id="mandos"><button id="play2"></button><button id="reiniciar2" title="Volver al principio de la partitura">⏮</button></span></div>
 <main id="score"></main>
 <script type="module" src="js/pagina.js"></script>
 <script type="module" src="js/sonido.js"></script>
-<script type="module" src="js/canto.js"></script>
+<script type="module" src="js/reproductor.js"></script>
 </body>
 </html>
