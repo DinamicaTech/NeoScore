@@ -70,3 +70,20 @@ main svg { -webkit-user-select:none; user-select:none; }
 .cantado .marca.c-afinada { fill:var(--afinada); } .cantado .marca.c-alta { fill:var(--alta); } .cantado .marca.c-baja { fill:var(--baja); }
 .cantado .marca.sin-oir { fill:var(--muted); font-size:12px; }
 @media (max-width: 600px) { #estado-repro { padding-left:8px; padding-right:8px; } }
+/* Repaso al acabar (entonacion/revision) */
+#repaso { max-width:1200px; margin:0 auto 10px; padding:0 16px; font-size:14px; color:var(--fg); }
+#repaso > * { margin:0 0 6px; }
+#repaso .cab { display:flex; gap:10px; align-items:baseline; border-top:1px solid var(--grid); padding-top:8px; }
+#repaso .quien, #repaso small, #repaso .ayuda, #repaso .hist { color:var(--muted); font-size:13px; }
+#repaso .cerrar { margin-left:auto; }
+#repaso .aviso { border:1px solid #D6336C; border-radius:6px; padding:6px 10px; }
+#repaso ul { list-style:none; padding:0; margin:0 0 6px; max-height:40vh; overflow:auto; display:flex; flex-direction:column; gap:4px; }
+#repaso li { display:flex; gap:6px; align-items:stretch; }
+#repaso button { font:inherit; color:var(--fg); background:transparent; border:1px solid var(--bar); border-radius:6px; padding:3px 9px; cursor:pointer; }
+#repaso button:disabled { opacity:.45; cursor:default; }
+#repaso .ir { text-align:left; flex:0 1 auto; max-width:100%; }
+#repaso .ir.c-alta { border-left:4px solid var(--alta); } #repaso .ir.c-baja { border-left:4px solid var(--baja); }
+#repaso .ir .sil { font-weight:600; }
+#repaso .ir > span:last-child { color:inherit; }
+#repaso-btn.on { background:var(--fg); color:var(--bg); border-color:var(--fg); }
+@media (max-width: 600px) { #repaso { padding-left:8px; padding-right:8px; } }
