@@ -1,7 +1,6 @@
 ---
 title: Reproducir partitura
 depends_on: [sonido, neo-partitura/controles, entonacion/cantar-con-tempo]
-status: draft
 threads:
   - 2026-11-12 11:13 · Reproducir la partitura entera | https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv?thread=cmsg_01KVLuMPf5x5gSm2uLfB6SDvWqkubtyBG1STVoRRX7YF7e
 ---
@@ -21,6 +20,7 @@ Se pueden sumar otras voces más suaves como acompañamiento, para oír la armon
 - 2026-11-12 11:45 · Micrófono: con "🎤 Micrófono" activado (se recuerda en localStorage "neo-micro"), ▶ Reproducir y ▶ Continuar hacen un compás de cuenta atrás y la página escucha y marca cada nota como en entonacion/cantar-con-tempo, que deja de tener un modo aparte. Al reiniciar, al desactivar el micrófono o al acabar se guarda el resultado para la revisión.
 - 2026-11-12 11:45 · Probado en el navegador: Muntanyes del Canigó con el Baix de acompañamiento suena entera hasta "¡Fin!"; pausa, continuar y reiniciar (desde la cabecera y desde la línea fija) funcionan; con un micrófono simulado que canta la melodía con algunas notas altas a propósito, las notas salen afinadas o altas; en móvil (375 px) los controles caben.
 - 2026-11-12 11:45 · Hecho cuando: en PC y en móvil suena toda la voz elegida con el tempo y el sonido elegidos, la sílaba iluminada va a la par de la música, pausar, continuar y reiniciar funcionan, el acompañamiento suena más suave que la voz principal y, con el micrófono, se marca la afinación mientras suena; lo valida el propietario en la página de prueba.
+- 2026-11-12 11:28 · Validado por el propietario: el nodo deja de ser borrador.
 
 ## Requirements
 - 2026-11-12 10:57 · Opción para reproducir toda la partitura (no solo la nota seleccionada) con el tempo e instrumento seleccionado. Poder pausar, continuar y reiniciar.
