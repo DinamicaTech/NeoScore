@@ -13,7 +13,7 @@ import * as micro from './canto.js';
 const $ = id => document.getElementById(id);
 const caja = $('reproductor'), play = $('play'), reiniciarBtn = $('reiniciar'), tempoIn = $('tempo');
 const microBtn = $('micro'), margenSel = $('margen'), acomp = $('acomp'), acompList = $('acomplist');
-const estado = $('estado-repro'), score = $('score');
+const estado = $('estado-repro'), score = $('score'), terminarBtn = $('terminar'), terminar2 = $('terminar2');
 const MICRO = 'neo-micro';            // si el micrófono estaba activado, guardado en este navegador
 const ESPERA = 0.15;                  // segundos antes de la primera nota sin micrófono (que no se coma el arranque)
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -53,6 +53,10 @@ function botones() {
   play2.title = play.title;
   reiniciar2.disabled = reiniciarBtn.disabled;
   $('mandos').hidden = !rep;
+  // ⏹ Terminar: mientras cantas con el micrófono (sonando o en pausa), para y abre el repaso con lo cantado hasta ahí
+  const puedeTerminar = !!(rep && rep.escucha && !rep.tramo && (st === 'sonando' || st === 'pausa'));
+  terminarBtn.hidden = terminar2.hidden = !puedeTerminar;
+  terminarBtn.title = terminar2.title = 'Terminar aquí: para la música y el micrófono y abre el repaso con lo que has cantado hasta ahora (cuenta como un intento en tu historial)';
 }
 
 play.onclick = () => {
@@ -62,6 +66,7 @@ play.onclick = () => {
 };
 reiniciarBtn.onclick = reiniciar2.onclick = () => reiniciar();
 play2.onclick = () => play.click();
+terminarBtn.onclick = terminar2.onclick = () => terminar();
 microBtn.onclick = () => {
   if (rep && rep.estado === 'sonando') pausar();
   conMicro = !conMicro;
@@ -211,6 +216,20 @@ function pausar() {
   r.voces.forEach(callar);
   r.estado = 'pausa';
   decir('En pausa' + (r.escucha ? ' · ' + micro.resumen(r.escucha) : '') + '. Pulsa <b>▶ Continuar</b> para seguir desde aquí o <b>⏮</b> para volver al principio.');
+  botones();
+}
+
+/** ⏹ Terminar: para la música y el micrófono, guarda lo cantado hasta aquí como un intento y abre el repaso. */
+function terminar() {
+  const r = rep;
+  if (!r || !r.escucha || r.tramo) return;
+  if (r.estado === 'sonando') pausar();
+  if (r.dentro) micro.cerrarNota(r.escucha, r.k);   // la nota que sonaba cuenta con lo que se haya oído
+  const res = micro.guardar(r.escucha, { tempo: r.tempo, completa: false, terminado: true });
+  micro.cerrar(r.escucha); r.escucha = null;
+  r.estado = 'fin';
+  quitarLuz();
+  decir('Terminado. ' + res + '. Debajo tienes el repaso de lo cantado hasta aquí; pulsa <b>▶ Reproducir</b> para empezar otra vez.');
   botones();
 }
 

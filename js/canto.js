@@ -130,9 +130,10 @@ export function cerrarNota(s, n) {
 }
 
 /** Guarda el resultado para la revisión y devuelve el resumen (HTML). completa: se ha llegado al final (de la
- *  canción o, al repetir, del tramo). Un intento completo de la canción se suma al historial; repetir un tramo solo
- *  cambia sus notas en el último resultado. Avisa con el evento "canto-guardado" (js/revision.js muestra el repaso). */
-export function guardar(s, { tempo, completa }) {
+ *  canción o, al repetir, del tramo); terminado: se ha pulsado ⏹ Terminar. Un intento completo o terminado se suma
+ *  al historial (el terminado, con las notas que dio tiempo a cantar); repetir un tramo solo cambia sus notas en el
+ *  último resultado. Avisa con el evento "canto-guardado" (js/revision.js muestra el repaso). */
+export function guardar(s, { tempo, completa, terminado = false }) {
   if (!s) return '';
   if (s.repetir) {
     if (completa) for (const n of s.repetir) cerrarNota(s, n);
@@ -141,16 +142,17 @@ export function guardar(s, { tempo, completa }) {
   const cantadas = Object.fromEntries(s.notas.map(x => [x.n, x.n in s.cantadas ? s.cantadas[x.n] : null]));
   const res = resultado({ titulo: s.data.title, voz: s.data.parts[s.part].name, tempo, margen: margenSel.value, notas: s.notas, cantadas, estrofas: s.estrofas });
   res.completa = s.repetir ? s.completaPrevia : completa;
+  if (!s.repetir && !completa) res.alcanzadas = Object.keys(s.cantadas).length;   // las primeras notas, ya pasadas
   s.completa = res.completa;
   try {
     localStorage.setItem(claveResultado(res.titulo, res.voz), JSON.stringify(res));
-    if (!s.repetir && completa) {
+    if (!s.repetir && (completa || terminado)) {
       const k = claveHistorial(res.titulo, res.voz);
       let h = []; try { h = JSON.parse(localStorage.getItem(k)) || []; } catch (e) {}
       localStorage.setItem(k, JSON.stringify(anadirIntento(h, res)));
     }
   } catch (e) {}
-  document.dispatchEvent(new CustomEvent('canto-guardado', { detail: { res, repaso: completa, tramo: !!s.repetir } }));
+  document.dispatchEvent(new CustomEvent('canto-guardado', { detail: { res, repaso: completa || terminado, tramo: !!s.repetir } }));
   return resumen(s, s.repetir ? s.completa : completa);
 }
 

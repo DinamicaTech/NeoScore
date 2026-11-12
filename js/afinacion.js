@@ -127,12 +127,16 @@ export function cuentas(notas) {
   return c;
 }
 
-/** Añade un intento al historial (solo si llegó al final) y deja los últimos HISTORIAL_MAX. Devuelve el historial nuevo. */
+/** Añade un intento al historial y deja los últimos HISTORIAL_MAX. Devuelve el historial nuevo.
+ *  Un intento completo cuenta todas sus notas; uno terminado antes (⏹ Terminar) solo las `alcanzadas` primeras,
+ *  las que dio tiempo a cantar. */
 export function anadirIntento(historial, res) {
   const lista = Array.isArray(historial) ? historial.filter(h => h && Number.isFinite(h.afinadas) && Number.isFinite(h.total)) : [];
-  if (!res || !res.completa) return lista;
-  const c = cuentas(res.notas);
-  lista.push({ fecha: res.fecha, tempo: res.tempo, margen: res.margen, afinadas: c.afinada, altas: c.alta, bajas: c.baja, sinOir: c['sin-oir'], total: res.notas.length });
+  if (!res) return lista;
+  const notas = res.completa ? res.notas : res.notas.slice(0, Math.max(0, res.alcanzadas || 0));
+  if (!notas.length) return lista;
+  const c = cuentas(notas);
+  lista.push({ fecha: res.fecha, tempo: res.tempo, margen: res.margen, afinadas: c.afinada, altas: c.alta, bajas: c.baja, sinOir: c['sin-oir'], total: notas.length, completa: !!res.completa });
   return lista.slice(-HISTORIAL_MAX);
 }
 

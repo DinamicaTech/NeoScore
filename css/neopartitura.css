@@ -85,5 +85,6 @@ main svg { -webkit-user-select:none; user-select:none; }
 #repaso .ir.c-alta { border-left:4px solid var(--alta); } #repaso .ir.c-baja { border-left:4px solid var(--baja); }
 #repaso .ir .sil { font-weight:600; }
 #repaso .ir > span:last-child { color:inherit; }
+#terminar, #terminar2 { border-color:var(--alta); }
 #repaso-btn.on { background:var(--fg); color:var(--bg); border-color:var(--fg); }
 @media (max-width: 600px) { #repaso { padding-left:8px; padding-right:8px; } }

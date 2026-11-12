@@ -124,16 +124,22 @@ test('revisión: historial de los últimos intentos completos', () => {
   const res = (afinadas, completa = true) => ({ completa, fecha: 'f', tempo: 80, margen: 'facil',
     notas: Array.from({ length: 4 }, (_, i) => ({ estado: i < afinadas ? 'afinada' : 'alta' })) });
   let h = anadirIntento(null, res(1));
-  h = anadirIntento(h, res(3, false));            // un intento a medias no cuenta
+  h = anadirIntento(h, res(3, false));            // guardado a medias sin terminar (pausa, reiniciar): no cuenta
   assert.equal(h.length, 1);
   for (let i = 0; i < 12; i++) h = anadirIntento(h, res(i % 5));
   assert.equal(h.length, HISTORIAL_MAX);
-  assert.deepEqual(h[0], { fecha: 'f', tempo: 80, margen: 'facil', afinadas: (2 % 5), altas: 4 - 2, bajas: 0, sinOir: 0, total: 4 });
+  assert.deepEqual(h[0], { fecha: 'f', tempo: 80, margen: 'facil', afinadas: (2 % 5), altas: 4 - 2, bajas: 0, sinOir: 0, total: 4, completa: true });
   assert.equal(textoHistorial([{ afinadas: 28, total: 42 }, { afinadas: 33, total: 42 }, { afinadas: 37, total: 42 }]),
     'Tus últimos intentos: 28 · 33 · 37 afinadas de 42');
   assert.equal(textoHistorial([{ afinadas: 10, total: 20 }, { afinadas: 30, total: 42 }]), 'Tus últimos intentos: 10/20 · 30/42 afinadas');
   assert.equal(textoHistorial([{ afinadas: 5, total: 9 }]), 'Tu intento completo: 5 afinadas de 9');
   assert.equal(textoHistorial([]), '');
+  // terminado antes con ⏹ Terminar: cuenta solo las notas que dio tiempo a cantar
+  const parcial = { ...res(4), completa: false, alcanzadas: 3 };
+  parcial.notas[2] = { estado: 'baja' };
+  const hp = anadirIntento([], parcial);
+  assert.deepEqual(hp.map(x => [x.afinadas, x.bajas, x.total, x.completa]), [[2, 1, 3, false]]);
+  assert.equal(anadirIntento([], { ...res(4), completa: false }).length, 0, 'sin notas cantadas no es un intento');
   assert.equal(claveHistorial('T', 'Alto'), 'neo-canto-historial:T:Alto');
 });
 

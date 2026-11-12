@@ -76,7 +76,7 @@ function pintar() {
   let html = `<div class="cab"><b>📋 Repaso</b><span class="quien">${esc(res.voz)}${cuando ? ' · ' + cuando : ''}</span>` +
     `<button class="cerrar" title="Cerrar el repaso (vuelve a abrirlo con 📋 Repaso, arriba)">✕</button></div>` +
     `<p class="cuentas"><span class="c-afinada">✓ ${c.afinada} afinadas</span> · <span class="c-alta">▲ ${c.alta} altas</span> · ` +
-    `<span class="c-baja">▼ ${c.baja} bajas</span> <small>(de ${res.notas.length} notas${res.completa ? '' : '; este intento no llegó al final'})</small></p>` +
+    `<span class="c-baja">▼ ${c.baja} bajas</span> <small>(de ${res.completa || res.alcanzadas == null ? res.notas.length : res.alcanzadas} notas${res.completa ? '' : res.alcanzadas == null ? '; este intento no llegó al final' : ' cantadas: terminaste antes del final'})</small></p>` +
     (hist ? `<p class="hist" title="Las notas afinadas en cada uno de tus últimos intentos completos, del más antiguo al más reciente">📈 ${esc(hist)}</p>` : '');
   if (!vale) {
     html += `<p class="aviso">Este repaso es de ${nombresEstrofas(res)}, no de las que se ven ahora. Para tocar sus sílabas y repetirlas, ` +
