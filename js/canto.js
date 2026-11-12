@@ -5,7 +5,7 @@
 // El ritmo lo lleva el reproductor: este módulo solo escucha, anota y dibuja lo que le dice.
 
 import { ROW, TEXT_H } from './dibujo.js';
-import { MARGENES, MARGEN_POR_DEFECTO, hzAMidi, comparar, mediana, resultado, claveResultado } from './afinacion.js';
+import { MARGENES, MARGEN_POR_DEFECTO, hzAMidi, comparar, mediana, resultado, claveResultado, claveHistorial, anadirIntento } from './afinacion.js';
 
 const $ = id => document.getElementById(id);
 const AJUSTES = 'neo-canto-ajustes';      // margen elegido, guardado en este navegador
@@ -34,8 +34,11 @@ const margenCents = () => (MARGENES.find(m => m.id === margenSel.value) || MARGE
 /**
  * Abre el micrófono para escuchar las notas `notas` (secuencia() de la voz principal). Devuelve la escucha:
  * { stream, ctx, ..., trazos, valores, cantadas }. Si no se puede, lanza un Error con el mensaje para el usuario (HTML).
+ * estrofas: índices de las estrofas que se ven (se guardan con el resultado).
+ * Para repetir un tramo (entonacion/revision): `previa` es la escucha anterior (sus notas se conservan) y `repetir`
+ * los números de las notas que se vuelven a escuchar.
  */
-export async function abrir({ data, part, notas }) {
+export async function abrir({ data, part, notas, estrofas = null, previa = null, repetir = null }) {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     throw new Error('Este navegador no deja usar el micrófono aquí. Abre la página desde su dirección https:// (por ejemplo https://dinamicatech.github.io/NeoScore) con Chrome, Edge, Firefox o Safari actualizados.');
   }
@@ -56,11 +59,42 @@ export async function abrir({ data, part, notas }) {
   ctx.createMediaStreamSource(stream).connect(analizador);
   const detector = pitchy.PitchDetector.forFloat32Array(analizador.fftSize);
   detector.minVolumeDecibels = -45;   // más flojo que esto es silencio o ruido de fondo
-  quitarMarcas();
-  marcas = {
-    data, part, notas, stream, ctx, analizador, detector, buf: new Float32Array(analizador.fftSize),
+  const s = {
+    data, part, notas, estrofas, stream, ctx, analizador, detector, buf: new Float32Array(analizador.fftSize),
     trazos: {}, valores: {}, cantadas: {}, abierta: true,
   };
+  if (repetir && !(previa && previa.notas.length === notas.length)) previa = { trazos: {}, valores: {}, cantadas: {}, completa: false };
+  if (repetir) {
+    // se conserva lo cantado antes, salvo las notas del tramo, que se vuelven a escuchar (si no se llegan a cantar,
+    // se quedan como estaban)
+    s.repetir = new Set(repetir);
+    s.completaPrevia = !!previa.completa;
+    s.antes = {};
+    for (const k of ['trazos', 'valores', 'cantadas']) {
+      for (const [n, v] of Object.entries(previa[k])) if (!s.repetir.has(+n)) s[k][n] = v;
+    }
+    for (const n of s.repetir) if (n in previa.cantadas) s.antes[n] = previa.cantadas[n];
+    for (const n of s.repetir) { const r = bloque(n); if (r) delete r.dataset.res; }
+    marcas = s;
+    repintar();
+  } else {
+    quitarMarcas();
+    marcas = s;
+  }
+  return s;
+}
+
+/** Las marcas que se ven ahora (la última escucha, abierta o cerrada), o null. */
+export const actuales = () => marcas;
+
+/** Muestra en la partitura un resultado guardado (res, de resultado()) para las notas que se ven ahora, sin micrófono:
+ *  así el repaso se puede hacer también después de recargar la página. */
+export function cargar({ data, part, notas, estrofas = null }, res) {
+  quitarMarcas();
+  const cantadas = {};
+  for (const x of res.notas) if (x.estado !== 'sin-oir' || res.completa) cantadas[x.n] = x.cantada;
+  marcas = { data, part, notas, estrofas, trazos: {}, valores: {}, cantadas, abierta: false, completa: !!res.completa, fecha: res.fecha };
+  repintar();
   return marcas;
 }
 
@@ -95,15 +129,39 @@ export function cerrarNota(s, n) {
   pintar(n);
 }
 
-/** Guarda el resultado para la revisión y devuelve el resumen (HTML). completa: se ha llegado al final. */
-export function guardar(s, { tempo, completa }) {
+/** Guarda el resultado para la revisión y devuelve el resumen (HTML). completa: se ha llegado al final (de la
+ *  canción o, al repetir, del tramo); terminado: se ha pulsado ⏹ Terminar. Un intento completo o terminado se suma
+ *  al historial (el terminado, con las notas que dio tiempo a cantar); repetir un tramo solo cambia sus notas en el
+ *  último resultado. Avisa con el evento "canto-guardado" (js/revision.js muestra el repaso). */
+export function guardar(s, { tempo, completa, terminado = false }) {
   if (!s) return '';
-  if (completa) for (const x of s.notas) cerrarNota(s, x.n);
+  if (s.repetir) {
+    if (completa) for (const n of s.repetir) cerrarNota(s, n);
+    for (const n of s.repetir) if (!(n in s.cantadas) && n in s.antes) s.cantadas[n] = s.antes[n];
+  } else if (completa) for (const x of s.notas) cerrarNota(s, x.n);
   const cantadas = Object.fromEntries(s.notas.map(x => [x.n, x.n in s.cantadas ? s.cantadas[x.n] : null]));
-  const res = resultado({ titulo: s.data.title, voz: s.data.parts[s.part].name, tempo, margen: margenSel.value, notas: s.notas, cantadas });
-  res.completa = completa;
-  try { localStorage.setItem(claveResultado(res.titulo, res.voz), JSON.stringify(res)); } catch (e) {}
-  return resumen(s, completa);
+  const res = resultado({ titulo: s.data.title, voz: s.data.parts[s.part].name, tempo, margen: margenSel.value, notas: s.notas, cantadas, estrofas: s.estrofas });
+  res.completa = s.repetir ? s.completaPrevia : completa;
+  if (!s.repetir && !completa) res.alcanzadas = Object.keys(s.cantadas).length;   // las primeras notas, ya pasadas
+  s.completa = res.completa;
+  try {
+    localStorage.setItem(claveResultado(res.titulo, res.voz), JSON.stringify(res));
+    if (!s.repetir && (completa || terminado)) {
+      const k = claveHistorial(res.titulo, res.voz);
+      let h = []; try { h = JSON.parse(localStorage.getItem(k)) || []; } catch (e) {}
+      localStorage.setItem(k, JSON.stringify(anadirIntento(h, res)));
+    }
+  } catch (e) {}
+  document.dispatchEvent(new CustomEvent('canto-guardado', { detail: { res, repaso: completa || terminado, tramo: !!s.repetir } }));
+  return resumen(s, s.repetir ? s.completa : completa);
+}
+
+/** Cómo ha salido la nota n (HTML): "✓ afinada", "▲ alta (+60 cents)", "no se te ha oído". */
+export function comoSalio(s, n) {
+  const x = s && s.notas[n], c = s && s.cantadas[n];
+  if (!x || c == null) return 'no se te ha oído';
+  const v = comparar(x.midi, c, margenCents());
+  return `<span class="c-${v.estado}">${SIGNO[v.estado]} ${v.estado}</span> (${v.cents > 0 ? '+' : ''}${v.cents} cents)`;
 }
 
 /** Cuántas notas van afinadas, altas, bajas y sin oír (HTML). */

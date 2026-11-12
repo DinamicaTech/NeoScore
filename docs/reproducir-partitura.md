@@ -21,6 +21,8 @@ Se pueden sumar otras voces más suaves como acompañamiento, para oír la armon
 - 2026-11-12 11:45 · Probado en el navegador: Muntanyes del Canigó con el Baix de acompañamiento suena entera hasta "¡Fin!"; pausa, continuar y reiniciar (desde la cabecera y desde la línea fija) funcionan; con un micrófono simulado que canta la melodía con algunas notas altas a propósito, las notas salen afinadas o altas; en móvil (375 px) los controles caben.
 - 2026-11-12 11:45 · Hecho cuando: en PC y en móvil suena toda la voz elegida con el tempo y el sonido elegidos, la sílaba iluminada va a la par de la música, pausar, continuar y reiniciar funcionan, el acompañamiento suena más suave que la voz principal y, con el micrófono, se marca la afinación mientras suena; lo valida el propietario en la página de prueba.
 - 2026-11-12 11:28 · Validado por el propietario: el nodo deja de ser borrador.
+- 2026-11-12 11:50 · ⏹ Terminar (entonacion/revision): con el micrófono, sonando o en pausa, un botón en la cabecera y otro en la línea fija paran la música y el micrófono y abren el repaso; después ▶ Reproducir empieza desde el principio.
+- 2026-11-12 11:00 · Repetir un compás (entonacion/revision): repetir(n) de js/reproductor.js reproduce solo el compás de la nota n de tu voz, con un compás de cuenta atrás, los volúmenes de cuando hay micrófono y el micrófono escuchando aunque 🎤 Micrófono esté desactivado; acaba al final de ese compás. Pausa y continuar valen; ⏮ vuelve a empezar el compás. Al acabar, ▶ Reproducir vuelve a la canción entera.
 
 ## Requirements
 - 2026-11-12 10:57 · Opción para reproducir toda la partitura (no solo la nota seleccionada) con el tempo e instrumento seleccionado. Poder pausar, continuar y reiniciar.
@@ -30,3 +32,5 @@ Se pueden sumar otras voces más suaves como acompañamiento, para oír la armon
 - 2026-11-12 11:09 · Ok a iluminar y pasar página
 - 2026-11-12 11:09 · Ok a los botones
 - 2026-11-12 11:13 · answer: cómo elegir las voces de acompañamiento y afinar mientras se reproduce → Ok a 1 y 2: desplegable "Acompañamiento" con las demás voces, más suaves; un solo reproductor con botón 🎤 Micrófono, sin el botón "Cantar" aparte.
+- 2026-11-12 11:00 · Derived from entonacion/revision: reproducir solo el compás de una sílaba, con cuenta atrás y el micrófono escuchando, para repetirlo desde el repaso.
+- 2026-11-12 11:50 · Derived from entonacion/revision: un botón para terminar el canto antes del final y ver el resultado.

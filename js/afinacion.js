@@ -97,10 +97,10 @@ export const tempoValido = t => {
  * Resultado de una sesión de canto, tal como se guarda en el navegador para la revisión al acabar
  * (entonacion/revision). notas: secuencia(...); cantadas[n]: altura cantada (MIDI con decimales) de la nota n, o null.
  */
-export function resultado({ titulo, voz, tempo, margen, notas, cantadas, fecha = new Date().toISOString() }) {
+export function resultado({ titulo, voz, tempo, margen, notas, cantadas, estrofas, fecha = new Date().toISOString() }) {
   const m = MARGENES.find(x => x.id === margen) || MARGENES[0];
   return {
-    version: 1, titulo, voz, fecha, tempo, margen: m.id, cents: m.cents,
+    version: 1, titulo, voz, fecha, tempo, margen: m.id, cents: m.cents, ...(estrofas ? { estrofas } : {}),
     notas: notas.map(x => {
       const c = cantadas[x.n];
       const base = { n: x.n, compas: x.compas, silaba: x.t || '', esperada: x.midi };
@@ -112,3 +112,74 @@ export function resultado({ titulo, voz, tempo, margen, notas, cantadas, fecha =
 
 /** Clave de localStorage del último resultado de una partitura y voz. */
 export const claveResultado = (titulo, voz) => `neo-canto:${titulo}:${voz}`;
+
+// ---- Revisión al acabar (entonacion/revision) ----
+
+export const HISTORIAL_MAX = 10;   // intentos completos que se recuerdan por partitura y voz
+
+/** Clave de localStorage del historial de intentos completos de una partitura y voz. */
+export const claveHistorial = (titulo, voz) => `neo-canto-historial:${titulo}:${voz}`;
+
+/** Cuántas notas de un resultado salieron afinadas, altas, bajas y sin oír. */
+export function cuentas(notas) {
+  const c = { afinada: 0, alta: 0, baja: 0, 'sin-oir': 0 };
+  for (const x of notas) if (x.estado in c) c[x.estado]++;
+  return c;
+}
+
+/** Añade un intento al historial y deja los últimos HISTORIAL_MAX. Devuelve el historial nuevo.
+ *  Un intento completo cuenta todas sus notas; uno terminado antes (⏹ Terminar) solo las `alcanzadas` primeras,
+ *  las que dio tiempo a cantar. */
+export function anadirIntento(historial, res) {
+  const lista = Array.isArray(historial) ? historial.filter(h => h && Number.isFinite(h.afinadas) && Number.isFinite(h.total)) : [];
+  if (!res) return lista;
+  const notas = res.completa ? res.notas : res.notas.slice(0, Math.max(0, res.alcanzadas || 0));
+  if (!notas.length) return lista;
+  const c = cuentas(notas);
+  lista.push({ fecha: res.fecha, tempo: res.tempo, margen: res.margen, afinadas: c.afinada, altas: c.alta, bajas: c.baja, sinOir: c['sin-oir'], total: notas.length, completa: !!res.completa });
+  return lista.slice(-HISTORIAL_MAX);
+}
+
+/** Una línea con la evolución: "Tus últimos intentos: 28 · 33 · 37 afinadas de 42" ('' si no hay intentos). */
+export function textoHistorial(historial) {
+  if (!historial || !historial.length) return '';
+  const total = historial[historial.length - 1].total, iguales = historial.every(h => h.total === total);
+  const uno = historial.length === 1;
+  return (uno ? 'Tu intento completo: ' : 'Tus últimos intentos: ') +
+    (iguales ? historial.map(h => h.afinadas).join(' · ') + ` afinadas de ${total}` : historial.map(h => `${h.afinadas}/${h.total}`).join(' · ') + ' afinadas');
+}
+
+/** Las notas de un resultado que salieron fuera del margen (altas o bajas), recalculadas con el margen `cents`
+ *  que está elegido ahora. Las que no se oyeron no salen. */
+export function fueraDeMargen(res, cents) {
+  return res.notas.filter(x => x.cantada != null)
+    .map(x => ({ ...x, ...comparar(x.esperada, x.cantada, cents) }))
+    .filter(x => x.estado !== 'afinada');
+}
+
+/** Cuánto se ha desviado, en palabras: "un poco alta (+35 cents, un tercio de semitono)". */
+export function desvioEnPalabras(cents) {
+  const a = Math.abs(cents), dir = cents > 0 ? 'alta' : 'baja';
+  const grado = a < 50 ? `un poco ${dir}` : a < 100 ? dir : `muy ${dir}`;
+  let medida;
+  if (a < 100) {
+    const marcas = [[25, 'un cuarto de semitono'], [33, 'un tercio de semitono'], [50, 'medio semitono'], [75, 'tres cuartos de semitono'], [100, 'casi un semitono']];
+    medida = marcas.reduce((m, x) => Math.abs(x[0] - a) < Math.abs(m[0] - a) ? x : m)[1];
+  } else {
+    const s = Math.round(a / 100);
+    medida = s === 1 ? 'un semitono' : `${s} semitonos`;
+  }
+  return `${grado} (${cents > 0 ? '+' : ''}${cents} cents, ${medida})`;
+}
+
+/** El tramo que se repite para practicar una nota: su compás entero (las notas de ese compás).
+ *  Devuelve { desde, hasta (en negras, como inicio en secuencia()), ns: números de las notas del tramo }. */
+export function tramoDeCompas(notas, compas) {
+  const del = notas.filter(x => x.compas === compas);
+  if (!del.length) return null;
+  return { compas, desde: del[0].inicio, hasta: Math.max(...del.map(x => x.inicio + x.d)), ns: del.map(x => x.n) };
+}
+
+/** El resultado guardado corresponde a las notas que se ven ahora (mismas estrofas): se pueden marcar y repetir. */
+export const coincide = (res, notas) => !!res && Array.isArray(res.notas) && res.notas.length === notas.length &&
+  res.notas.every((x, i) => x.n === notas[i].n && x.compas === notas[i].compas && x.esperada === notas[i].midi);

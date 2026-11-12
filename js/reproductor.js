@@ -6,14 +6,14 @@
 
 import { actual } from './controles.js';
 import { instrumento, sonidoElegido, cargarTone } from './sonido.js';
-import { TEMPO_POR_DEFECTO, secuencia, negrasPorCompas, tempoValido, inicioComun } from './afinacion.js';
+import { TEMPO_POR_DEFECTO, secuencia, negrasPorCompas, tempoValido, inicioComun, tramoDeCompas } from './afinacion.js';
 import { crearReloj, notaEn, ligada, final, acompanamiento, volumen } from './reproduccion.js';
 import * as micro from './canto.js';
 
 const $ = id => document.getElementById(id);
 const caja = $('reproductor'), play = $('play'), reiniciarBtn = $('reiniciar'), tempoIn = $('tempo');
 const microBtn = $('micro'), margenSel = $('margen'), acomp = $('acomp'), acompList = $('acomplist');
-const estado = $('estado-repro'), score = $('score');
+const estado = $('estado-repro'), score = $('score'), terminarBtn = $('terminar'), terminar2 = $('terminar2');
 const MICRO = 'neo-micro';            // si el micrófono estaba activado, guardado en este navegador
 const ESPERA = 0.15;                  // segundos antes de la primera nota sin micrófono (que no se coma el arranque)
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -33,14 +33,16 @@ const firma = () => actual.data ? JSON.stringify([actual.data.title, actual.part
 
 // ---- botones ----
 function botones() {
-  const st = rep ? rep.estado : 'parado';
+  const st = rep ? rep.estado : 'parado', tramo = rep && rep.tramo && st !== 'fin';
   play.textContent = st === 'sonando' ? '⏸ Pausa' : st === 'pausa' ? '▶ Continuar' : '▶ Reproducir';
   play.classList.toggle('on', st === 'sonando');
   play.title = st === 'sonando' ? 'Parar la música donde va; luego pulsa Continuar para seguir desde ahí'
     : st === 'pausa' ? 'Seguir desde donde se ha parado'
     : 'Escuchar la partitura entera: tu voz, con las estrofas que se ven, al tempo y con el sonido elegidos' +
       (conMicro ? '. Con el micrófono, tras un compás de cuenta atrás, canta a la vez y verás si cada nota sale afinada' : '');
+  if (tramo && st === 'pausa') play.title = `Seguir repitiendo el compás ${rep.tramo.compas} desde donde se ha parado`;
   reiniciarBtn.disabled = !rep || (rep.estado !== 'sonando' && rep.pos === 0 && !rep.empezada);
+  reiniciarBtn.title = reiniciar2.title = tramo ? `Volver a empezar el compás ${rep.tramo.compas} (con su cuenta atrás)` : 'Volver al principio de la partitura';
   microBtn.classList.toggle('on', conMicro);
   microBtn.setAttribute('aria-pressed', conMicro);
   microBtn.title = conMicro
@@ -51,6 +53,10 @@ function botones() {
   play2.title = play.title;
   reiniciar2.disabled = reiniciarBtn.disabled;
   $('mandos').hidden = !rep;
+  // ⏹ Terminar: mientras cantas con el micrófono (sonando o en pausa), para y abre el repaso con lo cantado hasta ahí
+  const puedeTerminar = !!(rep && rep.escucha && !rep.tramo && (st === 'sonando' || st === 'pausa'));
+  terminarBtn.hidden = terminar2.hidden = !puedeTerminar;
+  terminarBtn.title = terminar2.title = 'Terminar aquí: para la música y el micrófono y abre el repaso con lo que has cantado hasta ahora (cuenta como un intento en tu historial)';
 }
 
 play.onclick = () => {
@@ -60,6 +66,7 @@ play.onclick = () => {
 };
 reiniciarBtn.onclick = reiniciar2.onclick = () => reiniciar();
 play2.onclick = () => play.click();
+terminarBtn.onclick = terminar2.onclick = () => terminar();
 microBtn.onclick = () => {
   if (rep && rep.estado === 'sonando') pausar();
   conMicro = !conMicro;
@@ -144,10 +151,10 @@ async function aplicarVolumenes() {
   // conserva por dónde iba cada voz que sigue sonando; las que se quitan se callan
   for (const v of r.voces) if (!vivas.some(w => w.part === v.part)) callar(v);
   r.voces = vivas.map(w => r.voces.find(v => v.part === w.part) || w);
-  r.fin = final(r.voces.map(v => v.notas));
+  r.fin = r.tramo ? r.tramo.hasta : final(r.voces.map(v => v.notas));
   const id = sonidoElegido();
   await Promise.all(r.voces.map(async v => {
-    const ins = await instrumento(id, volumen(v.principal, conMicro), 'p' + v.part);
+    const ins = await instrumento(id, volumen(v.principal, conMicro || !!r.tramo), 'p' + v.part);
     if (v.ins !== ins) { callar(v); v.ins = ins; }
   }));
 }
@@ -170,10 +177,13 @@ async function arrancar() {
     const T = await cargarTone(); await T.start();
     if (r.estado === 'parado' || r.estado === 'pausa') decir('Preparando el sonido…');
     await aplicarVolumenes();
-    if (conMicro && !r.escucha) {
+    if ((conMicro || r.tramo) && !r.escucha) {
       decir('Preparando el micrófono… Si el navegador pregunta, pulsa <b>Permitir</b>.');
       const main = r.voces.find(v => v.principal);
-      r.escucha = await micro.abrir({ data: r.data, part: r.part, notas: main.notas });
+      r.escucha = await micro.abrir({
+        data: r.data, part: r.part, notas: main.notas, estrofas: [...r.secsVisibles].sort((a, b) => a - b),
+        previa: r.tramo ? r.tramo.previa : null, repetir: r.tramo ? r.tramo.ns : null,
+      });
     }
     if (rep !== r) return;
     // con el micrófono, un compás de cuenta atrás (el primer golpe más agudo); sin él, empieza ya
@@ -209,10 +219,25 @@ function pausar() {
   botones();
 }
 
+/** ⏹ Terminar: para la música y el micrófono, guarda lo cantado hasta aquí como un intento y abre el repaso. */
+function terminar() {
+  const r = rep;
+  if (!r || !r.escucha || r.tramo) return;
+  if (r.estado === 'sonando') pausar();
+  if (r.dentro) micro.cerrarNota(r.escucha, r.k);   // la nota que sonaba cuenta con lo que se haya oído
+  const res = micro.guardar(r.escucha, { tempo: r.tempo, completa: false, terminado: true });
+  micro.cerrar(r.escucha); r.escucha = null;
+  r.estado = 'fin';
+  quitarLuz();
+  decir('Terminado. ' + res + '. Debajo tienes el repaso de lo cantado hasta aquí; pulsa <b>▶ Reproducir</b> para empezar otra vez.');
+  botones();
+}
+
 /** Vuelve al principio. Si estaba sonando, sigue sonando desde el principio; si no, se queda listo para empezar. */
 function reiniciar() {
   const r = rep;
   if (!r) return;
+  if (r.tramo && r.estado !== 'fin') return repetir(r.tramo.n);   // repitiendo un compás: vuelve a empezar el compás
   const sonaba = r.estado === 'sonando';
   if (sonaba) pausar();
   if (r.escucha) { micro.guardar(r.escucha, { tempo: r.tempo, completa: false }); micro.cerrar(r.escucha); r.escucha = null; }
@@ -287,14 +312,48 @@ function acabar(r) {
   r.voces.forEach(callar);
   r.estado = 'fin';
   quitarLuz();
-  if (r.escucha) {
+  if (r.tramo) {
+    const s = r.escucha;
+    if (s) { micro.guardar(s, { tempo: r.tempo, completa: true }); micro.cerrar(s); r.escucha = null; }
+    const nota = r.voces.find(v => v.principal).notas[r.tramo.n];
+    decir(`Compás ${r.tramo.compas} repetido: «${esc(nota.t || '…')}» ${micro.comoSalio(s, r.tramo.n)}. ` +
+      'Pulsa otra vez <b>🔁</b> en el repaso para repetirlo, o <b>▶ Reproducir</b> para cantar la canción entera.');
+  } else if (r.escucha) {
     const res = micro.guardar(r.escucha, { tempo: r.tempo, completa: true });
     micro.cerrar(r.escucha); r.escucha = null;
-    decir('¡Fin! ' + res + '. Pasa el dedo o el ratón por una sílaba para ver cuánto te has desviado; pulsa <b>▶ Reproducir</b> para repetir.');
+    decir('¡Fin! ' + res + '. Debajo tienes el repaso de lo desafinado; pasa el dedo o el ratón por una sílaba para ver cuánto te has desviado o pulsa <b>▶ Reproducir</b> para repetir.');
   } else {
     decir('¡Fin! Pulsa <b>▶ Reproducir</b> para escucharla otra vez.');
   }
   botones();
+}
+
+// ---- repetir un compás (entonacion/revision) ----
+/**
+ * Repite el compás de la nota n de tu voz para practicarla: cuenta atrás, suena ese compás (tu voz suave y el
+ * acompañamiento elegido) y el micrófono vuelve a escuchar sus notas; lo demás de lo cantado se conserva.
+ */
+export async function repetir(n) {
+  if (!actual.data) return;
+  if (rep && rep.estado === 'sonando') pausar();
+  if (rep) {   // deja lo que hubiera (sin borrar lo cantado, que se conserva fuera del compás)
+    clearTimeout(rep.reloj_t);
+    rep.voces.forEach(callar);
+    if (rep.escucha) { micro.guardar(rep.escucha, { tempo: rep.tempo, completa: false }); micro.cerrar(rep.escucha); }
+    if (rep.tic) rep.tic.dispose();
+    quitarLuz();
+    rep = null;
+  }
+  const r = preparar();
+  if (!r) return;
+  const main = r.voces.find(v => v.principal);
+  const t = main.notas[n] && tramoDeCompas(main.notas, main.notas[n].compas);
+  if (!t) { decir('Esa sílaba ya no está en la partitura que se ve: vuelve a cantar la canción con ▶ Reproducir.', true); return; }
+  r.tramo = { ...t, n, previa: micro.actuales() };
+  r.pos = t.desde; r.fin = t.hasta;
+  r.k = notaEn(main.notas, t.desde).k;
+  rep = r;
+  await arrancar();
 }
 
 // ---- la sílaba que suena ----
