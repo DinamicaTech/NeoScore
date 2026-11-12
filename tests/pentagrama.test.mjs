@@ -64,3 +64,31 @@ for (const ruta of PARTITURAS) {
     assert.ok(notas.length && notas.every(n => n.attrs.color === '#7048E8'));
   });
 }
+
+// ---- Todas las voces en un solo pentagrama ----
+import { elegirPentagramas } from '../js/pentagrama-xml.js';
+
+test('elegirPentagramas: uno solo si todas caben, dos unidos si alguna necesitaría más de tres rayitas', () => {
+  const r = (voz, min, max) => ({ voz, min, max, mediana: Math.round((min + max) / 2) });
+  assert.deepEqual(elegirPentagramas([r(0, 60, 79), r(1, 55, 72)]), [{ clave: 'G', voces: [0, 1] }]);
+  assert.deepEqual(elegirPentagramas([r(0, 40, 62), r(1, 36, 55)]), [{ clave: 'F', voces: [0, 1] }]);
+  assert.deepEqual(elegirPentagramas([r(0, 60, 79), r(1, 55, 72), r(3, 41, 62)]), [{ clave: 'G', voces: [0, 1] }, { clave: 'F', voces: [3] }]);
+});
+
+for (const ruta of PARTITURAS) {
+  test(`${ruta}: juntas, cada voz conserva sus notas (por su número de <voice>)`, () => {
+    const texto = leer(ruta), data = leerMusicXML(texto, ruta), secs = estrofas(data);
+    const todas = new Set(secs.lista.map((_, k) => k)), partes = data.parts.map((_, i) => i);
+    const raiz = leerXML(prepararPentagrama(texto, { partes, mia: 0, compases: () => true, juntos: true }));
+    assert.ok(hijos(raiz, 'part').length <= 2, 'Juntas deben ir en uno o dos pentagramas');
+    const STEP = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+    const txt = (el, n) => (hijos(el, n)[0] || { text: '' }).text.trim();
+    for (const p of partes) {
+      const notas = todos(raiz, 'note').filter(n => txt(n, 'voice') === String(p + 1) && hijos(n, 'pitch').length).map(n => {
+        const pt = hijos(n, 'pitch')[0];
+        return 12 * (Number(txt(pt, 'octave')) + 1) + STEP[txt(pt, 'step')] + Math.trunc(Number(txt(pt, 'alter') || 0));
+      });
+      assert.deepEqual(notas, secuencia(data, p, todas, secs).map(x => x.midi), `La voz ${data.parts[p].name} cambia al juntar las voces`);
+    }
+  });
+}

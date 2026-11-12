@@ -7,8 +7,8 @@ threads:
 ---
 ## Summary
 Una segunda forma de ver la partitura: el botón "Vista: Neo-score / Pentagrama" de la cabecera cambia la neo-score por el pentagrama clásico, dibujado con OpenSheetMusicDisplay (js/pentagrama.js y js/pentagrama-xml.js).
-En el pentagrama se ven varias voces a la vez, cada una en su pentagrama y con sus notas del color de su botón; "Tu voz" elige la que lleva la letra, se compara con el micrófono y suena más fuerte, y las otras visibles suenan como acompañamiento.
-Funciona igual que la neo-score: tocar una nota para oírla, reproducir al tempo con la nota que suena iluminada, cantar con el micrófono (cada nota se pinta de verde, rojo o azul) y el repaso. Fase 2, pendiente: todas las voces en un solo pentagrama y la línea de lo cantado sobre el pentagrama.
+En el pentagrama se ven varias voces a la vez, cada una en su pentagrama o todas juntas en uno (en dos unidos, agudo y grave, si alguna necesitaría más de tres rayitas), con sus notas del color de su botón; "Tu voz" elige la que lleva la letra, se compara con el micrófono y suena más fuerte, y las otras visibles suenan como acompañamiento.
+Funciona igual que la neo-score: tocar una nota para oírla, reproducir al tempo con la nota que suena iluminada, cantar con el micrófono (una línea dibuja lo que cantas y cada nota se pinta de verde, rojo o azul) y el repaso.
 
 ## Decisions
 - 2026-11-12 10:20 · Creado en el laboratorio como idea; no se construye nada mientras se debate.
@@ -29,6 +29,11 @@ Funciona igual que la neo-score: tocar una nota para oírla, reproducir al tempo
 - 2026-11-12 12:45 · Colores de las voces, por su orden en la partitura: violeta, naranja, cian, granate, oliva, morado, ocre y gris, lejos del verde, rojo y azul de los resultados del canto. Solo se usan en la vista de pentagrama.
 - 2026-11-12 12:45 · Probado en el navegador: con Muntanyes del Canigó y El Noi de la Mare (estrofas 1, 2 y 5) cada voz visible tiene en el pentagrama exactamente las mismas notas que suenan; la nota que suena se ilumina al reproducir; con un micrófono simulado, las notas de tu voz se pintan de verde o rojo al pasar; volver a Neo-score la dibuja como antes; en móvil (375 px) la partitura cabe en el ancho sin desplazarse de lado.
 - 2026-11-12 12:45 · Hecho cuando (fase 1): se puede cambiar de vista, ver dos o más voces coloreadas, tocar una nota y oírla, y reproducir y cantar desde el pentagrama con las notas marcadas; las pruebas automáticas pasan y lo valida el propietario en la página de prueba.
+- 2026-11-12 13:35 · Fase 1 lista; el propietario pide seguir con la fase 2. Las dos se fusionan juntas cuando valide la fase 2, y entonces el nodo deja de ser borrador.
+- 2026-11-12 14:10 · Fase 2, "todas en un solo pentagrama": con dos o más voces visibles aparecen los botones "Pentagramas: Separados / Juntos" (se recuerda en el navegador, "neo-juntos"). Juntas, js/pentagrama-xml.js escribe todas las voces como suenan (el tenor sin su clave de sol con 8) en una parte nueva, cada una como <voice> número de voz + 1, con <backup> entre voces, divisiones comunes y plicas arriba y abajo alternas. elegirPentagramas decide: un solo pentagrama en clave de sol si todas caben de Mi3 a Fa6, si no en clave de fa si todas caben de Sol1 a La4 (es decir, sin más de tres rayitas); si no, dos pentagramas unidos, el agudo para las voces que solo caben en sol o van por encima del Do central y el grave para las demás.
+- 2026-11-12 14:10 · Fase 2, línea de lo cantado: como en la neo-score, mientras cantas una línea va de la cabeza de la nota hasta la siguiente nota de tu voz, a la altura de la nota si vas afinado y más arriba o más abajo según te desvías (cada semitono, 3,5/12 del espacio entre líneas, para que una octava ocupe lo que siete notas); cantar una octava más grave o más aguda cuenta como la misma nota. Las zonas tocables de tu voz guardan para ello data-y, data-semitono, data-x0 y data-x1.
+- 2026-11-12 14:10 · Probado en el navegador (fase 2): Muntanyes del Canigó con Soprano y Alto juntas va en un pentagrama; con Soprano, Alto y Tenor, también; con Soprano, Alto y Baix, en dos unidos (Baix en el grave). En todos los casos cada voz tiene sus mismas notas; con un micrófono simulado se dibujan la línea de lo cantado y los resultados sobre las notas.
+- 2026-11-12 14:10 · Hecho cuando (fase 2): se pueden ver las voces juntas en un pentagrama (o en dos unidos cuando no caben) y, al cantar, la línea de lo cantado se dibuja sobre el pentagrama; las pruebas automáticas pasan y lo valida el propietario en la página de prueba.
 
 ## Requirements
 - 2026-11-12 10:15 · idea: Poder ver la partitura en modo neo-score o en modo pentagrama clásico; en el modo pentagrama, ver varias cuerdas a la vez, cada una en su propio pentagrama o todas en un solo pentagrama con las notas de cada cuerda del color de su botón del selector de cuerda, manteniendo las mismas funciones que la neo-score.
@@ -48,3 +53,4 @@ Funciona igual que la neo-score: tocar una nota para oírla, reproducir al tempo
 - 2026-11-12 10:26 · answer: cómo se elige → A, botón "Vista: Neo-score / Pentagrama" y botones de cuerda que se activan varios a la vez y se colorean.
 - 2026-11-12 10:29 · Pásala a draft
 - 2026-11-12 12:05 · Ok, pasa este nodo a desarrollo
+- 2026-11-12 13:35 · Ok, ya puedes ir a por la fase 2

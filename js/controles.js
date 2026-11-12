@@ -13,6 +13,9 @@ export const actual = {};
 const VISTA = 'neo-vista';   // la última vista elegida (neo-score o pentagrama), guardada en este navegador
 let vista = 'neo';
 try { if (localStorage.getItem(VISTA) === 'pentagrama') vista = 'pentagrama'; } catch (e) {}
+const JUNTOS = 'neo-juntos';  // en el pentagrama, si las voces van juntas en uno (guardado en este navegador)
+let juntos = false;
+try { juntos = localStorage.getItem(JUNTOS) === '1'; } catch (e) {}
 let cambiarAcomp = () => {};
 /** Cambia las otras voces elegidas (acompañamiento) y, en la vista de pentagrama, las que se ven. */
 export function elegirAcomp(lista) { cambiarAcomp(lista); }
@@ -40,7 +43,7 @@ export function mostrarPartitura(data, shownInicial = null, texto = null) {
     acomp = acompanamiento(acomp, part, data.parts.length);
     Object.assign(actual, { data, part, shown, secs, vista, acomp });
     score.classList.toggle('vista-pentagrama', vista === 'pentagrama');
-    if (vista === 'pentagrama') dibujarPentagrama({ data, texto, part, visibles: acomp, zoom: +zoom.value, shown, secs, score, legend });
+    if (vista === 'pentagrama') dibujarPentagrama({ data, texto, part, visibles: acomp, zoom: +zoom.value, shown, secs, score, legend, juntos });
     else dibujar({ data, part, zoom: +zoom.value, shown, secs, score, legend });
   };
   cambiarAcomp = lista => {
@@ -70,6 +73,11 @@ export function mostrarPartitura(data, shownInicial = null, texto = null) {
   // la muestra u oculta (y suena o no al reproducir), y el desplegable "Tu voz" elige la que cantas.
   vbox.onclick = e => {
     const i = e.target.dataset.i;
+    if (e.target.dataset.j !== undefined) {
+      juntos = e.target.dataset.j === '1';
+      try { localStorage.setItem(JUNTOS, juntos ? '1' : '0'); } catch (err) {}
+      mark(); redibujar(); return;
+    }
     if (i === undefined) return;
     if (vista === 'pentagrama' && +i !== part) { cambiarAcomp(acomp.includes(+i) ? acomp.filter(x => x !== +i) : [...acomp, +i]); return; }
     part = +i; mark(); redibujar();
@@ -86,7 +94,10 @@ export function mostrarPartitura(data, shownInicial = null, texto = null) {
       const estilo = pent ? ` style="--vz:${colorVoz(i)}"` : '';
       return `<button data-i="${i}" class="${pent ? 'vz' : ''}${(pent ? vista_ : mia) ? ' on' : ''}"${estilo} title="${titulo}"${pent ? ` aria-pressed="${vista_}"` : ''}>${esc(p.name)}</button>`;
     }).join('') + (pent && data.parts.length > 1
-      ? ` <label title="La voz que cantas: la que lleva la letra, la que se compara con el micrófono y la que suena más fuerte">Tu voz <select id="tuvoz">${data.parts.map((p, i) => `<option value="${i}"${i === part ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}</select></label>` : '');
+      ? ` <label title="La voz que cantas: la que lleva la letra, la que se compara con el micrófono y la que suena más fuerte">Tu voz <select id="tuvoz">${data.parts.map((p, i) => `<option value="${i}"${i === part ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}</select></label>` : '') +
+      (pent && acomp.length
+        ? ` <span class="juntos">Pentagramas <button data-j="0" class="${juntos ? '' : 'on'}" title="Cada voz en su propio pentagrama">Separados</button>` +
+          `<button data-j="1" class="${juntos ? 'on' : ''}" title="Todas las voces que se ven en un solo pentagrama, cada una de su color; si alguna necesitaría más de tres rayitas por arriba o por abajo, en dos pentagramas unidos (agudo y grave)">Juntos</button></span>` : '');
   };
   zoom.oninput = redibujar;
 
