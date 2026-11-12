@@ -1,7 +1,6 @@
 ---
 title: Vista de pentagrama
 depends_on: [neo-partitura/controles, sonido, reproducir-partitura, entonacion/cantar-con-tempo, entonacion/revision, architecture]
-status: draft
 threads:
   - 2026-11-12 10:20 · Visualización en pentagrama | https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv?thread=cmsg_01KVLuMPf5x5gSm2uLfB6SDvVLr4y4r8Jr8e3GADXdRtct
 ---
@@ -34,6 +33,7 @@ Funciona igual que la neo-score: tocar una nota para oírla, reproducir al tempo
 - 2026-11-12 14:10 · Fase 2, línea de lo cantado: como en la neo-score, mientras cantas una línea va de la cabeza de la nota hasta la siguiente nota de tu voz, a la altura de la nota si vas afinado y más arriba o más abajo según te desvías (cada semitono, 3,5/12 del espacio entre líneas, para que una octava ocupe lo que siete notas); cantar una octava más grave o más aguda cuenta como la misma nota. Las zonas tocables de tu voz guardan para ello data-y, data-semitono, data-x0 y data-x1.
 - 2026-11-12 14:10 · Probado en el navegador (fase 2): Muntanyes del Canigó con Soprano y Alto juntas va en un pentagrama; con Soprano, Alto y Tenor, también; con Soprano, Alto y Baix, en dos unidos (Baix en el grave). En todos los casos cada voz tiene sus mismas notas; con un micrófono simulado se dibujan la línea de lo cantado y los resultados sobre las notas.
 - 2026-11-12 14:10 · Hecho cuando (fase 2): se pueden ver las voces juntas en un pentagrama (o en dos unidos cuando no caben) y, al cantar, la línea de lo cantado se dibuja sobre el pentagrama; las pruebas automáticas pasan y lo valida el propietario en la página de prueba.
+- 2026-11-12 14:16 · Validado por el propietario (fases 1 y 2): el nodo deja de ser borrador.
 
 ## Requirements
 - 2026-11-12 10:15 · idea: Poder ver la partitura en modo neo-score o en modo pentagrama clásico; en el modo pentagrama, ver varias cuerdas a la vez, cada una en su propio pentagrama o todas en un solo pentagrama con las notas de cada cuerda del color de su botón del selector de cuerda, manteniendo las mismas funciones que la neo-score.
@@ -54,3 +54,4 @@ Funciona igual que la neo-score: tocar una nota para oírla, reproducir al tempo
 - 2026-11-12 10:29 · Pásala a draft
 - 2026-11-12 12:05 · Ok, pasa este nodo a desarrollo
 - 2026-11-12 13:35 · Ok, ya puedes ir a por la fase 2
+- 2026-11-12 14:16 · validado
