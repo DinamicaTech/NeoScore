@@ -21,8 +21,10 @@ Lo hace js/sonido.js con Tone.js: suena mientras se mantiene pulsada (como míni
 - 2026-11-11 18:10 · Validado por el propietario: el nodo deja de ser borrador.
 - 2026-11-11 18:45 · js/sonido.js exporta instrumento(id, bajar) (el mismo sonido, bajar decibelios más suave), sonidoElegido() y cargarTone() para la nota guía del modo de canto (entonacion/cantar-con-tempo).
 - 2026-11-11 18:50 · Corregido: un toque más corto que la espera táctil, o la primera nota mientras se preparaba el sonido, empezaba a sonar después de soltar y se quedaba sonando hasta 30 s. Ahora, si ya se ha soltado al empezar, suena el mínimo (1,2 s) y se calla.
+- 2026-11-12 11:45 · Para el reproductor (reproducir-partitura), instrumento(id, bajar, canal) da un instrumento aparte para cada voz que suena a la vez (canal), para que soltar una nota de una voz no corte la misma nota de otra; al elegir otro sonido se avisa con el evento "sonido-elegido" y el reproductor lo cambia sobre la marcha.
 
 ## Requirements
+- 2026-11-12 11:45 · Derived from reproducir-partitura: el sonido elegido (piano o voz) debe poder tocar una secuencia de notas, y varias voces a la vez.
 - 2026-11-11 13:55 · Poder seleccionar una nota/sílaba y que se emita el sonido de esa nota como referencia auditiva. Este sonido puede ser emulando un piano o una persona cantando esa nota (falta ver con qué tipo de sonido es más fácil detectar la resonancia para saber si se está afinando)
 - 2026-11-11 14:14 · La idea es poder escoger piano/voz (ampliable en un futuro a más 'samples', como Voz1, Voz2, Flauta...) en la web así el usuario escoge la que mejor le ayuda a afinar.
 - 2026-11-11 14:14 · Para la reproducción la que haya que ofrezca una buena calidad de reproducción (ya sea piano o voz).

@@ -45,9 +45,11 @@ function cargarTone() {
 }
 
 const instrumentos = {};
-/** Prepara un sonido de SONIDOS (por su id); `bajar`: decibelios más suave (el modo de canto lo usa muy suave). */
-export function instrumento(id, bajar = 0) {
-  const k = id + ':' + bajar;
+/** Prepara un sonido de SONIDOS (por su id); `bajar`: decibelios más suave (el reproductor lo usa más suave).
+ *  `canal`: un instrumento aparte para cada voz que suena a la vez (reproducir-partitura), para que soltar una nota
+ *  de una voz no corte la misma nota de otra. */
+export function instrumento(id, bajar = 0, canal = '') {
+  const k = id + ':' + bajar + ':' + canal;
   if (!instrumentos[k]) instrumentos[k] = crear(SONIDOS.find(s => s.id === id), bajar).catch(e => { delete instrumentos[k]; throw e; });
   return instrumentos[k];
 }
@@ -101,6 +103,7 @@ function iniciar() {
     const id = e.target.dataset && e.target.dataset.s;
     if (!id) return;
     elegido = id; marcar();
+    document.dispatchEvent(new CustomEvent('sonido-elegido'));   // el reproductor cambia de sonido sobre la marcha
     try { localStorage.setItem(GUARDADO, id); } catch (err) {}
     instrumento(id).catch(fallo);   // lo prepara ya, para que la primera nota no espere
   };

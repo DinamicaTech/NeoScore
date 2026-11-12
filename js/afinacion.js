@@ -43,22 +43,38 @@ export function mediana(valores) {
  * Las notas que se cantan, en el orden en que se dibujan: las de la voz `part` en las estrofas visibles (`shown`,
  * Set de índices de estrofa; `secs` = estrofas(data)). Cada una:
  * { n: número de orden (el data-n de su bloque en el dibujo), p: altura escrita, midi: altura que suena,
- *   d: duración en negras, inicio: en negras desde la primera nota, compas: número de compás, t?: sílaba }.
- * Los silencios no son notas pero ocupan su tiempo. El tiempo empieza en la primera nota (el silencio inicial no se espera).
+ *   d: duración en negras, inicio: en negras desde la primera nota, compas: número de compás, t?: sílaba,
+ *   tie?: 1 si sigue ligada a la anterior }.
+ * Los silencios no son notas pero ocupan su tiempo. El tiempo empieza en la primera nota (el silencio inicial no se espera),
+ * o en `cero` (negras desde el primer compás visible) si se da: así varias voces comparten reloj (ver inicioComun).
  */
-export function secuencia(data, part, shown, secs) {
+export function secuencia(data, part, shown, secs, cero = null) {
+  const notas = sinMover(data, part, shown, secs);
+  if (cero == null) cero = notas.length ? notas[0].inicio : 0;
+  for (const x of notas) x.inicio -= cero;
+  return notas;
+}
+
+// Las notas de una voz con su momento contado desde el primer compás visible (sin llevarlo a la primera nota).
+// tie: 1 si la nota sigue ligada a la anterior (misma altura: suenan como una sola nota larga).
+function sinMover(data, part, shown, secs) {
   const P = data.parts[part], oct = P.oct || 0, notas = [];
   let t = 0;
   P.measures.forEach((m, i) => {
     if (!shown.has(secs.de[i])) return;
     for (const e of m.e) {
-      if (!e.r) notas.push({ n: notas.length, p: e.p, midi: e.p + oct, d: e.d, inicio: t, compas: i + 1, ...(e.t ? { t: e.t } : {}) });
+      if (!e.r) notas.push({ n: notas.length, p: e.p, midi: e.p + oct, d: e.d, inicio: t, compas: i + 1, ...(e.t ? { t: e.t } : {}), ...(e.tie ? { tie: 1 } : {}) });
       t += e.d;
     }
   });
-  const cero = notas.length ? notas[0].inicio : 0;
-  for (const x of notas) x.inicio -= cero;
   return notas;
+}
+
+/** Momento (en negras desde el primer compás visible) de la primera nota de cualquiera de las voces `partes`:
+ *  el cero común para que varias voces suenen a la vez (secuencia(..., cero)). */
+export function inicioComun(data, partes, shown, secs) {
+  const primeras = partes.map(p => sinMover(data, p, shown, secs)).filter(n => n.length).map(n => n[0].inicio);
+  return primeras.length ? Math.min(...primeras) : 0;
 }
 
 /** Negras que dura un compás de la voz (el más largo de los primeros): las de la cuenta atrás. */

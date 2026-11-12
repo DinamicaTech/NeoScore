@@ -23,11 +23,11 @@ main svg { -webkit-user-select:none; user-select:none; }
 .toque.sonando { fill:var(--ref); fill-opacity:.55; }
 .mnum { font-size:9px; fill:var(--muted); }
 .lbl { font-size:11px; font-style:italic; fill:var(--muted); }
-#secs { position:relative; }
-#secs summary { cursor:pointer; color:var(--fg); border:1px solid var(--bar); border-radius:6px; padding:4px 10px; list-style:none; }
-#secs summary::after { content:" ▾"; color:var(--muted); }
-#seclist { position:absolute; top:calc(100% + 4px); left:0; z-index:5; background:var(--bg); border:1px solid var(--bar); border-radius:6px; padding:6px 10px; min-width:200px; display:flex; flex-direction:column; gap:4px; color:var(--fg); }
-#seclist label { display:flex; gap:6px; align-items:center; cursor:pointer; white-space:nowrap; }
+#secs, #acomp { position:relative; }
+#secs summary, #acomp summary { cursor:pointer; color:var(--fg); border:1px solid var(--bar); border-radius:6px; padding:4px 10px; list-style:none; }
+#secs summary::after, #acomp summary::after { content:" ▾"; color:var(--muted); }
+#seclist, #acomplist { position:absolute; top:calc(100% + 4px); left:0; z-index:5; background:var(--bg); border:1px solid var(--bar); border-radius:6px; padding:6px 10px; min-width:200px; display:flex; flex-direction:column; gap:4px; color:var(--fg); }
+#seclist label, #acomplist label { display:flex; gap:6px; align-items:center; cursor:pointer; white-space:nowrap; }
 #seclist .all { border-bottom:1px solid var(--grid); padding-bottom:4px; margin-bottom:2px; }
 @media print { header .ctrl { display:none; } body { background:#fff; color:#000; } main svg { break-inside:avoid; } }
 #aviso { max-width:1200px; margin:0 auto; padding:0 16px 8px; font-size:13px; color:var(--fg); }
@@ -40,17 +40,26 @@ main svg { -webkit-user-select:none; user-select:none; }
 #derechos b { font-weight:500; color:var(--fg); }
 /* móvil: menos margen a los lados para ganar espacio para la partitura */
 @media (max-width: 600px) { header, #legend, #aviso, #derechos, main { padding-left:8px; padding-right:8px; } }
-/* Modo de canto (entonacion/cantar-con-tempo) */
+/* Reproductor y canto (reproducir-partitura, entonacion/cantar-con-tempo) */
 :root { --afinada:#2E9E5B; --alta:#D6336C; --baja:#2D6FD6; }
 @media (prefers-color-scheme: dark) { :root { --afinada:#4cc27f; --alta:#ef5b8c; --baja:#5d95ec; } }
-#canto { flex-wrap:wrap; }
-#canto label { display:inline-flex; gap:4px; align-items:center; cursor:pointer; }
+#reproductor { flex-wrap:wrap; }
+#reproductor label { display:inline-flex; gap:4px; align-items:center; cursor:pointer; }
 #tempo { font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--bar); border-radius:6px; padding:3px 4px; width:4.2em; }
 #margen { font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--bar); border-radius:6px; padding:4px 4px; }
-#cantar.on { background:var(--alta); border-color:var(--alta); color:#fff; }
-#canto-estado { max-width:1200px; margin:0 auto 6px; padding:6px 16px; font-size:14px; color:var(--fg); position:sticky; top:0; z-index:4; background:var(--bg); border-bottom:1px solid var(--grid); }
-#canto-estado.error { border:1px solid #D6336C; border-radius:6px; }
-#canto-estado small { color:var(--muted); }
+#micro.on { background:var(--alta); border-color:var(--alta); color:#fff; }
+#play { min-width:8.5em; }
+.ctrl button:disabled { opacity:.4; cursor:default; }
+#estado-repro { max-width:1200px; margin:0 auto 6px; padding:6px 16px; font-size:14px; color:var(--fg); position:sticky; top:0; z-index:4; background:var(--bg); border-bottom:1px solid var(--grid); }
+#estado-repro { display:flex; gap:8px; align-items:center; }
+#estado-repro[hidden] { display:none; }
+#estado-texto { flex:1; }
+#mandos { display:flex; gap:6px; flex:none; }
+#mandos[hidden] { display:none; }
+#mandos button { font:inherit; font-size:13px; color:var(--fg); background:transparent; border:1px solid var(--bar); border-radius:6px; padding:3px 9px; cursor:pointer; }
+#mandos button:disabled { opacity:.4; cursor:default; }
+#estado-repro.error { border:1px solid #D6336C; border-radius:6px; }
+#estado-repro small { color:var(--muted); }
 .c-afinada { color:var(--afinada); } .c-alta { color:var(--alta); } .c-baja { color:var(--baja); }
 .toque.toca { fill:var(--ref); fill-opacity:.4; }
 .cantado { pointer-events:none; }
@@ -60,4 +69,4 @@ main svg { -webkit-user-select:none; user-select:none; }
 .cantado .marca { font-size:8px; text-anchor:middle; }
 .cantado .marca.c-afinada { fill:var(--afinada); } .cantado .marca.c-alta { fill:var(--alta); } .cantado .marca.c-baja { fill:var(--baja); }
 .cantado .marca.sin-oir { fill:var(--muted); font-size:12px; }
-@media (max-width: 600px) { #canto-estado { padding-left:8px; padding-right:8px; } }
+@media (max-width: 600px) { #estado-repro { padding-left:8px; padding-right:8px; } }
