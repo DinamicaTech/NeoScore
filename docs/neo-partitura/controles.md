@@ -15,6 +15,7 @@ Cada sílaba (con su bloque de color) se puede pulsar para oír su nota (ver son
 - 2026-11-12 11:45 · Reproductor en la cabecera (#reproductor, lo maneja js/reproductor.js): ▶ Reproducir / ⏸ Pausa / ▶ Continuar, ⏮ Reiniciar, Tempo, desplegable Acompañamiento (casillas con las demás voces, como el de estrofas; solo si hay más de una voz), botón 🎤 Micrófono y, solo con el micrófono, el margen. Debajo de la leyenda, la línea de estado fija arriba al desplazar (#estado-repro) con su propio ⏸/▶ y ⏮. Sustituye a los controles de canto (#canto).
 - 2026-11-12 12:45 · Botones "Vista: Neo-score / Pentagrama" (#vista) a la izquierda de la voz, visibles cuando hay partitura; la vista se recuerda en el navegador. En la vista de pentagrama los botones de voz llevan el color de su voz y muestran u ocultan cada voz (la tuya se ve siempre), y el desplegable "Tu voz" elige la que cantas (ver neo-partitura/vista-pentagrama).
 - 2026-11-12 14:10 · En la vista de pentagrama, con dos o más voces visibles, botones "Pentagramas: Separados / Juntos" detrás de "Tu voz"; la elección se recuerda en el navegador.
+- 2026-11-12 19:15 · El modo oscuro sigue la configuración del móvil solo en la neo-score; en la vista de pentagrama la página se ve siempre en claro (ver neo-partitura/vista-pentagrama).
 
 ## Requirements
 - 2026-11-12 11:45 · Derived from reproducir-partitura: botones ▶ Reproducir / ⏸ Pausa / ⏮ Reiniciar en la cabecera, y elegir voces de acompañamiento sin cambiar la voz principal.
@@ -23,3 +24,4 @@ Cada sílaba (con su bloque de color) se puede pulsar para oír su nota (ver son
 - 2026-11-11 18:03 · También hacer que el tamaño pueda ser más pequeño (el slider a la izquierda del todo, un 50% más pequeño que ahora)
 - 2026-11-12 12:09 · Derived from neo-partitura/vista-pentagrama: un botón para elegir la vista (Neo-score o Pentagrama) y, en el pentagrama, botones de voz de colores que se pueden activar varios a la vez, más la elección de tu voz.
 - 2026-11-12 13:35 · Derived from neo-partitura/vista-pentagrama: en el pentagrama, poder elegir ver las voces separadas o juntas en un solo pentagrama.
+- 2026-11-12 19:12 · Derived from neo-partitura/vista-pentagrama: que el modo oscuro solo se aplique en la neo-score.

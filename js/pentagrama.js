@@ -13,7 +13,10 @@ import { secuencia } from './afinacion.js';
 // de los originales), para que se lean bien en el móvil; en modo oscuro, más claros (un 25% menos que los originales).
 export const COLORES_VOZ = ['#2E1187', '#742C06', '#06434C', '#530F26', '#2E4A07', '#43174E', '#584400', '#24282C'];
 export const COLORES_VOZ_OSCURO = ['#4619CB', '#AE4309', '#096473', '#7D173A', '#456F0A', '#642375', '#846700', '#373C41'];
-const modoOscuro = () => typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches;
+// La vista de pentagrama fuerza el modo claro (clase claro-forzado, ver js/controles.js): los colores oscuros quedan
+// para si algún día se quita ese forzado.
+const modoOscuro = () => typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches &&
+  !(typeof document !== 'undefined' && document.documentElement.classList.contains('claro-forzado'));
 export const colorVoz = i => (modoOscuro() ? COLORES_VOZ_OSCURO : COLORES_VOZ)[i % COLORES_VOZ.length];
 const NAMES = ['Do', 'Do♯', 'Re', 'Mi♭', 'Mi', 'Fa', 'Fa♯', 'Sol', 'La♭', 'La', 'Si♭', 'Si'];
 const SVG = 'http://www.w3.org/2000/svg';

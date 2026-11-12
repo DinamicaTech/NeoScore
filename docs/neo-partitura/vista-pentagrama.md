@@ -36,6 +36,7 @@ Funciona igual que la neo-score: tocar una nota para oírla, reproducir al tempo
 - 2026-11-12 14:16 · Validado por el propietario (fases 1 y 2): el nodo deja de ser borrador.
 - 2026-11-12 18:55 · [replaced by 2026-11-12 19:05] Colores de las voces, por su orden en la partitura: violeta, naranja, cian, granate, oliva, morado, ocre y gris, lejos del verde, rojo y azul de los resultados del canto, y solo en la vista de pentagrama. Sobre fondo claro van con la mitad de luminosidad (#2E1187, #742C06, #06434C, #530F26, #2E4A07, #43174E, #584400, #24282C), para que se lean bien en el móvil; en modo oscuro se usan los claros de antes (#7048E8, #E8590C, #0C8599, #A61E4D, #5C940D, #862E9C, #B08900, #495057), porque los oscuros apenas se verían sobre el fondo negro.
 - 2026-11-12 19:05 · Colores de las voces, por su orden en la partitura: violeta, naranja, cian, granate, oliva, morado, ocre y gris, lejos del verde, rojo y azul de los resultados del canto, y solo en la vista de pentagrama. Sobre fondo claro, con la mitad de luminosidad de los originales (#2E1187, #742C06, #06434C, #530F26, #2E4A07, #43174E, #584400, #24282C); en modo oscuro, con un 25% menos que los originales (#4619CB, #AE4309, #096473, #7D173A, #456F0A, #642375, #846700, #373C41). Los originales eran #7048E8, #E8590C, #0C8599, #A61E4D, #5C940D, #862E9C, #B08900 y #495057.
+- 2026-11-12 19:15 · La vista de pentagrama se ve siempre en modo claro, aunque el móvil esté en modo oscuro: js/controles.js pone la clase claro-forzado en la página mientras se ve el pentagrama, y css/neopartitura.css le da los colores claros. La neo-score sigue la configuración del móvil. Así, en la práctica, las voces se ven siempre con los colores oscuros de fondo claro; los de modo oscuro quedan solo por si se quita el forzado.
 
 ## Requirements
 - 2026-11-12 10:15 · idea: Poder ver la partitura en modo neo-score o en modo pentagrama clásico; en el modo pentagrama, ver varias cuerdas a la vez, cada una en su propio pentagrama o todas en un solo pentagrama con las notas de cada cuerda del color de su botón del selector de cuerda, manteniendo las mismas funciones que la neo-score.
@@ -59,3 +60,4 @@ Funciona igual que la neo-score: tocar una nota para oírla, reproducir al tempo
 - 2026-11-12 14:16 · validado
 - 2026-11-12 18:50 · Puedes hacerlos mucho más oscuros ? (reducir la luminosidad a la mitad)
 - 2026-11-12 19:04 · Oscurece un 25% en modo oscuro del móvil ya que se ve demasiado luminoso
+- 2026-11-12 19:12 · Siempre claro en modo pentagrama y la configuración del móvil en Neo-score.

@@ -102,3 +102,8 @@ main svg { -webkit-user-select:none; user-select:none; }
 .pentagrama g.c-sin-oir path { fill:var(--muted) !important; stroke:var(--muted) !important; }
 .cantado .marca.grande { font-size:13px; font-weight:600; }
 .preparando { color:var(--muted); }
+
+/* La vista de pentagrama se ve siempre en claro, aunque el móvil esté en modo oscuro (neo-partitura/vista-pentagrama);
+   la neo-score sigue la configuración del móvil. js/controles.js pone la clase al cambiar de vista. */
+:root.claro-forzado { color-scheme:light; --bg:#fbfaf7; --fg:#1f1e1c; --muted:#8a877f; --grid:#e4e1d8; --ref:#b9c9e6; --bar:#cfcbc0;
+  --afinada:#2E9E5B; --alta:#D6336C; --baja:#2D6FD6; }
