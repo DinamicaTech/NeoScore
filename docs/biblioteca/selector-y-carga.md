@@ -6,7 +6,7 @@ threads:
 ---
 ## Summary
 En la cabecera de la web, un desplegable con las partituras de la biblioteca (biblioteca/indice.json) y un botón "Abrir fichero…" para abrir un MusicXML propio, que queda solo en el navegador del usuario y este recuerda.
-Bajo el título se muestran siempre la autoría y el aviso de derechos de la partitura. Código: js/pagina.js y js/biblioteca.js; pruebas en tests/biblioteca.test.mjs.
+Bajo el título se muestran siempre la autoría y el aviso de derechos de la partitura. Al lado, "Convertir con Claude" ayuda a sacar un MusicXML de fotos o un PDF (ver biblioteca/convertir-con-claude). Código: js/pagina.js y js/biblioteca.js; pruebas en tests/biblioteca.test.mjs.
 
 ## Decisions
 - 2026-11-11 14:20 · Creado en la carga de requisitos inicial.
@@ -15,6 +15,7 @@ Bajo el título se muestran siempre la autoría y el aviso de derechos de la par
 - 2026-11-11 17:55 · Partitura propia: "Abrir fichero…" lee un .musicxml del equipo sin subirlo a ningún sitio. Si se lee bien, se guarda en el navegador (IndexedDB, base "neoscore"), sustituye a la anterior y aparece en el desplegable como "Mi partitura: <fichero>"; "Olvidar la mía" la borra. Un fichero que no se puede leer da el mensaje del lector y no sustituye a la guardada. Si el navegador no deja guardar, se abre igual y se avisa de que habrá que volver a abrirla.
 - 2026-11-11 17:55 · Aviso de derechos: bajo el título, la autoría y, en negrita, el aviso de derechos. En la biblioteca salen del índice; en una partitura propia, del propio MusicXML (<identification><rights>), y si no trae ninguno se muestra "Este fichero no trae aviso de derechos: respeta siempre los de su autor.". Una prueba exige que el índice copie el aviso que trae cada MusicXML.
 - 2026-11-11 17:58 · Validado por el propietario: el nodo deja de ser borrador.
+- 2026-11-12 16:51 · La cabecera lleva, entre "Abrir fichero…" y "Olvidar la mía", el botón "Convertir con Claude" (ver biblioteca/convertir-con-claude); su resultado se abre con "Abrir fichero…" sin ningún cambio en cómo se lee y se guarda.
 
 ## Requirements
 - 2026-11-11 14:14 · La idea sería poder seleccionar en la página HTML una partitura y que luego la cargue.
@@ -22,3 +23,4 @@ Bajo el título se muestran siempre la autoría y el aviso de derechos de la par
 - 2026-11-11 14:20 · draft: Crear en la web un selector con las partituras de la biblioteca (una carpeta de MusicXML con su índice en el repositorio) y un botón para abrir un MusicXML propio. Hecho cuando se puede elegir cualquier partitura de la biblioteca o abrir un fichero propio y se dibuja su neo-partitura, y el aviso de derechos de cada partitura se muestra.
 - 2026-11-11 14:20 · [answered 2026-11-11 17:53] question: ¿Se recuerda en el navegador la partitura propia abierta, para no tener que volver a abrirla? Opciones: A) sí, guardada en el navegador (IndexedDB); B) no, hay que abrirla cada vez. Recomendación: A.
 - 2026-11-11 17:53 · answer: ¿se recuerda en el navegador la partitura propia abierta? → A, sí, guardada en el navegador (IndexedDB).
+- 2026-11-12 16:51 · Derived from biblioteca/convertir-con-claude: un botón "Convertir con Claude" junto a "Abrir fichero…", cuyo resultado se abre con "Abrir fichero…".
