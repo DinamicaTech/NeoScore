@@ -43,6 +43,7 @@ export function mostrarPartitura(data, shownInicial = null, texto = null) {
     acomp = acompanamiento(acomp, part, data.parts.length);
     Object.assign(actual, { data, part, shown, secs, vista, acomp });
     score.classList.toggle('vista-pentagrama', vista === 'pentagrama');
+    document.documentElement.classList.toggle('claro-forzado', vista === 'pentagrama');   // el pentagrama, siempre en claro
     if (vista === 'pentagrama') dibujarPentagrama({ data, texto, part, visibles: acomp, zoom: +zoom.value, shown, secs, score, legend, juntos });
     else dibujar({ data, part, zoom: +zoom.value, shown, secs, score, legend });
   };
@@ -85,6 +86,7 @@ export function mostrarPartitura(data, shownInicial = null, texto = null) {
   vbox.onchange = e => { if (e.target.id === 'tuvoz') { part = +e.target.value; mark(); redibujar(); } };
   const mark = () => {
     const pent = vista === 'pentagrama';
+    document.documentElement.classList.toggle('claro-forzado', pent);   // antes de pintar los botones con sus colores
     vistaBox.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === vista));
     vbox.innerHTML = (pent ? 'Voces ' : 'Voz ') + data.parts.map((p, i) => {
       const mia = i === part, vista_ = mia || acomp.includes(i);
