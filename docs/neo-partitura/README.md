@@ -10,6 +10,7 @@ El cantante elige su cuerda (soprano, contralto, tenor, bajo…); lo importante 
 - 2026-11-11 14:20 · Creado en la carga de requisitos inicial.
 - 2026-11-11 14:20 · Ancho de cada bloque = max(duración × zoom, ancho del texto + 6 px). Solo se muestran las filas que usa la voz, de la nota más grave a la más aguda. Sin nombres de notas en las celdas, de momento.
 - 2026-11-11 18:45 · Para el modo de canto (entonacion/cantar-con-tempo) y el reproductor (reproducir-partitura), el dibujo marca cada bloque tocable con su número de orden y su altura escrita (data-n, data-e), cada línea con su fila más aguda y más grave (data-hi, data-lo) y avisa con el evento "dibujada" cada vez que se redibuja. No cambia cómo se ve.
+- 2026-11-12 12:45 · Además de la neo-score hay una vista de pentagrama clásico (neo-partitura/vista-pentagrama), que se elige en la cabecera. La neo-score sigue siendo la vista por defecto y no cambia.
 
 ## Requirements
 - 2026-11-11 18:45 · Derived from entonacion/cantar-con-tempo: que cada bloque sepa qué nota es y dónde está, para dibujar encima lo cantado.

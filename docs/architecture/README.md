@@ -18,6 +18,7 @@ La página lee el MusicXML directamente (en JavaScript), lo dibuja como neo-part
 - 2026-11-11 14:18 · Detección de la nota cantada con pitchy (librería pequeña, método McLeod, precisa con la voz), copiada dentro del repositorio. Tone.js queda solo para reproducir sonido, porque no detecta notas.
 - 2026-11-11 18:45 · pitchy 4.1.0 copiado en js/vendor/pitchy.js con la pieza que usa para sus cálculos, fft.js 4.0.4 (js/vendor/fft.js, pasada a módulo); los dos con licencia MIT (js/vendor/pitchy-LICENSE.md). Se cargan solo al pulsar Cantar.
 - 2026-11-11 14:18 · neopartitura.py se retira cuando la lectura en JavaScript dé el mismo resultado con los ejemplos, comprobado con pruebas automáticas. Hasta entonces sigue siendo la referencia.
+- 2026-11-12 12:45 · Pentagrama clásico con OpenSheetMusicDisplay 2.3.0 (BSD-3-Clause), copiado en js/vendor/ como las demás librerías y cargado solo cuando se abre esa vista (neo-partitura/vista-pentagrama). Acordado con el propietario.
 
 ## Requirements
 - 2026-11-11 14:14 · Creo que haría falta un formato intermedio para no tener la partitura 'harcoded' en al HTML.
@@ -30,3 +31,4 @@ La página lee el MusicXML directamente (en JavaScript), lo dibuja como neo-part
 - 2026-11-11 14:14 · [answered 2026-11-11 14:18] question: Qué hacer con neopartitura.py cuando la página lea el MusicXML. Opciones: A) retirarlo cuando la versión JavaScript dé el mismo resultado con los ejemplos (lo comprueban las pruebas); B) mantener los dos y que hagan lo mismo; C) dejar Python solo como herramienta para revisar MusicXML problemáticos. Recomendación: A.
 - 2026-11-11 14:18 · answer: detección de la nota cantada → A, pitchy.
 - 2026-11-11 14:18 · answer: qué hacer con neopartitura.py → A, retirarlo cuando la versión JavaScript dé el mismo resultado con los ejemplos.
+- 2026-11-12 12:09 · Derived from neo-partitura/vista-pentagrama: usar una librería para dibujar el pentagrama clásico (OpenSheetMusicDisplay).

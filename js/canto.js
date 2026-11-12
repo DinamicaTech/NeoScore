@@ -187,6 +187,7 @@ const bloque = n => score.querySelector(`.toque[data-n="${n}"]`);
 /** Borra las marcas de lo cantado (al empezar otra vez, o con otra voz u otras estrofas). */
 export function quitarMarcas(olvidar = false) {
   score.querySelectorAll('.cantado').forEach(g => g.remove());
+  score.querySelectorAll('.nota-mia').forEach(g => g.classList.remove('c-afinada', 'c-alta', 'c-baja', 'c-sin-oir'));
   score.querySelectorAll('.toque[data-res]').forEach(r => {
     delete r.dataset.res;
     const t = r.querySelector('title');
@@ -206,6 +207,7 @@ export function repintar() {
 function pintar(n) {
   const r = bloque(n), s = marcas;
   if (!r || !s) return;
+  if (r.dataset.vista === 'pentagrama') { pintarEnPentagrama(n, r, s); return; }
   const g0 = r.parentNode, hi = +g0.dataset.hi, lo = +g0.dataset.lo, e = +r.dataset.e, esperada = +r.dataset.p;
   const x = +r.getAttribute('x'), w = +r.getAttribute('width');
   const yDe = escrita => TEXT_H + (hi - Math.max(lo - 2, Math.min(hi + 2, escrita))) * ROW + ROW / 2;
@@ -236,6 +238,30 @@ function pintar(n) {
     if (t) t.textContent = `${r.dataset.res}. Toca para oír la nota que tocaba (${NAMES[e % 12]})`;
   }
   g.innerHTML = html;
+}
+
+/** En la vista de pentagrama: al pasar la nota, la pinta del color de su resultado y pone encima ✓, ▲ o ▼.
+ *  (La línea de lo que se canta, nota a nota, solo se dibuja por ahora en la neo-score.) */
+function pintarEnPentagrama(n, r, s) {
+  if (!(n in s.cantadas)) return;
+  const c = s.cantadas[n], esperada = +r.dataset.p, e = +r.dataset.e;
+  const nota = r.dataset.g ? document.getElementById(r.dataset.g) : null;
+  let estado, signo;
+  if (c == null) { estado = 'sin-oir'; signo = '·'; r.dataset.res = 'No se te ha oído en esta nota'; }
+  else {
+    const v = comparar(esperada, c, margenCents());
+    const oct = v.octava ? ` · una octava más ${v.octava < 0 ? 'grave' : 'aguda'}` : '';
+    estado = v.estado; signo = SIGNO[v.estado];
+    r.dataset.res = `Has cantado ${nombre(c)} (${v.cents > 0 ? '+' : ''}${v.cents} cents): ${v.estado}${oct}`;
+  }
+  if (nota) { nota.classList.remove('c-afinada', 'c-alta', 'c-baja', 'c-sin-oir'); nota.classList.add('c-' + estado); }
+  r.parentNode.querySelectorAll(`.cantado[data-c="${n}"]`).forEach(x => x.remove());
+  const g = document.createElementNS(SVG, 'g');
+  g.setAttribute('class', 'cantado'); g.dataset.c = n;
+  g.innerHTML = `<text class="marca grande c-${estado}${c == null ? ' sin-oir' : ''}" x="${+r.getAttribute('x') + +r.getAttribute('width') / 2}" y="${+r.getAttribute('y') - 1}">${signo}</text>`;
+  r.parentNode.insertBefore(g, r);
+  const t = r.querySelector('title');
+  if (t) t.textContent = `${r.dataset.res}. Toca para oír la nota que tocaba (${NAMES[e % 12]})`;
 }
 
 function errorMicro(e) {

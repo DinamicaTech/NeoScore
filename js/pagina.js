@@ -48,7 +48,7 @@ function rellenarSelector(propia, elegido) {
 /** Lee el MusicXML y lo dibuja con su aviso de derechos. Devuelve si ha podido. */
 function mostrar(texto, nombre, shown, autoria, textoDerechos) {
   try {
-    mostrarPartitura(leerMusicXML(texto, nombre), shown);
+    mostrarPartitura(leerMusicXML(texto, nombre), shown, texto);
     nota('');
     mostrarDerechos(autoria, textoDerechos);
     return true;
