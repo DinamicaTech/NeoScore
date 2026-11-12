@@ -17,6 +17,7 @@
      js/dibujo.js          dibujo de la neo-partitura y la leyenda
      js/pentagrama.js      vista de pentagrama clásico (OpenSheetMusicDisplay), con varias voces de colores
      js/pentagrama-xml.js  el MusicXML que dibuja el pentagrama: voces que se ven, estrofas elegidas y tu letra
+     js/letra.js           vista de letra: solo la letra, por estrofas y versos, de una voz o de un fichero .txt
      js/sonido.js          nota de referencia: tocar una sílaba la hace sonar (Tone.js)
      js/reproductor.js     reproductor: la partitura entera al tempo, con pausa, acompañamiento y micrófono
      js/reproduccion.js    cálculos del reproductor (reloj con pausa, qué nota suena)
@@ -25,7 +26,7 @@
      js/afinacion.js       cálculos del canto (orden y momento de las notas, afinada / alta / baja)
      css/neopartitura.css   estilos -->
 <header>
-  <div class="ctrl" id="elegir"><select id="selector" title="Elegir una partitura de la biblioteca, o la tuya guardada en este navegador"></select><button id="abrir" title="Abrir una partitura MusicXML (.musicxml) de tu equipo; se queda solo en este navegador, no se sube a ningún sitio">Abrir fichero…</button><button id="convertir" title="Convertir en MusicXML una partitura en fotos o PDF: abre Claude en otra pestaña con las instrucciones; allí adjuntas los ficheros y luego abres aquí el resultado con Abrir fichero… (hace falta una cuenta de Claude)">Convertir con Claude</button><button id="olvidar" hidden title="Borrar de este navegador la partitura propia guardada">Olvidar la mía</button><input type="file" id="fichero" accept=".musicxml,.xml" hidden></div>
+  <div class="ctrl" id="elegir"><select id="selector" title="Elegir una partitura de la biblioteca, o la tuya guardada en este navegador"></select><button id="abrir" title="Abrir una partitura MusicXML (.musicxml) o solo su letra en un fichero de texto (.txt: un verso por línea y una línea en blanco entre estrofas) de tu equipo; se queda solo en este navegador, no se sube a ningún sitio">Abrir fichero…</button><button id="convertir" title="Convertir en MusicXML una partitura en fotos o PDF: abre Claude en otra pestaña con las instrucciones; allí adjuntas los ficheros y luego abres aquí el resultado con Abrir fichero… (hace falta una cuenta de Claude)">Convertir con Claude</button><button id="olvidar" hidden title="Borrar de este navegador la partitura propia guardada (y su letra .txt, si le abriste una)">Olvidar la mía</button><button id="olvidar-letra" hidden title="Borrar de este navegador la letra .txt que abriste para esta partitura; la vista Letra volverá a usar la de la partitura">Olvidar mi letra</button><input type="file" id="fichero" accept=".musicxml,.xml,.txt" hidden></div>
   <h1 id="titulo"></h1>
   <div class="ctrl" id="vista" hidden></div>
   <div class="ctrl" id="voices"></div>

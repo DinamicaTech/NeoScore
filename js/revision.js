@@ -31,7 +31,7 @@ margenSel.addEventListener('change', () => { if (!panel.hidden) pintar(); });
 // Cada vez que se dibuja la partitura: el botón se ve si hay un intento guardado de esta partitura y voz.
 score.addEventListener('dibujada', () => {
   boton.hidden = !guardado();
-  if (!panel.hidden && firmaPanel !== firma()) cerrar();
+  if (!panel.hidden && (firmaPanel !== firma() || !score.querySelector('.toque'))) cerrar();   // en la vista de letra, cerrado
   else if (!panel.hidden) pintar();
 });
 

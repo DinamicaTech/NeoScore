@@ -1,19 +1,25 @@
-// Arranque de la página: el selector de la biblioteca, el botón para abrir un MusicXML propio,
+// Arranque de la página: el selector de la biblioteca, el botón para abrir un MusicXML propio (o un .txt de letra),
 // el aviso de derechos y la carga de la partitura elegida.
 //   index.html                                            abre la primera partitura de la biblioteca
 //   index.html?partitura=<ruta .musicxml>&estrofas=1,2,5  una partitura de esta web
 //   index.html?propia                                     la partitura propia guardada en este navegador
+// Un .txt que se llama como una partitura (MiCancion.txt y MiCancion.musicxml, la propia o una de la biblioteca) es su
+// letra: se guarda aparte y la usa la vista de letra de esa partitura. Si no se llama como ninguna, se abre solo.
 import { leerMusicXML } from './lector-musicxml.js';
-import { mostrarPartitura } from './controles.js';
+import { mostrarPartitura, mostrarLetra, ponerVista } from './controles.js';
+import { leerTxt } from './letra.js';
 import { PROMPT, enlaceClaude, pasos } from './convertir.js';
-import { leerIndice, derechosDelFichero, estrofasVisibles, guardarPropia, leerPropia, olvidarPropia } from './biblioteca.js';
+import { leerIndice, derechosDelFichero, estrofasVisibles, guardarPropia, leerPropia, olvidarPropia,
+  nombreBase, guardarLetra, leerLetra, olvidarLetra } from './biblioteca.js';
 
 const $ = id => document.getElementById(id);
-const aviso = $('aviso'), derechos = $('derechos'), selector = $('selector'), fichero = $('fichero'), olvidar = $('olvidar');
+const aviso = $('aviso'), derechos = $('derechos'), selector = $('selector'), fichero = $('fichero'), olvidar = $('olvidar'), olvidarLetraBtn = $('olvidar-letra');
 const enlace = p => '?partitura=' + encodeURIComponent(p.ruta) + (p.estrofas ? '&estrofas=' + p.estrofas : '');
 const base = r => r.replace(/^.*[\\/]/, '');
+const esTxt = nombre => /\.txt$/i.test(nombre);   // un fichero de letra: se ve siempre en la vista de letra
 const SIN_DERECHOS = 'Este fichero no trae aviso de derechos: respeta siempre los de su autor.';
 let biblioteca = [];
+let letraGuardadaDe = null;   // la partitura que se ve, si tiene una letra .txt guardada en este navegador
 
 function error(msg) { aviso.className = 'error'; aviso.textContent = msg; }
 function nota(msg) { aviso.className = ''; aviso.textContent = msg; }
@@ -46,35 +52,94 @@ function rellenarSelector(propia, elegido) {
   olvidar.hidden = !propia;
 }
 
-/** Lee el MusicXML y lo dibuja con su aviso de derechos. Devuelve si ha podido. */
-function mostrar(texto, nombre, shown, autoria, textoDerechos) {
+/** Lee el MusicXML (o, si el fichero es .txt, la letra) y lo dibuja con su aviso de derechos. Devuelve si ha podido.
+ *  letra: el .txt unido a la partitura ({nombre, texto}), si tiene; guardada: si esa letra está en este navegador. */
+function mostrar(texto, nombre, shown, autoria, textoDerechos, letra = null, guardada = false) {
   try {
-    mostrarPartitura(leerMusicXML(texto, nombre), shown, texto);
-    nota('');
+    letraGuardadaDe = null;
+    if (esTxt(nombre)) mostrarLetra(leerTxt(texto, nombre));
+    else {
+      let letraTxt = null, avisoLetra = '';
+      if (letra) {
+        try { letraTxt = leerTxt(letra.texto, letra.nombre); if (guardada) letraGuardadaDe = nombre; }
+        catch (e) { avisoLetra = `La letra "${base(letra.nombre)}" no se ha podido leer (${e.message}); la vista Letra usa la de la partitura.`; if (guardada) letraGuardadaDe = nombre; }
+      }
+      mostrarPartitura(leerMusicXML(texto, nombre), shown, texto, letraTxt);
+      nota(avisoLetra);
+    }
+    if (esTxt(nombre)) nota('');
     mostrarDerechos(autoria, textoDerechos);
     return true;
   } catch (e) {
     error(`No se ha podido leer "${base(nombre)}": ${e.message} Elige otra partitura en el desplegable o abre otro fichero.`);
     return false;
+  } finally {
+    olvidarLetraBtn.hidden = !letraGuardadaDe;
   }
 }
-const mostrarPropia = p => mostrar(p.texto, p.nombre, null, '', derechosDelFichero(p.texto) || SIN_DERECHOS);
+async function mostrarPropia(p) {
+  const letra = esTxt(p.nombre) ? null : await leerLetra(p.nombre);
+  return mostrar(p.texto, p.nombre, null, '', (!esTxt(p.nombre) && derechosDelFichero(p.texto)) || SIN_DERECHOS, letra, !!letra);
+}
 
-/** Descarga y muestra el MusicXML de una dirección de esta web; entrada: su ficha del índice, si la tiene. */
-async function abrirRuta(ruta, shown, entrada) {
+/** Descarga un fichero de esta web y devuelve su texto. */
+async function descargar(ruta) {
+  const r = await fetch(ruta);
+  if (!r.ok) throw new Error(r.status === 404 ? 'no existe en la web' : `el servidor respondió ${r.status}`);
+  return r.text();
+}
+
+/** Descarga y muestra el MusicXML de una dirección de esta web; entrada: su ficha del índice, si la tiene.
+ *  Su letra: letraAbierta (un .txt recién abierto que no se ha podido guardar), la guardada en este navegador para ella
+ *  o, si no hay, la que trae la biblioteca (entrada.letra). */
+async function abrirRuta(ruta, shown, entrada, letraAbierta = null) {
   let texto;
   try {
-    const r = await fetch(ruta);
-    if (!r.ok) throw new Error(r.status === 404 ? 'no existe en la web' : `el servidor respondió ${r.status}`);
-    texto = await r.text();
+    texto = await descargar(ruta);
   } catch (e) {
     const local = location.protocol === 'file:'
       ? ' La página se ha abierto como fichero local y el navegador no le deja leer otros ficheros: ábrela desde su dirección web (https://dinamicatech.github.io/NeoScore) o, en el equipo, con "python -m http.server" en la carpeta del proyecto y http://localhost:8000.'
       : '';
     return error(`No se ha podido cargar la partitura "${ruta}" (${e.message}).${local} Elige otra en el desplegable de arriba.`);
   }
+  let letra = letraAbierta || await leerLetra(ruta), guardada = !letraAbierta && !!letra, sinLetra = '';
+  if (!letra && entrada && entrada.letra) {
+    try { letra = { nombre: entrada.letra, texto: await descargar(entrada.letra) }; }
+    catch (e) { sinLetra = `No se ha podido cargar la letra "${entrada.letra}" (${e.message}); la vista Letra usa la de la partitura. Recarga la página para volver a intentarlo.`; }
+  }
   const textoDerechos = (entrada && entrada.derechos) || derechosDelFichero(texto);
-  mostrar(texto, ruta, shown, entrada ? entrada.autoria : '', textoDerechos || (entrada ? '' : SIN_DERECHOS));
+  mostrar(texto, ruta, shown, entrada ? entrada.autoria : '', textoDerechos || (entrada ? '' : SIN_DERECHOS), letra, guardada);
+  if (sinLetra) nota(sinLetra);
+}
+
+/** Un .txt que se llama como la partitura propia o como una de la biblioteca: se guarda como su letra y se abre
+ *  esa partitura en la vista de letra. Devuelve false si no se llama como ninguna. */
+async function unirLetra(p, propia) {
+  const b = nombreBase(p.nombre);
+  const conPropia = propia && !esTxt(propia.nombre) && nombreBase(propia.nombre) === b;
+  const i = conPropia ? -1 : biblioteca.findIndex(e => nombreBase(e.ruta) === b);
+  if (!conPropia && i < 0) return false;
+  try { leerTxt(p.texto, p.nombre); }
+  catch (e) { error(`No se ha podido leer "${p.nombre}": ${e.message}`); return true; }
+  const destino = conPropia ? propia.nombre : biblioteca[i].ruta;
+  let noGuardada = '';
+  try { await guardarLetra({ nombre: destino.replace(/\.[^.\/\\]*$/, '') + '.txt', texto: p.texto }); }
+  catch (e) { noGuardada = ` Este navegador no deja guardarla (${e.message}): la próxima vez tendrás que volver a abrirla.`; }
+  ponerVista('letra');
+  const titulo = conPropia ? propia.nombre : biblioteca[i].titulo;
+  if (conPropia) {
+    rellenarSelector(propia, 'propia');
+    history.replaceState(null, '', '?propia');
+    if (noGuardada) mostrar(propia.texto, propia.nombre, null, '', derechosDelFichero(propia.texto) || SIN_DERECHOS, p, false);
+    else await mostrarPropia(propia);
+  } else {
+    const e = biblioteca[i];
+    rellenarSelector(propia, 'b' + i);
+    history.replaceState(null, '', enlace(e));
+    await abrirRuta(e.ruta, estrofasVisibles(e.estrofas), e, noGuardada ? p : null);   // sin guardar: con la letra recién abierta
+  }
+  nota(`"${p.nombre}" es la letra de "${titulo}": se ve en la vista Letra, y la neo-score y el pentagrama siguen igual.${noGuardada}`);
+  return true;
 }
 
 // ---- Controles ----
@@ -99,7 +164,9 @@ fichero.onchange = async () => {
   fichero.value = '';
   if (!f) return;
   const p = { nombre: f.name, texto: await f.text() };
-  if (!mostrarPropia(p)) return;
+  const guardadaAntes = await leerPropia();
+  if (esTxt(f.name) && await unirLetra(p, guardadaAntes)) return;
+  if (!(await mostrarPropia(p))) return;
   history.replaceState(null, '', '?propia');
   try {
     await guardarPropia(p);
@@ -110,8 +177,12 @@ fichero.onchange = async () => {
   }
 };
 olvidar.onclick = async () => {
-  try { await olvidarPropia(); } catch (e) { /* si no se puede borrar, no había nada guardado */ }
+  try { const p = await leerPropia(); if (p) await olvidarLetra(p.nombre); await olvidarPropia(); } catch (e) { /* si no se puede borrar, no había nada guardado */ }
   location.search = biblioteca.length ? enlace(biblioteca[0]) : '';
+};
+olvidarLetraBtn.onclick = async () => {
+  try { if (letraGuardadaDe) await olvidarLetra(letraGuardadaDe); } catch (e) { /* si no se puede borrar, no había nada guardado */ }
+  location.reload();
 };
 
 // ---- Arranque ----

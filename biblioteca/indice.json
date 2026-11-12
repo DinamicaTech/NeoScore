@@ -1,9 +1,10 @@
 {
-  "//": "Índice de la biblioteca: las partituras que ofrece el selector de la página, en este orden. fichero: el MusicXML de esta carpeta; estrofas: las que se ven al abrir (vacío = todas); autoria y derechos: se muestran siempre bajo el título.",
+  "//": "Índice de la biblioteca: las partituras que ofrece el selector de la página, en este orden. fichero: el MusicXML de esta carpeta; letra (opcional): un .txt de esta carpeta con solo la letra, que usa la vista Letra en lugar de la de las voces; estrofas: las que se ven al abrir (vacío = todas); autoria y derechos: se muestran siempre bajo el título.",
   "partituras": [
     {
       "titulo": "Muntanyes del Canigó",
       "fichero": "MuntanyesDelCanigo.musicxml",
+      "letra": "MuntanyesDelCanigo.txt",
       "estrofas": "",
       "autoria": "Tradicional catalana · armonización de Nadal Puig",
       "derechos": ""

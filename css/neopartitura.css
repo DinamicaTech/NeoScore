@@ -103,6 +103,12 @@ main svg { -webkit-user-select:none; user-select:none; }
 .cantado .marca.grande { font-size:13px; font-weight:600; }
 .preparando { color:var(--muted); }
 
+/* Vista de letra (js/letra.js): solo la letra, en una columna cómoda de leer; el tamaño lo pone el control de Tamaño */
+.letra { max-width:38em; line-height:1.5; }
+.letra section { margin:0 0 1.2em; break-inside:avoid; }
+.letra h2 { font-size:.6em; font-weight:500; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 .3em; }
+.letra p { margin:0; }
+
 /* La vista de pentagrama se ve siempre en claro, aunque el móvil esté en modo oscuro (neo-partitura/vista-pentagrama);
    la neo-score sigue la configuración del móvil. js/controles.js pone la clase al cambiar de vista. */
 :root.claro-forzado { color-scheme:light; --bg:#fbfaf7; --fg:#1f1e1c; --muted:#8a877f; --grid:#e4e1d8; --ref:#b9c9e6; --bar:#cfcbc0;
