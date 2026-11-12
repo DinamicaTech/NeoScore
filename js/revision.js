@@ -122,7 +122,7 @@ panel.addEventListener('click', async e => {
 function ir(n) {
   const r = score.querySelector(`.toque[data-n="${n}"]`);
   if (!r) return;
-  r.ownerSVGElement.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  (r.dataset.vista === 'pentagrama' ? r : r.ownerSVGElement).scrollIntoView({ block: 'center', behavior: 'smooth' });
   r.classList.add('sonando');
   setTimeout(() => r.classList.remove('sonando'), DURACION * 1000);
 }

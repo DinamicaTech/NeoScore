@@ -23,6 +23,7 @@ Se pueden sumar otras voces más suaves como acompañamiento, para oír la armon
 - 2026-11-12 11:28 · Validado por el propietario: el nodo deja de ser borrador.
 - 2026-11-12 11:50 · ⏹ Terminar (entonacion/revision): con el micrófono, sonando o en pausa, un botón en la cabecera y otro en la línea fija paran la música y el micrófono y abren el repaso; después ▶ Reproducir empieza desde el principio.
 - 2026-11-12 11:00 · Repetir un compás (entonacion/revision): repetir(n) de js/reproductor.js reproduce solo el compás de la nota n de tu voz, con un compás de cuenta atrás, los volúmenes de cuando hay micrófono y el micrófono escuchando aunque 🎤 Micrófono esté desactivado; acaba al final de ese compás. Pausa y continuar valen; ⏮ vuelve a empezar el compás. Al acabar, ▶ Reproducir vuelve a la canción entera.
+- 2026-11-12 12:45 · Las voces de acompañamiento viven en actual.acomp (js/controles.js), compartidas con la vista de pentagrama: allí son las voces que se ven además de la tuya y se eligen con los botones de voz (el desplegable se oculta). Si cambian mientras suena, se suman o se quitan sobre la marcha. En el pentagrama la página se desplaza al cambiar de sistema (data-linea), no de dibujo.
 
 ## Requirements
 - 2026-11-12 10:57 · Opción para reproducir toda la partitura (no solo la nota seleccionada) con el tempo e instrumento seleccionado. Poder pausar, continuar y reiniciar.
@@ -34,3 +35,4 @@ Se pueden sumar otras voces más suaves como acompañamiento, para oír la armon
 - 2026-11-12 11:13 · answer: cómo elegir las voces de acompañamiento y afinar mientras se reproduce → Ok a 1 y 2: desplegable "Acompañamiento" con las demás voces, más suaves; un solo reproductor con botón 🎤 Micrófono, sin el botón "Cantar" aparte.
 - 2026-11-12 11:00 · Derived from entonacion/revision: reproducir solo el compás de una sílaba, con cuenta atrás y el micrófono escuchando, para repetirlo desde el repaso.
 - 2026-11-12 11:50 · Derived from entonacion/revision: un botón para terminar el canto antes del final y ver el resultado.
+- 2026-11-12 12:09 · Derived from neo-partitura/vista-pentagrama: en la vista de pentagrama, que suenen todas las voces visibles (tu voz y las demás como acompañamiento) y que se ilumine la nota que suena.

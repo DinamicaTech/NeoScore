@@ -88,3 +88,17 @@ main svg { -webkit-user-select:none; user-select:none; }
 #terminar, #terminar2 { border-color:var(--alta); }
 #repaso-btn.on { background:var(--fg); color:var(--bg); border-color:var(--fg); }
 @media (max-width: 600px) { #repaso { padding-left:8px; padding-right:8px; } }
+
+/* Vista de pentagrama (js/pentagrama.js): botones de voz de su color, notas coloreadas por voz y resultados del canto */
+.ctrl button.vz { border-color:var(--vz); color:var(--vz); font-weight:500; }
+.ctrl button.vz.on { background:var(--vz); border-color:var(--vz); color:#fff; }
+#tuvoz { font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--bar); border-radius:6px; padding:3px 4px; }
+#score.vista-pentagrama { color:var(--fg); }
+.pentagrama svg { margin-bottom:0; }
+.pentagrama .toque:hover { fill-opacity:.18; }
+.pentagrama g.c-afinada path { fill:var(--afinada) !important; stroke:var(--afinada) !important; }
+.pentagrama g.c-alta path { fill:var(--alta) !important; stroke:var(--alta) !important; }
+.pentagrama g.c-baja path { fill:var(--baja) !important; stroke:var(--baja) !important; }
+.pentagrama g.c-sin-oir path { fill:var(--muted) !important; stroke:var(--muted) !important; }
+.cantado .marca.grande { font-size:13px; font-weight:600; }
+.preparando { color:var(--muted); }

@@ -44,6 +44,7 @@ y abre http://localhost:8000 en el navegador.
 En la página puedes:
 
 - Elegir la **voz** (Soprano, Alto, Tenor, Baix…) si la partitura tiene varias.
+- Cambiar la **vista** entre **Neo-score** (la cuadrícula de colores) y **Pentagrama** (la partitura clásica de cinco líneas). En el pentagrama puedes ver varias voces a la vez: cada botón de voz muestra u oculta esa voz, con sus notas de su color, y en **Tu voz** eliges la que cantas (la que lleva la letra, se compara con el micrófono y suena más fuerte; las demás que se ven suenan suaves). En **Pentagramas** eliges si van **Separados** (cada voz en el suyo) o **Juntos** (todas en uno; si alguna voz necesitaría más de tres rayitas, en dos unidos: uno agudo y uno grave). Tocar una nota, reproducir, cantar con el micrófono (una línea dibuja lo que cantas y cada nota se pinta de verde, rojo o azul) y el repaso funcionan igual que en la neo-score.
 - Elegir qué **estrofas** ver en el desplegable. Cada estrofa termina donde la partitura tiene una doble barra y toma su nombre de la indicación de texto del primer compás ("Estrofa 2"…). El navegador recuerda la última selección.
 - Ajustar el **tamaño** con el control deslizante.
 - **Oír una nota**: al tocar una sílaba (o su bloque de color) suena su nota, como referencia para afinar; si se mantiene pulsada, sigue sonando hasta soltarla. En **Sonido** se elige con qué se oye: **Voz** (una voz sintética que canta "a") o **Piano** (un piano de cola grabado). El navegador recuerda la elección. En iPhone, si no se oye nada, quita el interruptor de silencio.
@@ -61,7 +62,8 @@ En la página puedes:
 | `js/lector-musicxml.js` | Lee el MusicXML (notas, duraciones, silencios, ligaduras, letra, indicaciones y dobles barras). |
 | `js/dibujo.js` | Dibuja la cuadrícula, los colores y la leyenda. |
 | `js/lineas.js` | Reparte los compases en líneas según el ancho de la pantalla. |
-| `js/controles.js`, `js/estrofas.js` | Controles de voz, estrofas y tamaño. |
+| `js/controles.js`, `js/estrofas.js` | Controles de vista, voz, estrofas y tamaño. |
+| `js/pentagrama.js`, `js/pentagrama-xml.js` | Vista de pentagrama: prepara el MusicXML con las voces y estrofas que se ven y lo dibuja con OpenSheetMusicDisplay. |
 | `js/pagina.js` | Selector de partituras, botón para abrir un fichero propio, aviso de derechos y carga de la partitura. |
 | `js/biblioteca.js` | Lee el índice de la biblioteca y guarda en el navegador la partitura propia. |
 | `js/sonido.js` | Nota de referencia: hace sonar la nota de la sílaba tocada, con el sonido elegido. |
@@ -70,7 +72,7 @@ En la página puedes:
 | `js/revision.js` | Repaso al acabar: las sílabas desafinadas, para oír su nota y repetir su compás. |
 | `js/canto.js` | Cantar con tempo: escucha el micrófono mientras suena el reproductor y dibuja lo cantado. |
 | `js/afinacion.js` | Cálculos de cantar con tempo: orden y momento de las notas, y si lo cantado está afinado, alto o bajo. |
-| `js/vendor/` | Librerías copiadas en el proyecto, con su licencia MIT: Tone.js (reproduce el sonido) y pitchy con fft.js (reconoce la nota que se canta). |
+| `js/vendor/` | Librerías copiadas en el proyecto, con su licencia: Tone.js (reproduce el sonido) y pitchy con fft.js (reconoce la nota que se canta), MIT; OpenSheetMusicDisplay (dibuja el pentagrama), BSD-3-Clause. |
 | `sonidos/` | Sonidos grabados, una carpeta por sonido con su licencia (`sonidos/piano/`: Salamander Grand Piano, CC BY 3.0, de Alexander Holm). Para añadir otro, ver el comentario al principio de `js/sonido.js`. |
 | `css/neopartitura.css` | Estilos de la página. |
 | `examples/` | Direcciones antiguas de los ejemplos: llevan a la página con su partitura. |

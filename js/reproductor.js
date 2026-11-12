@@ -4,7 +4,7 @@
 // La sílaba que suena se ilumina y la partitura se desplaza para mantenerla a la vista.
 // Se activa solo: usa los controles #reproductor y #acomp de la cabecera y la partitura #score que dibuja js/dibujo.js.
 
-import { actual } from './controles.js';
+import { actual, elegirAcomp } from './controles.js';
 import { instrumento, sonidoElegido, cargarTone } from './sonido.js';
 import { TEMPO_POR_DEFECTO, secuencia, negrasPorCompas, tempoValido, inicioComun, tramoDeCompas } from './afinacion.js';
 import { crearReloj, notaEn, ligada, final, acompanamiento, volumen } from './reproduccion.js';
@@ -20,7 +20,6 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const ahora = () => performance.now() / 1000;
 
 let rep = null;        // la reproducción preparada (en marcha, en pausa o acabada) para la partitura, voz y estrofas actuales
-let elegidas = [];     // voces de acompañamiento marcadas (índices de parte)
 let titulo = null;
 let conMicro = false;
 try { conMicro = localStorage.getItem(MICRO) === '1'; } catch (e) {}
@@ -87,20 +86,19 @@ document.addEventListener('sonido-elegido', () => { if (rep) aplicarVolumenes();
 function acompRender() {
   const { data, part } = actual;
   const otras = data.parts.map((p, i) => i).filter(i => i !== part);
-  acomp.hidden = !otras.length;
-  elegidas = acompanamiento(elegidas, part, data.parts.length);
+  acomp.hidden = !otras.length || actual.vista === 'pentagrama';   // en el pentagrama lo hacen los botones de voz
+  const elegidas = actual.acomp || [];
   acompList.innerHTML = otras.map(i => `<label title="Hacer sonar también la voz ${esc(data.parts[i].name)}, más suave que la tuya, para oír la armonía">` +
     `<input type="checkbox" data-i="${i}" ${elegidas.includes(i) ? 'checked' : ''}> ${esc(data.parts[i].name)}</label>`).join('');
   acomp.querySelector('summary').textContent = elegidas.length
     ? 'Acompañamiento: ' + elegidas.map(i => data.parts[i].name).join(', ') : 'Acompañamiento';
 }
 acompList.onchange = e => {
-  const i = +e.target.dataset.i;
-  elegidas = e.target.checked ? [...elegidas, i] : elegidas.filter(x => x !== i);
-  try { localStorage.setItem('neo-acomp:' + actual.data.title, JSON.stringify(elegidas)); } catch (err) {}
-  acompRender();
-  if (rep) aplicarVolumenes();   // las voces se suman o se quitan sobre la marcha
+  const i = +e.target.dataset.i, elegidas = actual.acomp || [];
+  elegirAcomp(e.target.checked ? [...elegidas, i] : elegidas.filter(x => x !== i));
 };
+// las voces de acompañamiento han cambiado (aquí o con los botones de voz del pentagrama): se suman o se quitan sobre la marcha
+document.addEventListener('acomp-cambiado', () => { if (!actual.data) return; acompRender(); if (rep) aplicarVolumenes(); });
 document.addEventListener('click', e => { if (!acomp.contains(e.target)) acomp.open = false; });
 
 // Cada vez que se dibuja la partitura: los controles se ven si hay notas; con otra partitura, su tempo y su acompañamiento;
@@ -114,10 +112,10 @@ score.addEventListener('dibujada', () => {
     tempoIn.value = tempoValido(t || TEMPO_POR_DEFECTO);
     tempoIn.title = (t ? `Tempo de la partitura: ${t} negras por minuto.` : `La partitura no trae tempo: se propone ${TEMPO_POR_DEFECTO}.`) +
       ' Baja el número para ir más despacio o súbelo para ir más rápido; se puede cambiar mientras suena.';
-    try { elegidas = JSON.parse(localStorage.getItem('neo-acomp:' + titulo)) || []; } catch (e) { elegidas = []; }
   }
   acompRender();
   if (rep && rep.firma !== firma()) { descartar(); decir(''); }
+  else if (rep) aplicarVolumenes();   // en el pentagrama, mostrar u ocultar una voz también la suma o la quita
   micro.repintar();
   if (rep && rep.dentro) iluminar(rep.k, false);
   botones();
@@ -127,7 +125,7 @@ score.addEventListener('dibujada', () => {
 /** Las voces que suenan ahora: la tuya y las de acompañamiento, con el reloj común. */
 function voces() {
   const { data, part, shown, secs } = actual;
-  const partes = [part, ...acompanamiento(elegidas, part, data.parts.length)];
+  const partes = [part, ...acompanamiento(actual.acomp || [], part, data.parts.length)];
   const cero = inicioComun(data, data.parts.map((p, i) => i), shown, secs);   // todas: el cero no cambia al sumar voces
   return partes.map(p => ({ part: p, principal: p === part, notas: secuencia(data, p, shown, secs, cero), k: 0, sonando: null, ins: null }));
 }
@@ -364,9 +362,10 @@ function iluminar(n, desplazar) {
   const b = bloque(n);
   if (!b) return;
   b.classList.add('toca');
-  const svg = b.ownerSVGElement;
-  if (desplazar && svg !== rep.linea) { rep.linea = svg; svg.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
-  else if (!desplazar) rep.linea = svg;
+  // la línea de la partitura: en la neo-score, cada línea es un dibujo; en el pentagrama, todo es un dibujo con sus sistemas
+  const pent = b.dataset.vista === 'pentagrama', linea = pent ? 'p' + b.dataset.linea : b.ownerSVGElement;
+  if (desplazar && linea !== rep.linea) { rep.linea = linea; (pent ? b : b.ownerSVGElement).scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+  else if (!desplazar) rep.linea = linea;
 }
 
 botones();

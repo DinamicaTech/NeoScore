@@ -22,6 +22,7 @@ Lo hace js/sonido.js con Tone.js: suena mientras se mantiene pulsada (como míni
 - 2026-11-11 18:45 · js/sonido.js exporta instrumento(id, bajar) (el mismo sonido, bajar decibelios más suave), sonidoElegido() y cargarTone() para la nota guía del modo de canto (entonacion/cantar-con-tempo).
 - 2026-11-11 18:50 · Corregido: un toque más corto que la espera táctil, o la primera nota mientras se preparaba el sonido, empezaba a sonar después de soltar y se quedaba sonando hasta 30 s. Ahora, si ya se ha soltado al empezar, suena el mínimo (1,2 s) y se calla.
 - 2026-11-12 11:45 · Para el reproductor (reproducir-partitura), instrumento(id, bajar, canal) da un instrumento aparte para cada voz que suena a la vez (canal), para que soltar una nota de una voz no corte la misma nota de otra; al elegir otro sonido se avisa con el evento "sonido-elegido" y el reproductor lo cambia sobre la marcha.
+- 2026-11-12 12:45 · En la vista de pentagrama cada nota de cada voz visible tiene su zona tocable (rect.toque con data-p): suena igual que en la neo-score, sin cambios en js/sonido.js.
 
 ## Requirements
 - 2026-11-12 11:45 · Derived from reproducir-partitura: el sonido elegido (piano o voz) debe poder tocar una secuencia de notas, y varias voces a la vez.
@@ -35,3 +36,4 @@ Lo hace js/sonido.js con Tone.js: suena mientras se mantiene pulsada (como míni
 - 2026-11-11 18:06 · answer: de dónde salen los sonidos → Ok a los samples: piano grabado Salamander (CC BY 3.0) y, de momento, una voz sintética; una voz grabada por el coro se añadirá más adelante.
 - 2026-11-11 18:06 · answer: qué sonido se ofrece por defecto → Ok a voz.
 - 2026-11-11 18:45 · Derived from entonacion/cantar-con-tempo: dejar usar sus sonidos, más suaves, como nota guía mientras se canta.
+- 2026-11-12 12:09 · Derived from neo-partitura/vista-pentagrama: tocar una nota del pentagrama hace sonar su nota de referencia.
