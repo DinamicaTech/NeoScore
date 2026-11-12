@@ -4,7 +4,8 @@
 //   index.html?partitura=<ruta .musicxml>&estrofas=1,2,5  una partitura de esta web
 //   index.html?propia                                     la partitura propia guardada en este navegador
 import { leerMusicXML } from './lector-musicxml.js';
-import { mostrarPartitura } from './controles.js';
+import { mostrarPartitura, mostrarLetra } from './controles.js';
+import { leerTxt } from './letra.js';
 import { PROMPT, enlaceClaude, pasos } from './convertir.js';
 import { leerIndice, derechosDelFichero, estrofasVisibles, guardarPropia, leerPropia, olvidarPropia } from './biblioteca.js';
 
@@ -12,6 +13,7 @@ const $ = id => document.getElementById(id);
 const aviso = $('aviso'), derechos = $('derechos'), selector = $('selector'), fichero = $('fichero'), olvidar = $('olvidar');
 const enlace = p => '?partitura=' + encodeURIComponent(p.ruta) + (p.estrofas ? '&estrofas=' + p.estrofas : '');
 const base = r => r.replace(/^.*[\\/]/, '');
+const esTxt = nombre => /\.txt$/i.test(nombre);   // un fichero de letra: se ve siempre en la vista de letra
 const SIN_DERECHOS = 'Este fichero no trae aviso de derechos: respeta siempre los de su autor.';
 let biblioteca = [];
 
@@ -46,10 +48,11 @@ function rellenarSelector(propia, elegido) {
   olvidar.hidden = !propia;
 }
 
-/** Lee el MusicXML y lo dibuja con su aviso de derechos. Devuelve si ha podido. */
+/** Lee el MusicXML (o, si el fichero es .txt, la letra) y lo dibuja con su aviso de derechos. Devuelve si ha podido. */
 function mostrar(texto, nombre, shown, autoria, textoDerechos) {
   try {
-    mostrarPartitura(leerMusicXML(texto, nombre), shown, texto);
+    if (esTxt(nombre)) mostrarLetra(leerTxt(texto, nombre));
+    else mostrarPartitura(leerMusicXML(texto, nombre), shown, texto);
     nota('');
     mostrarDerechos(autoria, textoDerechos);
     return true;
@@ -58,7 +61,7 @@ function mostrar(texto, nombre, shown, autoria, textoDerechos) {
     return false;
   }
 }
-const mostrarPropia = p => mostrar(p.texto, p.nombre, null, '', derechosDelFichero(p.texto) || SIN_DERECHOS);
+const mostrarPropia = p => mostrar(p.texto, p.nombre, null, '', (!esTxt(p.nombre) && derechosDelFichero(p.texto)) || SIN_DERECHOS);
 
 /** Descarga y muestra el MusicXML de una dirección de esta web; entrada: su ficha del índice, si la tiene. */
 async function abrirRuta(ruta, shown, entrada) {

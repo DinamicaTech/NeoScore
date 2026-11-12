@@ -5,7 +5,7 @@ threads:
   - 2026-11-11 17:55 · Selector de partituras y abrir fichero propio | https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv?thread=cmsg_01KVLuMPf5x5gSm2uLfB6SDv8gDiqytrKfg72LkEKxEUoY
 ---
 ## Summary
-En la cabecera de la web, un desplegable con las partituras de la biblioteca (biblioteca/indice.json) y un botón "Abrir fichero…" para abrir un MusicXML propio, que queda solo en el navegador del usuario y este recuerda.
+En la cabecera de la web, un desplegable con las partituras de la biblioteca (biblioteca/indice.json) y un botón "Abrir fichero…" para abrir un MusicXML propio (o un .txt con solo la letra, ver neo-partitura/vista-letra), que queda solo en el navegador del usuario y este recuerda.
 Bajo el título se muestran siempre la autoría y el aviso de derechos de la partitura. Al lado, "Convertir con Claude" ayuda a sacar un MusicXML de fotos o un PDF (ver biblioteca/convertir-con-claude). Código: js/pagina.js y js/biblioteca.js; pruebas en tests/biblioteca.test.mjs.
 
 ## Decisions
@@ -16,6 +16,7 @@ Bajo el título se muestran siempre la autoría y el aviso de derechos de la par
 - 2026-11-11 17:55 · Aviso de derechos: bajo el título, la autoría y, en negrita, el aviso de derechos. En la biblioteca salen del índice; en una partitura propia, del propio MusicXML (<identification><rights>), y si no trae ninguno se muestra "Este fichero no trae aviso de derechos: respeta siempre los de su autor.". Una prueba exige que el índice copie el aviso que trae cada MusicXML.
 - 2026-11-11 17:58 · Validado por el propietario: el nodo deja de ser borrador.
 - 2026-11-12 16:51 · La cabecera lleva, entre "Abrir fichero…" y "Olvidar la mía", el botón "Convertir con Claude" (ver biblioteca/convertir-con-claude); su resultado se abre con "Abrir fichero…" sin ningún cambio en cómo se lee y se guarda.
+- 2026-11-12 19:40 · "Abrir fichero…" también acepta ficheros .txt con solo la letra: se leen como letra (js/letra.js) en lugar de como MusicXML y se guardan en el mismo hueco de la partitura propia (ver neo-partitura/vista-letra).
 
 ## Requirements
 - 2026-11-11 14:14 · La idea sería poder seleccionar en la página HTML una partitura y que luego la cargue.
@@ -24,3 +25,4 @@ Bajo el título se muestran siempre la autoría y el aviso de derechos de la par
 - 2026-11-11 14:20 · [answered 2026-11-11 17:53] question: ¿Se recuerda en el navegador la partitura propia abierta, para no tener que volver a abrirla? Opciones: A) sí, guardada en el navegador (IndexedDB); B) no, hay que abrirla cada vez. Recomendación: A.
 - 2026-11-11 17:53 · answer: ¿se recuerda en el navegador la partitura propia abierta? → A, sí, guardada en el navegador (IndexedDB).
 - 2026-11-12 16:51 · Derived from biblioteca/convertir-con-claude: un botón "Convertir con Claude" junto a "Abrir fichero…", cuyo resultado se abre con "Abrir fichero…".
+- 2026-11-12 19:40 · Derived from neo-partitura/vista-letra: abrir con "Abrir fichero…" un .txt con solo la letra, que se recuerda como la partitura propia.

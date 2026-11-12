@@ -3,7 +3,7 @@ title: Controles de la página
 depends_on: []
 ---
 ## Summary
-Los controles de la neo-partitura: selector de voz (por defecto la que contiene "alt"), desplegable de estrofas, selector de sonido de la nota de referencia, reproductor (▶ Reproducir / ⏸ Pausa, ⏮, tempo, Acompañamiento, 🎤 Micrófono; ver reproducir-partitura), control de tamaño (de 12 a 70), estilos para imprimir y modo oscuro.
+Los controles de la neo-partitura: vista (Neo-score, Pentagrama o Letra), selector de voz (por defecto la que contiene "alt"), desplegable de estrofas, selector de sonido de la nota de referencia, reproductor (▶ Reproducir / ⏸ Pausa, ⏮, tempo, Acompañamiento, 🎤 Micrófono; ver reproducir-partitura), control de tamaño (de 12 a 70), estilos para imprimir y modo oscuro.
 Cada sílaba (con su bloque de color) se puede pulsar para oír su nota (ver sonido).
 
 ## Decisions
@@ -16,6 +16,7 @@ Cada sílaba (con su bloque de color) se puede pulsar para oír su nota (ver son
 - 2026-11-12 12:45 · Botones "Vista: Neo-score / Pentagrama" (#vista) a la izquierda de la voz, visibles cuando hay partitura; la vista se recuerda en el navegador. En la vista de pentagrama los botones de voz llevan el color de su voz y muestran u ocultan cada voz (la tuya se ve siempre), y el desplegable "Tu voz" elige la que cantas (ver neo-partitura/vista-pentagrama).
 - 2026-11-12 14:10 · En la vista de pentagrama, con dos o más voces visibles, botones "Pentagramas: Separados / Juntos" detrás de "Tu voz"; la elección se recuerda en el navegador.
 - 2026-11-12 19:15 · El modo oscuro sigue la configuración del móvil solo en la neo-score; en la vista de pentagrama la página se ve siempre en claro (ver neo-partitura/vista-pentagrama).
+- 2026-11-12 19:40 · Los botones de vista son tres, "Vista: Neo-score / Pentagrama / Letra" (ver neo-partitura/vista-letra). En Letra se quedan Voz, Estrofas y Tamaño (el tamaño de la letra) y el resto de controles se ocultan. Con un fichero .txt no se ven ni la vista ni las voces.
 
 ## Requirements
 - 2026-11-12 11:45 · Derived from reproducir-partitura: botones ▶ Reproducir / ⏸ Pausa / ⏮ Reiniciar en la cabecera, y elegir voces de acompañamiento sin cambiar la voz principal.
@@ -25,3 +26,4 @@ Cada sílaba (con su bloque de color) se puede pulsar para oír su nota (ver son
 - 2026-11-12 12:09 · Derived from neo-partitura/vista-pentagrama: un botón para elegir la vista (Neo-score o Pentagrama) y, en el pentagrama, botones de voz de colores que se pueden activar varios a la vez, más la elección de tu voz.
 - 2026-11-12 13:35 · Derived from neo-partitura/vista-pentagrama: en el pentagrama, poder elegir ver las voces separadas o juntas en un solo pentagrama.
 - 2026-11-12 19:12 · Derived from neo-partitura/vista-pentagrama: que el modo oscuro solo se aplique en la neo-score.
+- 2026-11-12 19:40 · Derived from neo-partitura/vista-letra: una tercera opción "Letra" en el botón de vista y, con un .txt, sin opciones de vista.

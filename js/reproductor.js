@@ -105,6 +105,8 @@ document.addEventListener('click', e => { if (!acomp.contains(e.target)) acomp.o
 // con otra voz u otras estrofas se para y se borra lo cantado; si es la misma (zoom, giro del móvil), se repinta.
 score.addEventListener('dibujada', () => {
   caja.hidden = !score.querySelector('.toque');
+  // sin notas (vista de letra o un fichero .txt): no hay nada que tocar, y lo que sonaba se para
+  if (caja.hidden) { if (rep) { descartar(); decir(''); } return; }
   if (!actual.data) return;
   if (actual.data.title !== titulo) {
     titulo = actual.data.title;

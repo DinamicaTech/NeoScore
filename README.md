@@ -23,7 +23,7 @@ Como los colores son relativos a la primera nota, si se cambia el tono de la can
 
 NeoScore es una pequeña web que funciona entera en el navegador: lee directamente la partitura en **MusicXML** y la dibuja. Está publicada en **https://dinamicatech.github.io/NeoScore**.
 
-Arriba a la izquierda hay un **desplegable con las partituras de la biblioteca**: al elegir una, se abre. Con **Abrir fichero…** puedes abrir un MusicXML de tu equipo: se queda solo en tu navegador (no se sube a ningún sitio), el navegador lo recuerda y aparece en el desplegable como "Mi partitura"; **Olvidar la mía** lo borra. Bajo el título se muestra siempre la autoría y el aviso de derechos de la partitura.
+Arriba a la izquierda hay un **desplegable con las partituras de la biblioteca**: al elegir una, se abre. Con **Abrir fichero…** puedes abrir un MusicXML de tu equipo (o un fichero de texto `.txt` con solo la letra, ver más abajo): se queda solo en tu navegador (no se sube a ningún sitio), el navegador lo recuerda y aparece en el desplegable como "Mi partitura"; **Olvidar la mía** lo borra. Bajo el título se muestra siempre la autoría y el aviso de derechos de la partitura.
 
 Si la partitura solo la tienes en **fotos o en PDF**, pulsa **Convertir con Claude**: se abre Claude (claude.ai, con tu propia cuenta) en otra pestaña con las instrucciones ya escritas, y además copiadas por si no aparecen (pégalas con Ctrl+V). Adjunta allí las fotos o el PDF, descarga el fichero `.musicxml` que te dé Claude y ábrelo aquí con **Abrir fichero…**. Claude te dirá qué ha leído con dudas; si alguna nota o sílaba sale mal, díselo en la misma conversación y abre el fichero corregido.
 
@@ -47,6 +47,7 @@ En la página puedes:
 
 - Elegir la **voz** (Soprano, Alto, Tenor, Baix…) si la partitura tiene varias.
 - Cambiar la **vista** entre **Neo-score** (la cuadrícula de colores) y **Pentagrama** (la partitura clásica de cinco líneas). En el pentagrama puedes ver varias voces a la vez: cada botón de voz muestra u oculta esa voz, con sus notas de su color, y en **Tu voz** eliges la que cantas (la que lleva la letra, se compara con el micrófono y suena más fuerte; las demás que se ven suenan suaves). En **Pentagramas** eliges si van **Separados** (cada voz en el suyo) o **Juntos** (todas en uno; si alguna voz necesitaría más de tres rayitas, en dos unidos: uno agudo y uno grave). Tocar una nota, reproducir, cantar con el micrófono (una línea dibuja lo que cantas y cada nota se pinta de verde, rojo o azul) y el repaso funcionan igual que en la neo-score. El pentagrama se ve siempre con fondo claro, aunque el móvil esté en modo oscuro; la neo-score sigue el modo del móvil.
+- Pasar a la vista **Letra** para leer solo la letra de tu voz, por estrofas y en versos, sin notas: aquí no suena nada, así que se ocultan el reproductor, el micrófono y el sonido, y el **tamaño** cambia el de la letra. También puedes abrir con **Abrir fichero…** un `.txt` con solo la letra: escribe un verso en cada línea y deja una línea en blanco entre estrofas; el título es el nombre del fichero. Un `.txt` se ve siempre en Letra, sin botón de vista ni voces.
 - Elegir qué **estrofas** ver en el desplegable. Cada estrofa termina donde la partitura tiene una doble barra y toma su nombre de la indicación de texto del primer compás ("Estrofa 2"…). El navegador recuerda la última selección.
 - Ajustar el **tamaño** con el control deslizante.
 - **Oír una nota**: al tocar una sílaba (o su bloque de color) suena su nota, como referencia para afinar; si se mantiene pulsada, sigue sonando hasta soltarla. En **Sonido** se elige con qué se oye: **Voz** (una voz sintética que canta "a") o **Piano** (un piano de cola grabado). El navegador recuerda la elección. En iPhone, si no se oye nada, quita el interruptor de silencio.
@@ -66,6 +67,7 @@ En la página puedes:
 | `js/lineas.js` | Reparte los compases en líneas según el ancho de la pantalla. |
 | `js/controles.js`, `js/estrofas.js` | Controles de vista, voz, estrofas y tamaño. |
 | `js/pentagrama.js`, `js/pentagrama-xml.js` | Vista de pentagrama: prepara el MusicXML con las voces y estrofas que se ven y lo dibuja con OpenSheetMusicDisplay. |
+| `js/letra.js` | Vista de letra: junta las sílabas de una voz en palabras y versos, lee los ficheros `.txt` de letra y la dibuja. |
 | `js/pagina.js` | Selector de partituras, botón para abrir un fichero propio, aviso de derechos y carga de la partitura. |
 | `js/convertir.js` | "Convertir con Claude": las instrucciones para pasar fotos o un PDF a MusicXML en claude.ai, y el enlace que las abre. |
 | `js/biblioteca.js` | Lee el índice de la biblioteca y guarda en el navegador la partitura propia. |
