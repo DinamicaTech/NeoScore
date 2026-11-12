@@ -25,13 +25,15 @@ NeoScore es una pequeña web que funciona entera en el navegador: lee directamen
 
 Arriba a la izquierda hay un **desplegable con las partituras de la biblioteca**: al elegir una, se abre. Con **Abrir fichero…** puedes abrir un MusicXML de tu equipo: se queda solo en tu navegador (no se sube a ningún sitio), el navegador lo recuerda y aparece en el desplegable como "Mi partitura"; **Olvidar la mía** lo borra. Bajo el título se muestra siempre la autoría y el aviso de derechos de la partitura.
 
+Si la partitura solo la tienes en **fotos o en PDF**, pulsa **Convertir con Claude**: se abre Claude (claude.ai, con tu propia cuenta) en otra pestaña con las instrucciones ya escritas, y además copiadas por si no aparecen (pégalas con Ctrl+V). Adjunta allí las fotos o el PDF, descarga el fichero `.musicxml` que te dé Claude y ábrelo aquí con **Abrir fichero…**. Claude te dirá qué ha leído con dudas; si alguna nota o sílaba sale mal, díselo en la misma conversación y abre el fichero corregido.
+
 También se puede abrir una partitura concreta con su dirección dentro de la web, y opcionalmente qué estrofas se ven al abrir:
 
 ```
 https://dinamicatech.github.io/NeoScore/?partitura=biblioteca/ElNoiDeLaMare_completa.musicxml&estrofas=1,2,5
 ```
 
-Para añadir una canción a la biblioteca, expórtala a MusicXML sin comprimir (por ejemplo, desde MuseScore: *Archivo → Exportar → MusicXML*, fichero `.musicxml`), guárdala en la carpeta `biblioteca/` y añádela a la lista `biblioteca/indice.json` con su título, las estrofas que se ven al abrir (vacío = todas), su autoría y su aviso de derechos.
+Para añadir una canción a la biblioteca, expórtala a MusicXML sin comprimir (por ejemplo, desde MuseScore: *Archivo → Exportar → MusicXML*, fichero `.musicxml`, o con **Convertir con Claude**), guárdala en la carpeta `biblioteca/` y añádela a la lista `biblioteca/indice.json` con su título, las estrofas que se ven al abrir (vacío = todas), su autoría y su aviso de derechos.
 
 Para probar la web en tu equipo hace falta servirla (el navegador no deja leer la partitura si se abre `index.html` con doble clic). Con Python 3 instalado, en la carpeta del proyecto:
 
@@ -65,6 +67,7 @@ En la página puedes:
 | `js/controles.js`, `js/estrofas.js` | Controles de vista, voz, estrofas y tamaño. |
 | `js/pentagrama.js`, `js/pentagrama-xml.js` | Vista de pentagrama: prepara el MusicXML con las voces y estrofas que se ven y lo dibuja con OpenSheetMusicDisplay. |
 | `js/pagina.js` | Selector de partituras, botón para abrir un fichero propio, aviso de derechos y carga de la partitura. |
+| `js/convertir.js` | "Convertir con Claude": las instrucciones para pasar fotos o un PDF a MusicXML en claude.ai, y el enlace que las abre. |
 | `js/biblioteca.js` | Lee el índice de la biblioteca y guarda en el navegador la partitura propia. |
 | `js/sonido.js` | Nota de referencia: hace sonar la nota de la sílaba tocada, con el sonido elegido. |
 | `js/reproductor.js` | Reproductor: la partitura entera al tempo, con pausa, reiniciar, acompañamiento y micrófono. |

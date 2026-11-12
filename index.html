@@ -9,7 +9,8 @@
 <body>
 <!-- Piezas de la página (cada una en su fichero, para poder cambiarlas por separado):
      js/pagina.js          selector de partituras, abrir fichero propio, aviso de derechos y carga
-     js/biblioteca.js      índice de la biblioteca (biblioteca/indice.json) y partitura propia guardada
+     js/convertir.js       "Convertir con Claude": el prompt para pasar fotos o un PDF a MusicXML en claude.ai
+     js/biblioteca.js     índice de la biblioteca (biblioteca/indice.json) y partitura propia guardada
      js/lector-musicxml.js lectura del MusicXML
      js/controles.js       controles de la cabecera (voz, estrofas, tamaño)
      js/estrofas.js        estrofas de la partitura
@@ -24,7 +25,7 @@
      js/afinacion.js       cálculos del canto (orden y momento de las notas, afinada / alta / baja)
      css/neopartitura.css   estilos -->
 <header>
-  <div class="ctrl" id="elegir"><select id="selector" title="Elegir una partitura de la biblioteca, o la tuya guardada en este navegador"></select><button id="abrir" title="Abrir una partitura MusicXML (.musicxml) de tu equipo; se queda solo en este navegador, no se sube a ningún sitio">Abrir fichero…</button><button id="olvidar" hidden title="Borrar de este navegador la partitura propia guardada">Olvidar la mía</button><input type="file" id="fichero" accept=".musicxml,.xml" hidden></div>
+  <div class="ctrl" id="elegir"><select id="selector" title="Elegir una partitura de la biblioteca, o la tuya guardada en este navegador"></select><button id="abrir" title="Abrir una partitura MusicXML (.musicxml) de tu equipo; se queda solo en este navegador, no se sube a ningún sitio">Abrir fichero…</button><button id="convertir" title="Convertir en MusicXML una partitura en fotos o PDF: abre Claude en otra pestaña con las instrucciones; allí adjuntas los ficheros y luego abres aquí el resultado con Abrir fichero… (hace falta una cuenta de Claude)">Convertir con Claude</button><button id="olvidar" hidden title="Borrar de este navegador la partitura propia guardada">Olvidar la mía</button><input type="file" id="fichero" accept=".musicxml,.xml" hidden></div>
   <h1 id="titulo"></h1>
   <div class="ctrl" id="vista" hidden></div>
   <div class="ctrl" id="voices"></div>

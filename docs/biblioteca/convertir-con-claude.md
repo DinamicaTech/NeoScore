@@ -1,20 +1,24 @@
 ---
-title: Convertir una partitura de varios JPG o un PDF en musicxml e incorporarla al repertorio
+title: Convertir fotos o un PDF con Claude
 depends_on: [biblioteca/selector-y-carga]
-status: idea
+status: draft
 threads:
   - 2026-11-12 16:16 · Convertir fotos o PDF en partitura | https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv?thread=cmsg_01KVLuMPf5x5gSm2uLfB6SDvW795Nb5Ai8gUfqbCiAtr9x
 ---
 ## Summary
-Idea para cerrar el círculo: incorporar una partitura que no está en MusicXML (fotos JPG del móvil, o un PDF nativo o escaneado).
-Camino preferido en el debate: un botón de NeoScore abre Claude en otra pestaña con un prompt preparado; allí el usuario adjunta las fotos o el PDF con su propia cuenta, y Claude devuelve un fichero que NeoScore abre y comprueba. Así no hace falta clave ni servidor.
-Ningún reconocedor es perfecto (la letra y los ritmos fallan a veces), así que hace falta un paso para revisar y corregir, que se hace pidiéndole a Claude en la misma conversación que corrija lo que falle. En el GitHub del propietario solo él añade partituras a la biblioteca, a través de un hilo de Claude.
+Incorporar una partitura que no está en MusicXML (fotos JPG del móvil, o un PDF nativo o escaneado): el botón "Convertir con Claude" de la cabecera abre claude.ai en otra pestaña con las instrucciones ya escritas (y copiadas); allí el usuario adjunta los ficheros con su propia cuenta y Claude le da un .musicxml, que abre con "Abrir fichero…". Sin clave ni servidor.
+Lo que salga mal se corrige diciéndoselo a Claude en la misma conversación. En el GitHub del propietario solo él añade partituras a la biblioteca pública, a través de un hilo de Claude (ver biblioteca). Código: js/convertir.js (el prompt y el enlace) y js/pagina.js; pruebas en tests/convertir.test.mjs.
 
 ## Decisions
 - 2026-11-12 16:16 · Creado en el laboratorio como idea; no se construye nada hasta que el propietario lo decida.
+- 2026-11-12 16:51 · Leaves the lab: executed. Se mueve de creative-lab/convertir-una-partitura-de-varios-jpg-o-un-pdf-en-musicxml-e-incorporarla-al-repertorio a biblioteca/convertir-con-claude.
+- 2026-11-12 16:51 · Botón "Convertir con Claude" en la cabecera, junto a "Abrir fichero…": abre https://claude.ai/new?q=<prompt> en otra pestaña y copia el prompt al portapapeles por si claude.ai no lo escribe solo; el aviso de la página explica los pasos (adjuntar, descargar el .musicxml, abrirlo con "Abrir fichero…", corregir en la misma conversación). Si el navegador bloquea la pestaña, el aviso dice cómo seguir.
+- 2026-11-12 16:51 · El prompt (js/convertir.js) pide MusicXML 3.1 score-partwise sin comprimir, copiado tal cual se ve; una parte por voz con su nombre; la letra con un lyric por estrofa y su syllabic, incluidas las estrofas escritas aparte; título, autoría y aviso de derechos (<rights>) solo si aparecen, sin inventarlos; entrega como fichero descargable .musicxml; y una lista de lo leído con dudas.
+- 2026-11-12 16:51 · Abrir el resultado no cambia: "Abrir fichero…" lo lee, lo comprueba, lo guarda en el navegador y muestra su aviso de derechos (ver biblioteca/selector-y-carga). No se añade recuadro "Pegar" ni editor de partituras.
+- 2026-11-12 16:51 · Hecho cuando, con fotos o un PDF de una partitura corta, el propietario sigue los pasos y la ve en NeoScore con su letra y su aviso de derechos.
 
 ## Debate
-Lo que se ha hablado hasta ahora, para quien siga el debate sin leer el hilo.
+Lo que se habló en el laboratorio antes de ejecutarla.
 - Convertir una imagen de partitura en MusicXML se llama reconocimiento óptico de música (como el OCR de textos, pero con notas). Siempre comete errores, y la letra, que en NeoScore es lo principal, suele ser lo que peor reconocen los programas clásicos.
 - Caminos vistos:
   1. Herramienta externa a mano (por ejemplo Audiveris, gratuito, o una app de móvil de pago) y abrir el resultado con "Abrir fichero…", que ya existe. Coste casi nulo para NeoScore.
@@ -42,3 +46,4 @@ Lo que se ha hablado hasta ahora, para quien siga el debate sin leer el hilo.
 - 2026-11-12 16:25 · answer: cómo se corrige una nota mal leída → diciéndoselo a Claude en la misma conversación, que rehace el fichero; sin editor en NeoScore
 - 2026-11-12 16:25 · 3. Ok, en mi Github solo yo puedo subir partituras
 - 2026-11-12 16:25 · answer: quién añade partituras a la biblioteca → en el GitHub del propietario solo él, pidiéndoselo a un hilo de Claude; quien tenga NeoScore en su propio servidor gestiona su propia biblioteca
+- 2026-11-12 16:30 · Ok, pásalo a desarrollo

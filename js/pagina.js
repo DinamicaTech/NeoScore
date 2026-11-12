@@ -5,6 +5,7 @@
 //   index.html?propia                                     la partitura propia guardada en este navegador
 import { leerMusicXML } from './lector-musicxml.js';
 import { mostrarPartitura } from './controles.js';
+import { PROMPT, enlaceClaude, pasos } from './convertir.js';
 import { leerIndice, derechosDelFichero, estrofasVisibles, guardarPropia, leerPropia, olvidarPropia } from './biblioteca.js';
 
 const $ = id => document.getElementById(id);
@@ -83,6 +84,16 @@ selector.onchange = () => {
   else if (v[0] === 'b') location.search = enlace(biblioteca[+v.slice(1)]);
 };
 $('abrir').onclick = () => fichero.click();
+$('convertir').onclick = async () => {
+  const pestana = window.open(enlaceClaude(), '_blank');
+  if (pestana) pestana.opener = null;
+  let copiado = false;
+  try { await navigator.clipboard.writeText(PROMPT); copiado = true; } catch (e) { /* sin portapapeles: el enlace ya lleva el prompt */ }
+  if (!pestana) return error(copiado
+    ? 'El navegador no ha dejado abrir otra pestaña, pero las instrucciones están copiadas: abre claude.ai en otra pestaña, pégalas con Ctrl+V y sigue allí. Para la próxima vez, permite las ventanas emergentes de esta página.'
+    : 'El navegador no ha dejado abrir otra pestaña ni copiar las instrucciones. Permite las ventanas emergentes de esta página y vuelve a pulsar "Convertir con Claude".');
+  nota(pasos(copiado));
+};
 fichero.onchange = async () => {
   const f = fichero.files[0];
   fichero.value = '';
