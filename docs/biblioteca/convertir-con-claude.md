@@ -1,7 +1,6 @@
 ---
 title: Convertir fotos o un PDF con Claude
 depends_on: [biblioteca/selector-y-carga]
-status: draft
 threads:
   - 2026-11-12 16:16 · Convertir fotos o PDF en partitura | https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv?thread=cmsg_01KVLuMPf5x5gSm2uLfB6SDvW795Nb5Ai8gUfqbCiAtr9x
 ---
@@ -16,6 +15,7 @@ Lo que salga mal se corrige diciéndoselo a Claude en la misma conversación. En
 - 2026-11-12 16:51 · El prompt (js/convertir.js) pide MusicXML 3.1 score-partwise sin comprimir, copiado tal cual se ve; una parte por voz con su nombre; la letra con un lyric por estrofa y su syllabic, incluidas las estrofas escritas aparte; título, autoría y aviso de derechos (<rights>) solo si aparecen, sin inventarlos; entrega como fichero descargable .musicxml; y una lista de lo leído con dudas.
 - 2026-11-12 16:51 · Abrir el resultado no cambia: "Abrir fichero…" lo lee, lo comprueba, lo guarda en el navegador y muestra su aviso de derechos (ver biblioteca/selector-y-carga). No se añade recuadro "Pegar" ni editor de partituras.
 - 2026-11-12 16:51 · Hecho cuando, con fotos o un PDF de una partitura corta, el propietario sigue los pasos y la ve en NeoScore con su letra y su aviso de derechos.
+- 2026-11-12 19:48 · Validado por el propietario: el nodo deja de ser borrador.
 
 ## Debate
 Lo que se habló en el laboratorio antes de ejecutarla.
