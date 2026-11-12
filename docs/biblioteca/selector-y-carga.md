@@ -17,6 +17,7 @@ Bajo el título se muestran siempre la autoría y el aviso de derechos de la par
 - 2026-11-11 17:58 · Validado por el propietario: el nodo deja de ser borrador.
 - 2026-11-12 16:51 · La cabecera lleva, entre "Abrir fichero…" y "Olvidar la mía", el botón "Convertir con Claude" (ver biblioteca/convertir-con-claude); su resultado se abre con "Abrir fichero…" sin ningún cambio en cómo se lee y se guarda.
 - 2026-11-12 19:40 · "Abrir fichero…" también acepta ficheros .txt con solo la letra: se leen como letra (js/letra.js) en lugar de como MusicXML y se guardan en el mismo hueco de la partitura propia (ver neo-partitura/vista-letra).
+- 2026-11-12 20:05 · Un .txt que se llama como la partitura propia o como una de la biblioteca se guarda como su letra, sin sustituir a la partitura propia; botón "Olvidar mi letra" junto a "Olvidar la mía" (ver neo-partitura/vista-letra).
 
 ## Requirements
 - 2026-11-11 14:14 · La idea sería poder seleccionar en la página HTML una partitura y que luego la cargue.
@@ -25,4 +26,4 @@ Bajo el título se muestran siempre la autoría y el aviso de derechos de la par
 - 2026-11-11 14:20 · [answered 2026-11-11 17:53] question: ¿Se recuerda en el navegador la partitura propia abierta, para no tener que volver a abrirla? Opciones: A) sí, guardada en el navegador (IndexedDB); B) no, hay que abrirla cada vez. Recomendación: A.
 - 2026-11-11 17:53 · answer: ¿se recuerda en el navegador la partitura propia abierta? → A, sí, guardada en el navegador (IndexedDB).
 - 2026-11-12 16:51 · Derived from biblioteca/convertir-con-claude: un botón "Convertir con Claude" junto a "Abrir fichero…", cuyo resultado se abre con "Abrir fichero…".
-- 2026-11-12 19:40 · Derived from neo-partitura/vista-letra: abrir con "Abrir fichero…" un .txt con solo la letra, que se recuerda como la partitura propia.
+- 2026-11-12 19:40 · Derived from neo-partitura/vista-letra: abrir con "Abrir fichero…" un .txt con solo la letra, que se recuerda como la partitura propia; si se llama como una partitura, se guarda como su letra.

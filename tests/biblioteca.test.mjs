@@ -64,3 +64,21 @@ test('el índice mal escrito da un mensaje que explica qué arreglar', () => {
   assert.throws(() => leerIndice({ partituras: [{ titulo: 'X', fichero: '../x.musicxml' }] }), /dentro de la carpeta biblioteca/);
   assert.throws(() => leerIndice({ partituras: [{ titulo: 'X', fichero: 'x.musicxml', estrofas: 'uno' }] }), /números separados por comas/);
 });
+
+test('la letra .txt de una partitura de la biblioteca existe y se lee (vista Letra, nodo neo-partitura/vista-letra)', async () => {
+  const { leerTxt } = await import('../js/letra.js');
+  const conLetra = indice.filter(p => p.letra);
+  assert.ok(conLetra.some(p => p.titulo === 'Muntanyes del Canigó'));
+  for (const p of conLetra) {
+    assert.ok(existsSync(new URL(p.letra, raiz)), `${p.letra} no existe`);
+    assert.equal(leerTxt(leer(p.letra), p.letra).estrofas.length, 4);
+  }
+});
+
+test('el índice rechaza una letra que no es un .txt de la carpeta biblioteca/', () => {
+  const una = letra => ({ partituras: [{ titulo: 'X', fichero: 'x.musicxml', letra }] });
+  assert.throws(() => leerIndice(una('otra/x.txt')), /sin subcarpetas/);
+  assert.throws(() => leerIndice(una('x.musicxml')), /\.txt/);
+  assert.equal(leerIndice(una('x.txt'))[0].letra, 'biblioteca/x.txt');
+  assert.equal(leerIndice(una(''))[0].letra, undefined);
+});

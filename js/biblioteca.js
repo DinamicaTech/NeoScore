@@ -12,7 +12,10 @@ export function leerIndice(json) {
     if (!p.titulo || !p.fichero) throw new Error(`a la partitura n.º ${i + 1} del índice le falta el título o el fichero`);
     if (/[\/]|^\./.test(p.fichero)) throw new Error(`el fichero "${p.fichero}" debe estar dentro de la carpeta biblioteca/, sin subcarpetas`);
     if (p.estrofas && !/^\d+(,\d+)*$/.test(p.estrofas)) throw new Error(`las estrofas de "${p.titulo}" deben ser números separados por comas, como 1,2,5`);
-    return { titulo: p.titulo, ruta: CARPETA + p.fichero, estrofas: p.estrofas || '', autoria: p.autoria || '', derechos: p.derechos || '' };
+    if (p.letra && (/[\/]|^\./.test(p.letra) || !/\.txt$/i.test(p.letra))) throw new Error(`la letra "${p.letra}" de "${p.titulo}" debe ser un fichero .txt dentro de la carpeta biblioteca/, sin subcarpetas`);
+    const e = { titulo: p.titulo, ruta: CARPETA + p.fichero, estrofas: p.estrofas || '', autoria: p.autoria || '', derechos: p.derechos || '' };
+    if (p.letra) e.letra = CARPETA + p.letra;
+    return e;
   });
 }
 
@@ -52,3 +55,14 @@ export const guardarPropia = p => operacion('readwrite', s => s.put(p, 'actual')
 export const leerPropia = () => operacion('readonly', s => s.get('actual')).catch(() => undefined);
 /** Olvida la partitura propia. */
 export const olvidarPropia = () => operacion('readwrite', s => s.delete('actual'));
+
+// ---- Letra (.txt) unida a una partitura por el nombre del fichero: MiCancion.txt es la letra de MiCancion.musicxml ----
+/** Nombre de un fichero sin carpeta ni extensión, en minúsculas: lo que une un .txt con su partitura. */
+export const nombreBase = r => r.replace(/^.*[\\/]/, '').replace(/\.[^.]*$/, '').toLowerCase();
+const claveLetra = nombre => 'letra:' + nombreBase(nombre);
+/** Guarda la letra {nombre, texto} de la partitura que se llama como ella. */
+export const guardarLetra = p => operacion('readwrite', s => s.put(p, claveLetra(p.nombre)));
+/** La letra guardada para la partitura del fichero `nombre` ({nombre, texto}), o undefined. */
+export const leerLetra = nombre => operacion('readonly', s => s.get(claveLetra(nombre))).catch(() => undefined);
+/** Olvida la letra guardada para la partitura del fichero `nombre`. */
+export const olvidarLetra = nombre => operacion('readwrite', s => s.delete(claveLetra(nombre)));

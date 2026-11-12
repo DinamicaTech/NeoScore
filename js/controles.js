@@ -21,6 +21,8 @@ try { juntos = localStorage.getItem(JUNTOS) === '1'; } catch (e) {}
 let cambiarAcomp = () => {};
 /** Cambia las otras voces elegidas (acompañamiento) y, en la vista de pentagrama, las que se ven. */
 export function elegirAcomp(lista) { cambiarAcomp(lista); }
+/** Elige la vista con la que se abrirá la próxima partitura (y la recuerda), por ejemplo Letra al unir un .txt. */
+export function ponerVista(v) { vista = v; try { localStorage.setItem(VISTA, v); } catch (e) {} }
 
 /** Pone la clase de la vista en la partitura; el pentagrama se ve siempre en claro. */
 function marcarVista(v) {
@@ -52,7 +54,7 @@ function selectorEstrofas(lista, shown, store, alCambiar) {
   const cerrar = e => { if (!box.contains(e.target)) box.open = false; };
   document.addEventListener('click', cerrar);
   box.hidden = lista.length <= 1;
-  if (!box.hidden) pintar();
+  if (lista.length > 1) pintar();
   return () => document.removeEventListener('click', cerrar);
 }
 
@@ -64,8 +66,11 @@ function estrofasIniciales(n, inicial, store) {
 }
 
 /** Muestra una partitura con sus controles. shownInicial: estrofas visibles al abrir (índices desde 0), o null para todas.
- *  texto: el MusicXML original, que necesita la vista de pentagrama. */
-export function mostrarPartitura(data, shownInicial = null, texto = null) {
+ *  texto: el MusicXML original, que necesita la vista de pentagrama.
+ *  letraTxt: la letra de un .txt unido a la partitura ({title, estrofas}, ver leerTxt), que usa la vista de letra
+ *  en lugar de la de las voces: entonces la vista de letra no tiene botones de voz y, si el .txt no tiene tantas
+ *  estrofas como la partitura, se ven todas las suyas sin desplegable de estrofas. */
+export function mostrarPartitura(data, shownInicial = null, texto = null, letraTxt = null) {
   quitarAnterior();
   const score = $('score'), legend = $('legend'), zoom = $('zoom'), vbox = $('voices');
   const secs = estrofas(data), SECTIONS = secs.lista;
@@ -78,12 +83,16 @@ export function mostrarPartitura(data, shownInicial = null, texto = null) {
   acomp = acompanamiento(acomp, part, data.parts.length);
   const conPentagrama = !!texto;
   if (!conPentagrama && vista === 'pentagrama') vista = 'neo';
+  const coinciden = !!letraTxt && letraTxt.estrofas.length === SECTIONS.length;   // la misma elección de estrofas vale para el .txt
 
   const redibujar = () => {
     acomp = acompanamiento(acomp, part, data.parts.length);
     Object.assign(actual, { data, part, shown, secs, vista, acomp });
     marcarVista(vista);
-    if (vista === 'pentagrama') dibujarPentagrama({ data, texto, part, visibles: acomp, zoom: +zoom.value, shown, secs, score, legend, juntos });
+    const letraDelTxt = vista === 'letra' && letraTxt;
+    $('secs').hidden = SECTIONS.length <= 1 || (letraDelTxt && !coinciden);
+    if (letraDelTxt) dibujarLetra({ estrofas: coinciden ? letraTxt.estrofas.map((e, k) => ({ ...e, name: SECTIONS[k].name })).filter((_, k) => shown.has(k)) : letraTxt.estrofas, zoom: +zoom.value, score, legend });
+    else if (vista === 'pentagrama') dibujarPentagrama({ data, texto, part, visibles: acomp, zoom: +zoom.value, shown, secs, score, legend, juntos });
     else if (vista === 'letra') dibujarLetra({ estrofas: letraDeVoz(data, part, shown, secs), zoom: +zoom.value, score, legend });
     else dibujar({ data, part, zoom: +zoom.value, shown, secs, score, legend });
   };
@@ -129,7 +138,7 @@ export function mostrarPartitura(data, shownInicial = null, texto = null) {
     const pent = vista === 'pentagrama';
     document.documentElement.classList.toggle('claro-forzado', pent);   // antes de pintar los botones con sus colores
     vistaBox.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === vista));
-    vbox.hidden = false;
+    vbox.hidden = vista === 'letra' && !!letraTxt;   // la letra del .txt es la misma para todas las voces
     vbox.innerHTML = (pent ? 'Voces ' : 'Voz ') + data.parts.map((p, i) => {
       const mia = i === part, vista_ = mia || acomp.includes(i);
       const titulo = vista === 'letra' ? `Leer la letra de la voz ${esc(p.name)}`
