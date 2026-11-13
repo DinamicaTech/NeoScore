@@ -8,6 +8,7 @@ import { estrofas } from '../js/estrofas.js';
 import {
   MARGENES, hzAMidi, comparar, mediana, secuencia, negrasPorCompas, tempoValido, resultado, claveResultado, TEMPO_POR_DEFECTO,
   HISTORIAL_MAX, claveHistorial, cuentas, anadirIntento, textoHistorial, fueraDeMargen, desvioEnPalabras, tramoDeCompas, coincide,
+  tempoInicial, claveTempo,
 } from '../js/afinacion.js';
 import { PitchDetector } from '../js/vendor/pitchy.js';
 import { leerIndice } from '../js/biblioteca.js';
@@ -49,6 +50,16 @@ test('tempo: el que se escribe, dentro de unos límites', () => {
   assert.equal(tempoValido(5), 30);
   assert.equal(tempoValido(900), 200);
   assert.equal(tempoValido('hola'), TEMPO_POR_DEFECTO);
+});
+
+test('tempo recordado: la partitura se abre con el último tempo que le pusiste, o con el suyo', () => {
+  assert.equal(claveTempo('Muntanyes del Canigó'), 'neo-tempo:Muntanyes del Canigó');
+  assert.equal(tempoInicial(96, null), 96);              // nada guardado: el de la partitura
+  assert.equal(tempoInicial(undefined, null), TEMPO_POR_DEFECTO);   // la partitura no trae tempo
+  assert.equal(tempoInicial(96, '70'), 70);              // guardado en el navegador: manda el tuyo
+  assert.equal(tempoInicial(96, '900'), 200);            // dentro de los límites
+  assert.equal(tempoInicial(96, 'hola'), 96);            // algo raro guardado: se ignora
+  assert.equal(tempoInicial(96, ''), 96);
 });
 
 for (const ruta of rutas) {
