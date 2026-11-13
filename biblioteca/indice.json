@@ -15,6 +15,14 @@
       "estrofas": "1,2,5",
       "autoria": "Villancico popular catalán · versión coral de Abel Di Marco, Pbro.",
       "derechos": "© A. Di Marco. Se permite el uso y duplicación de este material sólo con fines Pastorales. Prohibido su uso con fines económicos."
+    },
+    {
+      "titulo": "A Montserrat",
+      "fichero": "AMontserrat.musicxml",
+      "letra": "AMontserrat.txt",
+      "estrofas": "",
+      "autoria": "Tradicional",
+      "derechos": ""
     }
   ]
 }
