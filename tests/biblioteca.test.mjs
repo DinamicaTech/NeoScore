@@ -12,7 +12,7 @@ const leer = r => readFileSync(new URL(r, raiz), 'utf8');
 const indice = leerIndice(JSON.parse(leer('biblioteca/indice.json')));
 
 test('el índice tiene las partituras de la biblioteca', () => {
-  assert.deepEqual(indice.map(p => p.titulo), ['Muntanyes del Canigó', 'El Noi de la Mare', 'A Montserrat']);
+  assert.deepEqual(indice.map(p => p.titulo), ['Muntanyes del Canigó', 'El Noi de la Mare', 'A Montserrat', 'Mare vull ser pescador']);
 });
 
 test('todos los MusicXML de la carpeta biblioteca/ están en el índice', () => {
