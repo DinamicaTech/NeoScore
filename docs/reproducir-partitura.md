@@ -3,16 +3,17 @@ title: Reproducir partitura
 depends_on: [sonido, neo-partitura/controles, entonacion/cantar-con-tempo]
 threads:
   - 2026-11-12 11:13 · Reproducir la partitura entera | https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv?thread=cmsg_01KVLuMPf5x5gSm2uLfB6SDvWqkubtyBG1STVoRRX7YF7e
+  - 2026-11-13 10:40 · Recordar el tempo de cada partitura | https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv?thread=cmsg_01KVLuMPf5x5gSm2uLfB6SDvAVbeoAw89qRY9zQx7Bzv4G
 ---
 ## Summary
-Escuchar la partitura entera (la voz elegida, con las estrofas que se ven) al tempo y con el sonido elegidos, con botones para reproducir, pausar, continuar y volver al principio.
+Escuchar la partitura entera (la voz elegida, con las estrofas que se ven) al tempo y con el sonido elegidos, con botones para reproducir, pausar, continuar y volver al principio. El tempo que se pone a una partitura se recuerda en el navegador y ↺ vuelve al suyo.
 Se pueden sumar otras voces más suaves como acompañamiento, para oír la armonía, y activar el micrófono para cantar a la vez y ver la afinación de cada nota (lo que antes hacía el botón "Cantar").
 
 ## Decisions
 - 2026-11-12 11:13 · Creado como hijo de NeoScore.
 - 2026-11-12 11:45 · Reproductor en js/reproductor.js (navegador) y js/reproduccion.js (cálculos sin navegador, probados en tests/reproduccion.test.mjs). Controles en la cabecera (#reproductor): ▶ Reproducir / ⏸ Pausa / ▶ Continuar, ⏮ Reiniciar, Tempo, Acompañamiento y 🎤 Micrófono; la línea de estado fija arriba al desplazar (#estado-repro) repite ⏸/▶ y ⏮, porque la página se desplaza sola y la cabecera queda fuera de la vista.
 - 2026-11-12 11:45 · Qué suena: la voz elegida (la que se dibuja), con las estrofas que se ven, en orden, con el sonido elegido en la cabecera (Voz o Piano; si se cambia mientras suena, cambia sobre la marcha). Las notas ligadas suenan como una sola; cada nota se suelta 60 ms antes de acabar para que dos notas iguales seguidas se oigan separadas.
-- 2026-11-12 11:45 · Tempo: el mismo control que el canto (el de la partitura, o 80), de 30 a 200 negras por minuto; se puede cambiar mientras suena y sigue desde el mismo sitio.
+- 2026-11-12 11:45 · [replaced by 2026-11-13 10:40] Tempo: el mismo control que el canto (el de la partitura, o 80), de 30 a 200 negras por minuto; se puede cambiar mientras suena y sigue desde el mismo sitio.
 - 2026-11-12 11:45 · Pausa para la música donde va; Continuar sigue desde ahí; ⏮ vuelve al principio (si estaba sonando, sigue sonando desde el principio; si no, se queda listo). Al acabar se puede volver a reproducir. Con otra voz u otras estrofas, la reproducción se descarta.
 - 2026-11-12 11:45 · Mientras suena, la sílaba que toca se ilumina y la partitura se desplaza para mantener su línea a la vista; la línea de estado dice qué sílaba y compás suenan.
 - 2026-11-12 11:45 · Acompañamiento: un desplegable con casillas para las demás voces (no cambia la voz principal; si la principal cambia, sale de la lista). Por defecto ninguna; lo elegido se recuerda por partitura en el navegador (localStorage "neo-acomp:<título>"). Se puede cambiar mientras suena. Todas las voces comparten reloj: el cero es la primera nota de cualquier voz (inicioComun en js/afinacion.js), para que sumar o quitar voces no mueva la música.
@@ -24,6 +25,9 @@ Se pueden sumar otras voces más suaves como acompañamiento, para oír la armon
 - 2026-11-12 11:50 · ⏹ Terminar (entonacion/revision): con el micrófono, sonando o en pausa, un botón en la cabecera y otro en la línea fija paran la música y el micrófono y abren el repaso; después ▶ Reproducir empieza desde el principio.
 - 2026-11-12 11:00 · Repetir un compás (entonacion/revision): repetir(n) de js/reproductor.js reproduce solo el compás de la nota n de tu voz, con un compás de cuenta atrás, los volúmenes de cuando hay micrófono y el micrófono escuchando aunque 🎤 Micrófono esté desactivado; acaba al final de ese compás. Pausa y continuar valen; ⏮ vuelve a empezar el compás. Al acabar, ▶ Reproducir vuelve a la canción entera.
 - 2026-11-12 12:45 · Las voces de acompañamiento viven en actual.acomp (js/controles.js), compartidas con la vista de pentagrama: allí son las voces que se ven además de la tuya y se eligen con los botones de voz (el desplegable se oculta). Si cambian mientras suena, se suman o se quitan sobre la marcha. En el pentagrama la página se desplaza al cambiar de sistema (data-linea), no de dibujo.
+- 2026-11-13 10:40 · Tempo: el mismo control que el canto, de 30 a 200 negras por minuto; se puede cambiar mientras suena y sigue desde el mismo sitio. Cada partitura se abre con el último tempo que se le puso en este navegador (localStorage "neo-tempo:<título>", claveTempo y tempoInicial de js/afinacion.js) o, si no, con el suyo (o 80). Se guarda solo al cambiarlo, sin botón; si es distinto del de la partitura aparece ↺ al lado, que vuelve al de la partitura y lo olvida (poner a mano el de la partitura también lo olvida). Solo para ese navegador: el PC y el móvil se recuerdan por separado; la biblioteca no cambia.
+- 2026-11-13 10:40 · Probado en el navegador: en Muntanyes del Canigó se pone 60, se recarga y abre a 60 con ↺; El Noi de la Mare sigue con el suyo; ↺ vuelve a 80 y borra lo guardado; cambiarlo mientras suena sigue sonando y lo guarda.
+- 2026-11-13 10:40 · Hecho cuando: en PC y en móvil, al cambiar el tempo de una partitura y recargar, esa partitura empieza con ese tempo, las demás con el suyo, y ↺ devuelve el original; lo valida el propietario en la página de prueba.
 
 ## Requirements
 - 2026-11-12 10:57 · Opción para reproducir toda la partitura (no solo la nota seleccionada) con el tempo e instrumento seleccionado. Poder pausar, continuar y reiniciar.
@@ -36,3 +40,5 @@ Se pueden sumar otras voces más suaves como acompañamiento, para oír la armon
 - 2026-11-12 11:00 · Derived from entonacion/revision: reproducir solo el compás de una sílaba, con cuenta atrás y el micrófono escuchando, para repetirlo desde el repaso.
 - 2026-11-12 11:50 · Derived from entonacion/revision: un botón para terminar el canto antes del final y ver el resultado.
 - 2026-11-12 12:09 · Derived from neo-partitura/vista-pentagrama: en la vista de pentagrama, que suenen todas las voces visibles (tu voz y las demás como acompañamiento) y que se ilumine la nota que suena.
+- 2026-11-13 08:47 · Si se modifica el tempo, se puede guardar para que sea el nuevo valor por defecto de la partitura seleccionada?
+- 2026-11-13 09:49 · A, pero sin botón guardar. Automático en el momento que se cambie el valor.

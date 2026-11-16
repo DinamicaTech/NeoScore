@@ -6,12 +6,12 @@
 
 import { actual, elegirAcomp } from './controles.js';
 import { instrumento, sonidoElegido, cargarTone } from './sonido.js';
-import { TEMPO_POR_DEFECTO, secuencia, negrasPorCompas, tempoValido, inicioComun, tramoDeCompas } from './afinacion.js';
+import { TEMPO_POR_DEFECTO, secuencia, negrasPorCompas, tempoValido, tempoInicial, claveTempo, inicioComun, tramoDeCompas } from './afinacion.js';
 import { crearReloj, notaEn, ligada, final, acompanamiento, volumen } from './reproduccion.js';
 import * as micro from './canto.js';
 
 const $ = id => document.getElementById(id);
-const caja = $('reproductor'), play = $('play'), reiniciarBtn = $('reiniciar'), tempoIn = $('tempo');
+const caja = $('reproductor'), play = $('play'), reiniciarBtn = $('reiniciar'), tempoIn = $('tempo'), tempoVolver = $('tempo-volver');
 const microBtn = $('micro'), margenSel = $('margen'), acomp = $('acomp'), acompList = $('acomplist');
 const estado = $('estado-repro'), score = $('score'), terminarBtn = $('terminar'), terminar2 = $('terminar2');
 const MICRO = 'neo-micro';            // si el micrófono estaba activado, guardado en este navegador
@@ -21,6 +21,7 @@ const ahora = () => performance.now() / 1000;
 
 let rep = null;        // la reproducción preparada (en marcha, en pausa o acabada) para la partitura, voz y estrofas actuales
 let titulo = null;
+let tempoOriginal = TEMPO_POR_DEFECTO;   // el tempo que trae la partitura actual (o el de por defecto)
 let conMicro = false;
 try { conMicro = localStorage.getItem(MICRO) === '1'; } catch (e) {}
 
@@ -76,10 +77,27 @@ microBtn.onclick = () => {
   if (rep) aplicarVolumenes();
   botones();
 };
+// El tempo que se pone a una partitura se recuerda solo en este navegador (localStorage "neo-tempo:<título>"): la próxima
+// vez se abre con él. Volver al de la partitura (con ↺ o escribiéndolo) borra lo recordado.
 tempoIn.onchange = () => {
   const t = tempoValido(tempoIn.value); tempoIn.value = t;
   if (rep) { rep.reloj.cambiarTempo(ahora(), t); rep.tempo = t; }   // sigue desde el mismo sitio, a otra velocidad
+  if (titulo !== null) {
+    try { if (t === tempoOriginal) localStorage.removeItem(claveTempo(titulo)); else localStorage.setItem(claveTempo(titulo), String(t)); } catch (e) {}
+  }
+  tempoAvisos();
 };
+tempoVolver.onclick = () => { tempoIn.value = tempoOriginal; tempoIn.onchange(); };
+
+function tempoAvisos() {
+  const propio = +tempoIn.value !== tempoOriginal;
+  tempoVolver.hidden = !propio;
+  tempoVolver.title = `Volver al tempo original de la partitura (${tempoOriginal} negras por minuto) y olvidar el tuyo`;
+  tempoIn.title = (propio
+    ? `Tu tempo para esta partitura (el suyo es ${tempoOriginal}): se recuerda en este navegador y la partitura se abrirá así la próxima vez.`
+    : `Tempo de la partitura: ${tempoOriginal} negras por minuto.`) +
+    ' Baja el número para ir más despacio o súbelo para ir más rápido; se puede cambiar mientras suena y se recuerda solo.';
+}
 document.addEventListener('sonido-elegido', () => { if (rep) aplicarVolumenes(); });
 
 // ---- acompañamiento ----
@@ -111,9 +129,10 @@ score.addEventListener('dibujada', () => {
   if (actual.data.title !== titulo) {
     titulo = actual.data.title;
     const t = actual.data.tempo;
-    tempoIn.value = tempoValido(t || TEMPO_POR_DEFECTO);
-    tempoIn.title = (t ? `Tempo de la partitura: ${t} negras por minuto.` : `La partitura no trae tempo: se propone ${TEMPO_POR_DEFECTO}.`) +
-      ' Baja el número para ir más despacio o súbelo para ir más rápido; se puede cambiar mientras suena.';
+    let guardado = null; try { guardado = localStorage.getItem(claveTempo(titulo)); } catch (e) {}
+    tempoOriginal = tempoValido(t || TEMPO_POR_DEFECTO);
+    tempoIn.value = tempoInicial(t, guardado);
+    tempoAvisos();
   }
   acompRender();
   if (rep && rep.firma !== firma()) { descartar(); decir(''); }

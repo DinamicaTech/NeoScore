@@ -93,6 +93,18 @@ export const tempoValido = t => {
   return Number.isFinite(n) && n > 0 ? Math.min(TEMPO_MAX, Math.max(TEMPO_MIN, n)) : TEMPO_POR_DEFECTO;
 };
 
+/** Clave de localStorage del tempo que el usuario ha puesto a una partitura (reproducir-partitura). */
+export const claveTempo = titulo => `neo-tempo:${titulo}`;
+
+/**
+ * Tempo con el que se abre una partitura: el último que le puso el usuario en este navegador (guardado, tal como
+ * sale de localStorage) o, si no hay ninguno válido, el de la partitura (o TEMPO_POR_DEFECTO si no trae).
+ */
+export function tempoInicial(original, guardado) {
+  const g = guardado == null || guardado === '' ? NaN : +guardado;
+  return Number.isFinite(g) && g > 0 ? tempoValido(g) : tempoValido(original || TEMPO_POR_DEFECTO);
+}
+
 /**
  * Resultado de una sesión de canto, tal como se guarda en el navegador para la revisión al acabar
  * (entonacion/revision). notas: secuencia(...); cantadas[n]: altura cantada (MIDI con decimales) de la nota n, o null.
