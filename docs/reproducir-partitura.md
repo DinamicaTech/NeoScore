@@ -4,10 +4,11 @@ depends_on: [sonido, neo-partitura/controles, entonacion/cantar-con-tempo]
 threads:
   - 2026-11-12 11:13 · Reproducir la partitura entera | https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv?thread=cmsg_01KVLuMPf5x5gSm2uLfB6SDvWqkubtyBG1STVoRRX7YF7e
   - 2026-11-13 10:40 · Recordar el tempo de cada partitura | https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv?thread=cmsg_01KVLuMPf5x5gSm2uLfB6SDvAVbeoAw89qRY9zQx7Bzv4G
+  - 2026-11-16 18:15 · Volumen del acompañamiento | https://claude.ai/code/project/chan_01KVLuMPf5x5gSm2uLfB6SDv?thread=cmsg_01KVLuMPf5x5gSm2uLfB6SDvQmbPYsW8TWmqbpGty4bHsX
 ---
 ## Summary
 Escuchar la partitura entera (la voz elegida, con las estrofas que se ven) al tempo y con el sonido elegidos, con botones para reproducir, pausar, continuar y volver al principio. El tempo que se pone a una partitura se recuerda en el navegador y ↺ vuelve al suyo.
-Se pueden sumar otras voces más suaves como acompañamiento, para oír la armonía, y activar el micrófono para cantar a la vez y ver la afinación de cada nota (lo que antes hacía el botón "Cantar").
+Se pueden sumar otras voces como acompañamiento, para oír la armonía, con su volumen ajustable (🔊 Acompañamiento), y activar el micrófono para cantar a la vez y ver la afinación de cada nota (lo que antes hacía el botón "Cantar").
 
 ## Decisions
 - 2026-11-12 11:13 · Creado como hijo de NeoScore.
@@ -17,7 +18,7 @@ Se pueden sumar otras voces más suaves como acompañamiento, para oír la armon
 - 2026-11-12 11:45 · Pausa para la música donde va; Continuar sigue desde ahí; ⏮ vuelve al principio (si estaba sonando, sigue sonando desde el principio; si no, se queda listo). Al acabar se puede volver a reproducir. Con otra voz u otras estrofas, la reproducción se descarta.
 - 2026-11-12 11:45 · Mientras suena, la sílaba que toca se ilumina y la partitura se desplaza para mantener su línea a la vista; la línea de estado dice qué sílaba y compás suenan.
 - 2026-11-12 11:45 · Acompañamiento: un desplegable con casillas para las demás voces (no cambia la voz principal; si la principal cambia, sale de la lista). Por defecto ninguna; lo elegido se recuerda por partitura en el navegador (localStorage "neo-acomp:<título>"). Se puede cambiar mientras suena. Todas las voces comparten reloj: el cero es la primera nota de cualquier voz (inicioComun en js/afinacion.js), para que sumar o quitar voces no mueva la música.
-- 2026-11-12 11:45 · Volúmenes: tu voz a volumen normal; el acompañamiento 9 dB más suave. Con el micrófono, todo 16 dB más suave (tu voz como la antigua nota guía) para que el micrófono no confunda la música con tu voz. Cada voz usa su propio instrumento (instrumento(id, bajar, canal) de js/sonido.js).
+- 2026-11-12 11:45 · [replaced by 2026-11-16 18:15] Volúmenes: tu voz a volumen normal; el acompañamiento 9 dB más suave. Con el micrófono, todo 16 dB más suave (tu voz como la antigua nota guía) para que el micrófono no confunda la música con tu voz. Cada voz usa su propio instrumento (instrumento(id, bajar, canal) de js/sonido.js).
 - 2026-11-12 11:45 · Micrófono: con "🎤 Micrófono" activado (se recuerda en localStorage "neo-micro"), ▶ Reproducir y ▶ Continuar hacen un compás de cuenta atrás y la página escucha y marca cada nota como en entonacion/cantar-con-tempo, que deja de tener un modo aparte. Al reiniciar, al desactivar el micrófono o al acabar se guarda el resultado para la revisión.
 - 2026-11-12 11:45 · Probado en el navegador: Muntanyes del Canigó con el Baix de acompañamiento suena entera hasta "¡Fin!"; pausa, continuar y reiniciar (desde la cabecera y desde la línea fija) funcionan; con un micrófono simulado que canta la melodía con algunas notas altas a propósito, las notas salen afinadas o altas; en móvil (375 px) los controles caben.
 - 2026-11-12 11:45 · Hecho cuando: en PC y en móvil suena toda la voz elegida con el tempo y el sonido elegidos, la sílaba iluminada va a la par de la música, pausar, continuar y reiniciar funcionan, el acompañamiento suena más suave que la voz principal y, con el micrófono, se marca la afinación mientras suena; lo valida el propietario en la página de prueba.
@@ -28,6 +29,8 @@ Se pueden sumar otras voces más suaves como acompañamiento, para oír la armon
 - 2026-11-13 10:40 · Tempo: el mismo control que el canto, de 30 a 200 negras por minuto; se puede cambiar mientras suena y sigue desde el mismo sitio. Cada partitura se abre con el último tempo que se le puso en este navegador (localStorage "neo-tempo:<título>", claveTempo y tempoInicial de js/afinacion.js) o, si no, con el suyo (o 80). Se guarda solo al cambiarlo, sin botón; si es distinto del de la partitura aparece ↺ al lado, que vuelve al de la partitura y lo olvida (poner a mano el de la partitura también lo olvida). Solo para ese navegador: el PC y el móvil se recuerdan por separado; la biblioteca no cambia.
 - 2026-11-13 10:40 · Probado en el navegador: en Muntanyes del Canigó se pone 60, se recarga y abre a 60 con ↺; El Noi de la Mare sigue con el suyo; ↺ vuelve a 80 y borra lo guardado; cambiarlo mientras suena sigue sonando y lo guarda.
 - 2026-11-13 10:40 · Hecho cuando: en PC y en móvil, al cambiar el tempo de una partitura y recargar, esa partitura empieza con ese tempo, las demás con el suyo, y ↺ devuelve el original; lo valida el propietario en la página de prueba.
+
+- 2026-11-16 18:15 · Volúmenes: tu voz a volumen normal; el acompañamiento según el control "🔊 Acompañamiento" de la cabecera (#vol-acomp, de 0 a 100 de 10 en 10): 0 = 30 dB más suave que tu voz (casi en silencio), 100 = 3 dB más fuerte; por defecto 80, unos 4 dB más suave (antes, fijo a 9 dB). Se recuerda en el navegador (localStorage "neo-vol-acomp") y se puede cambiar mientras suena. Con el micrófono, todo 16 dB más suave (tu voz como la antigua nota guía) para que el micrófono no confunda la música con tu voz. Cada voz usa su propio instrumento (instrumento(id, bajar, canal) de js/sonido.js); cálculo en volumen() de js/reproduccion.js.
 
 ## Requirements
 - 2026-11-12 10:57 · Opción para reproducir toda la partitura (no solo la nota seleccionada) con el tempo e instrumento seleccionado. Poder pausar, continuar y reiniciar.
@@ -42,3 +45,4 @@ Se pueden sumar otras voces más suaves como acompañamiento, para oír la armon
 - 2026-11-12 12:09 · Derived from neo-partitura/vista-pentagrama: en la vista de pentagrama, que suenen todas las voces visibles (tu voz y las demás como acompañamiento) y que se ilumine la nota que suena.
 - 2026-11-13 08:47 · Si se modifica el tempo, se puede guardar para que sea el nuevo valor por defecto de la partitura seleccionada?
 - 2026-11-13 09:49 · A, pero sin botón guardar. Automático en el momento que se cambie el valor.
+- 2026-11-16 17:54 · quizá lo podemos reaprovechar para ajustar el volumen de reproducción del acompañamiento (suena muy flojo pese a que tengo el volumen del móvil al máximo)

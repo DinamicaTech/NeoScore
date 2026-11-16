@@ -113,3 +113,6 @@ main svg { -webkit-user-select:none; user-select:none; }
    la neo-score sigue la configuración del móvil. js/controles.js pone la clase al cambiar de vista. */
 :root.claro-forzado { color-scheme:light; --bg:#fbfaf7; --fg:#1f1e1c; --muted:#8a877f; --grid:#e4e1d8; --ref:#b9c9e6; --bar:#cfcbc0;
   --afinada:#2E9E5B; --alta:#D6336C; --baja:#2D6FD6; }
+/* Pinza sobre la partitura: cambia solo su tamaño (js/pinza.js), no el zoom de toda la página */
+#score { touch-action:pan-x pan-y; }
+#vol-acomp input { width:110px; }
