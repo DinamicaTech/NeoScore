@@ -1,13 +1,19 @@
-// Controles de la cabecera: vista (neo-score, pentagrama o letra), voz, estrofas y tamaño. Cada cambio vuelve a dibujar la partitura.
+// Controles de la cabecera: vista (neo-score, pentagrama o letra), voz y estrofas, y el tamaño con la pinza sobre la partitura
+// (js/pinza.js). Cada cambio vuelve a dibujar la partitura.
 import { estrofas } from './estrofas.js';
 import { dibujar } from './dibujo.js';
 import { dibujarPentagrama, colorVoz } from './pentagrama.js';
 import { acompanamiento } from './reproduccion.js';
 import { letraDeVoz, dibujarLetra } from './letra.js';
+import { activarPinza, tamanoGuardado } from './pinza.js';
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 let quitarAnterior = () => {};
+/** Tamaño de la partitura (ancho de una negra en px, de 12 a 70; en la letra, el de las letras): se cambia con la pinza. */
+let tamano = tamanoGuardado();
+let redibujarActual = () => {};
+activarPinza(document.getElementById('score'), () => tamano, t => { tamano = t; return redibujarActual(); });
 /** Lo que se ve ahora: { data, part, shown, secs, vista, acomp }. Lo leen el reproductor, el canto y el repaso.
  *  acomp: las otras voces elegidas; suenan como acompañamiento y, en la vista de pentagrama, también se ven.
  *  Con un fichero de letra (.txt) está vacío: no hay notas que tocar, reproducir ni cantar. */
@@ -72,7 +78,7 @@ function estrofasIniciales(n, inicial, store) {
  *  estrofas como la partitura, se ven todas las suyas sin desplegable de estrofas. */
 export function mostrarPartitura(data, shownInicial = null, texto = null, letraTxt = null) {
   quitarAnterior();
-  const score = $('score'), legend = $('legend'), zoom = $('zoom'), vbox = $('voices');
+  const score = $('score'), legend = $('legend'), vbox = $('voices');
   const secs = estrofas(data), SECTIONS = secs.lista;
   let part = Math.max(0, data.parts.findIndex(p => /alt/i.test(p.name)));   // por defecto la voz "alt..."
   const shown = estrofasIniciales(SECTIONS.length, shownInicial, 'neo-secs:' + data.title);
@@ -91,10 +97,10 @@ export function mostrarPartitura(data, shownInicial = null, texto = null, letraT
     marcarVista(vista);
     const letraDelTxt = vista === 'letra' && letraTxt;
     $('secs').hidden = SECTIONS.length <= 1 || (letraDelTxt && !coinciden);
-    if (letraDelTxt) dibujarLetra({ estrofas: coinciden ? letraTxt.estrofas.map((e, k) => ({ ...e, name: SECTIONS[k].name })).filter((_, k) => shown.has(k)) : letraTxt.estrofas, zoom: +zoom.value, score, legend });
-    else if (vista === 'pentagrama') dibujarPentagrama({ data, texto, part, visibles: acomp, zoom: +zoom.value, shown, secs, score, legend, juntos });
-    else if (vista === 'letra') dibujarLetra({ estrofas: letraDeVoz(data, part, shown, secs), zoom: +zoom.value, score, legend });
-    else dibujar({ data, part, zoom: +zoom.value, shown, secs, score, legend });
+    if (letraDelTxt) return dibujarLetra({ estrofas: coinciden ? letraTxt.estrofas.map((e, k) => ({ ...e, name: SECTIONS[k].name })).filter((_, k) => shown.has(k)) : letraTxt.estrofas, zoom: tamano, score, legend });
+    if (vista === 'pentagrama') return dibujarPentagrama({ data, texto, part, visibles: acomp, zoom: tamano, shown, secs, score, legend, juntos });
+    if (vista === 'letra') return dibujarLetra({ estrofas: letraDeVoz(data, part, shown, secs), zoom: tamano, score, legend });
+    return dibujar({ data, part, zoom: tamano, shown, secs, score, legend });
   };
   cambiarAcomp = lista => {
     acomp = acompanamiento(lista, part, data.parts.length);
@@ -105,7 +111,6 @@ export function mostrarPartitura(data, shownInicial = null, texto = null, letraT
   };
 
   document.title = data.title + ' · neo-partitura';
-  $('tamano').hidden = false;
   $('titulo').textContent = data.title;
   // Vista: Neo-score / Pentagrama / Letra
   const vistaBox = $('vista');
@@ -153,7 +158,7 @@ export function mostrarPartitura(data, shownInicial = null, texto = null, letraT
         ? ` <span class="juntos">Pentagramas <button data-j="0" class="${juntos ? '' : 'on'}" title="Cada voz en su propio pentagrama">Separados</button>` +
           `<button data-j="1" class="${juntos ? 'on' : ''}" title="Todas las voces que se ven en un solo pentagrama, cada una de su color; si alguna necesitaría más de tres rayitas por arriba o por abajo, en dos pentagramas unidos (agudo y grave)">Juntos</button></span>` : '');
   };
-  zoom.oninput = redibujar;
+  redibujarActual = redibujar;
 
   const quitarEstrofas = selectorEstrofas(SECTIONS, shown, 'neo-secs:' + data.title, redibujar);
   addEventListener('resize', redibujar);
@@ -166,21 +171,20 @@ export function mostrarPartitura(data, shownInicial = null, texto = null, letraT
  *  sin voces y sin nada que suene. letra: {title, estrofas:[{name, versos}]}. */
 export function mostrarLetra(letra) {
   quitarAnterior();
-  const score = $('score'), legend = $('legend'), zoom = $('zoom');
+  const score = $('score'), legend = $('legend');
   for (const k of Object.keys(actual)) delete actual[k];
   cambiarAcomp = () => {};
   const lista = letra.estrofas, store = 'neo-secs:letra:' + letra.title;
   const shown = estrofasIniciales(lista.length, null, store);
   const redibujar = () => {
     marcarVista('letra');
-    dibujarLetra({ estrofas: lista.filter((_, k) => shown.has(k)), zoom: +zoom.value, score, legend });
+    return dibujarLetra({ estrofas: lista.filter((_, k) => shown.has(k)), zoom: tamano, score, legend });
   };
   document.title = letra.title + ' · letra';
   $('titulo').textContent = letra.title;
   $('vista').hidden = true;
   $('voices').hidden = true;
-  $('tamano').hidden = false;
-  zoom.oninput = redibujar;
+  redibujarActual = redibujar;
   quitarAnterior = selectorEstrofas(lista, shown, store, redibujar);
   redibujar();
 }

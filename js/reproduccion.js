@@ -52,8 +52,14 @@ export function acompanamiento(elegidas, principal, numVoces) {
   return [...new Set(elegidas)].filter(p => Number.isInteger(p) && p >= 0 && p < numVoces && p !== principal).sort((a, b) => a - b);
 }
 
-/** Decibelios más suave que la nota de referencia normal: tu voz y las de acompañamiento, con o sin micrófono. */
-export function volumen(principal, micro) {
+/** Volumen del acompañamiento por defecto en el control "🔊 Acompañamiento" (de 0, casi en silencio, a 100, algo más fuerte que tu voz). */
+export const NIVEL_ACOMP = 80;
+/** El nivel del control llevado a un valor válido: de 0 a 100, de 10 en 10. */
+export const nivelAcomp = n => Number.isFinite(+n) && n !== null && n !== '' ? Math.min(100, Math.max(0, Math.round(n / 10) * 10)) : NIVEL_ACOMP;
+
+/** Decibelios más suave que la nota de referencia normal: tu voz y las de acompañamiento, con o sin micrófono.
+ *  nivel: el control "🔊 Acompañamiento" (0 = 30 dB por debajo de tu voz, 100 = 3 dB por encima; antes era fijo a 9 dB por debajo). */
+export function volumen(principal, micro, nivel = NIVEL_ACOMP) {
   const base = micro ? 16 : 0;          // con el micrófono, tu voz muy suave (como la antigua nota guía) para que no la oiga
-  return principal ? base : base + 9;   // el acompañamiento, claramente más bajo que tu voz
+  return principal ? base : base + Math.round((100 - nivelAcomp(nivel)) * 0.33 - 3);
 }

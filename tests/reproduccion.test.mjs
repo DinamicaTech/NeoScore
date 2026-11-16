@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import { leerMusicXML } from '../js/lector-musicxml.js';
 import { estrofas } from '../js/estrofas.js';
 import { secuencia, inicioComun } from '../js/afinacion.js';
-import { crearReloj, notaEn, ligada, final, acompanamiento, volumen } from '../js/reproduccion.js';
+import { crearReloj, notaEn, ligada, final, acompanamiento, volumen, nivelAcomp, NIVEL_ACOMP } from '../js/reproduccion.js';
 import { leerIndice } from '../js/biblioteca.js';
 
 const raiz = new URL('../', import.meta.url);
@@ -77,6 +77,24 @@ test('volÃºmenes: el acompaÃ±amiento mÃ¡s suave que tu voz, y todo mÃ¡s 
   assert.ok(volumen(false, false) > volumen(true, false));
   assert.ok(volumen(true, true) > volumen(true, false));
   assert.ok(volumen(false, true) > volumen(true, true));
+});
+
+test('volumen del acompañamiento: el control lo sube o lo baja respecto a tu voz', () => {
+  assert.ok(volumen(false, false) < 9, 'por defecto, más fuerte que antes (9 dB por debajo de tu voz)');
+  assert.equal(volumen(false, false, 100), -3);   // al máximo, un poco más fuerte que tu voz
+  assert.equal(volumen(false, false, 0), 30);     // al mínimo, casi en silencio
+  for (let n = 10; n <= 100; n += 10) assert.ok(volumen(false, false, n) < volumen(false, false, n - 10));
+  assert.equal(volumen(true, false, 0), 0, 'tu voz no cambia');
+  assert.equal(volumen(false, true, 50) - volumen(false, false, 50), 16, 'con el micrófono baja igual que tu voz');
+});
+
+test('nivel del acompañamiento: de 0 a 100 de 10 en 10, y el de por defecto si no hay uno guardado', () => {
+  assert.equal(nivelAcomp('70'), 70);
+  assert.equal(nivelAcomp(73), 70);
+  assert.equal(nivelAcomp(500), 100);
+  assert.equal(nivelAcomp(-5), 0);
+  assert.equal(nivelAcomp(null), NIVEL_ACOMP);
+  assert.equal(nivelAcomp('x'), NIVEL_ACOMP);
 });
 
 const ejemplos = leerIndice(JSON.parse(leer('biblioteca/indice.json'))).map(p => p.ruta);

@@ -7,7 +7,7 @@
 import { actual, elegirAcomp } from './controles.js';
 import { instrumento, sonidoElegido, cargarTone } from './sonido.js';
 import { TEMPO_POR_DEFECTO, secuencia, negrasPorCompas, tempoValido, tempoInicial, claveTempo, inicioComun, tramoDeCompas } from './afinacion.js';
-import { crearReloj, notaEn, ligada, final, acompanamiento, volumen } from './reproduccion.js';
+import { crearReloj, notaEn, ligada, final, acompanamiento, volumen, nivelAcomp } from './reproduccion.js';
 import * as micro from './canto.js';
 
 const $ = id => document.getElementById(id);
@@ -15,6 +15,8 @@ const caja = $('reproductor'), play = $('play'), reiniciarBtn = $('reiniciar'), 
 const microBtn = $('micro'), margenSel = $('margen'), acomp = $('acomp'), acompList = $('acomplist');
 const estado = $('estado-repro'), score = $('score'), terminarBtn = $('terminar'), terminar2 = $('terminar2');
 const MICRO = 'neo-micro';            // si el micrófono estaba activado, guardado en este navegador
+const VOL_ACOMP = 'neo-vol-acomp';    // el volumen del acompañamiento (control 🔊 Acompañamiento), guardado en este navegador
+const volCaja = $('vol-acomp'), volIn = $('vol-acomp-in');
 const ESPERA = 0.15;                  // segundos antes de la primera nota sin micrófono (que no se coma el arranque)
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const ahora = () => performance.now() / 1000;
@@ -101,9 +103,15 @@ function tempoAvisos() {
 document.addEventListener('sonido-elegido', () => { if (rep) aplicarVolumenes(); });
 
 // ---- acompañamiento ----
+try { volIn.value = nivelAcomp(localStorage.getItem(VOL_ACOMP)); } catch (e) {}
+volIn.oninput = () => {
+  try { localStorage.setItem(VOL_ACOMP, volIn.value); } catch (e) {}
+  if (rep) aplicarVolumenes();
+};
 function acompRender() {
   const { data, part } = actual;
   const otras = data.parts.map((p, i) => i).filter(i => i !== part);
+  volCaja.hidden = !otras.length;
   acomp.hidden = !otras.length || actual.vista === 'pentagrama';   // en el pentagrama lo hacen los botones de voz
   const elegidas = actual.acomp || [];
   acompList.innerHTML = otras.map(i => `<label title="Hacer sonar también la voz ${esc(data.parts[i].name)}, más suave que la tuya, para oír la armonía">` +
@@ -124,7 +132,7 @@ document.addEventListener('click', e => { if (!acomp.contains(e.target)) acomp.o
 score.addEventListener('dibujada', () => {
   caja.hidden = !score.querySelector('.toque');
   // sin notas (vista de letra o un fichero .txt): no hay nada que tocar, y lo que sonaba se para
-  if (caja.hidden) { if (rep) { descartar(); decir(''); } return; }
+  if (caja.hidden) { volCaja.hidden = true; if (rep) { descartar(); decir(''); } return; }
   if (!actual.data) return;
   if (actual.data.title !== titulo) {
     titulo = actual.data.title;
@@ -173,7 +181,7 @@ async function aplicarVolumenes() {
   r.fin = r.tramo ? r.tramo.hasta : final(r.voces.map(v => v.notas));
   const id = sonidoElegido();
   await Promise.all(r.voces.map(async v => {
-    const ins = await instrumento(id, volumen(v.principal, conMicro || !!r.tramo), 'p' + v.part);
+    const ins = await instrumento(id, volumen(v.principal, conMicro || !!r.tramo, volIn.value), 'p' + v.part);
     if (v.ins !== ins) { callar(v); v.ins = ins; }
   }));
 }
